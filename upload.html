@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html><head>
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/hprose-html5.js"></script>
+<script type="text/javascript" src="app/indextest.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Language" content="zh-CN">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">        
+<meta content="telephone=no" name="format-detection">    
+<link rel="stylesheet" type="text/css" href="css/leither.css">  
+</head>
+ <body ng-app="appModule" ng-controller="UserInfoCtrl">          
+      	<p class="firstP">Leither 版本号：{{version}}</p>      	        
+        <p><a href="{{host}}getres?sid={{sid}}&bid={{bid}}&key={{resid}}">getres</a></p>
+        <p>session id：{{sid}} </p>
+        <p>bid:{{bid}}</p>
+        <p>status:{{appstatus}}</p>
+        <form name="leitherForm" enctype="multipart/form-data" novalidate>
+	        <p><textarea rows="5" cols="60">{{imgtext}}</textarea></p>
+    	     File Upload: Select a file to upload: <br /> 
+            <input type="file" id="fileName" name="uploadfile" />  
+            <input type="hidden" name="token" value="{{.}}"/>  
+            <input ng-click="upload()" type="submit" value="upload" />             
+            <input ng-click="getImageData()" type="submit" value="DataURL" />   
+            <p>          
+        	<input width=40 type="text" ng-model="dbversion"/>         
+            <input ng-click="setVersion()" type="submit" value="Version" />
+            <p>
+            <input type="button" ng-click="newUser();" value="New User">           
+        </form><br/>         
+        input: <input type="text" ng-model="inputest">
+        
+        <p><button ng-click="invite()">发邀请</button>
+        <button ng-click="accept()">接受邀请</button>  
+        <button ng-click="veni()">veni</button>
+        <button ng-click="setip()">setip</button>
+        <button ng-click="checkip()">checkip</button>        
+        </p>      
+        <p><button ng-click="addfriend()">添加好友</button>
+        <button ng-click="nearby()">附近好友</button>
+        <button ng-click="getswarm()">getswarm</button>
+        <button ng-click="test()">测试</button>
+        </p>                
+        <p><button ng-click="sendmsg()">发消息</button>
+        <button ng-click="readmsg()">收消息</button></p>
+        <p><button ng-click="setdata()">setdata</button></p>
+        <p><button ng-click="zadd()">zadd</button>   <button ng-click="zrange()">zrange</button></p>    
+        <p><button ng-click="set()">set</button>   <button ng-click="get()">get</button></p>    
+        <p><button ng-click="hset()">hset</button>   <button ng-click="hget()">hget</button>
+        <button ng-click="hmset()">hmset</button> <button ng-click="hmget()">hmget</button>
+        <button ng-click="hgetall()">hgetall</button>  <button ng-click="hlen()">hlen</button>   
+        <button ng-click="hkeys()">hkeys</button>
+        </p>
+        <p><button ng-click="rollback()">rollback</button></p>
+        <p><button ng-click="lpush()">lpush</button>   <button ng-click="lpop()">lpop</button></p> 
+        <p><button ng-click="rpush()">rpush</button>   <button ng-click="rpop()">rpop</button></p> 
+        <p><button ng-click="lrange()">lrange</button></p>               
+        <p><button ng-click="add()" ng-init="count=0">Increment</button>
+        <span>  count: {{count}}</span></p>
+        <p><button ng-click="exit()">退出</button></p>
+        <p>当前用户的消息：{{msg.num}}</p>
+		<p>当前用户的id：{{user.id}}</p>
+        <p>当前用户的Name：{{user.name}}</p>
+        <p>当前用户的地址：{{user.url}}</p>
+        <p>当前用户的好友信息：</p>
+	    <li ng-repeat="fri in user.friends">
+      		{{fri.id}}
+            <p>{{fri.name}}</p>
+    		<p>{{fri.url}}</p>    
+        </li>
+</body>
+</html>

@@ -1,0 +1,1525 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<title>我的个人主页</title>
+<link href="css/base.css" rel="stylesheet" type="text/css" />
+<link href="css/master.css" rel="stylesheet" type="text/css" />
+<link href="css/addition.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/easydialog.min.js"></script>
+<script type="text/javascript"> 
+var isPlusMobileVisible=false; 
+var showTid; 
+var hideTid; 
+function showPlusMobile(id){ 
+	if(isPlusMobileVisible == false) { 
+		showTid = setTimeout("document.getElementById('"+id+"').style.display='block'; isPlusMobileVisible=true;", 0); 
+	}else{ 
+		clearTimeout(hideTid); 
+	} 
+} 
+function hidePlusMobile(id){ 
+	if(isPlusMobileVisible == true) { 
+		hideTid = setTimeout("document.getElementById('"+id+"').style.display='none'; isPlusMobileVisible=false;", 500); 
+	}else { 
+		clearTimeout(showTid); 
+	} 
+}
+
+
+function b(){
+	h = $(window).height();
+	t = $(document).scrollTop();
+	//$('#floating').show();
+	if(t > 159){
+		$('#floating').show();
+	}else{
+		$('#floating').hide();
+	}
+}
+$(window).scroll(function(e){
+	b();		
+})
+</script>
+</head>
+
+<body>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="head_box">
+			
+			
+			<a id="logo" href="#"></a>
+			<div id="menu_bar">
+				
+				<div class="nav">
+					<a class="nav-link" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');"><i class="nav-icon"></i><span>导航</span></a>
+					
+					<div id="header_main_menu" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');" style="display:none;">
+						<div class="inner">	
+							<ul>
+								<li><a href="#" class="main-link"><i class="weibo_icon"></i><span>微博</span></a></li>
+								<li><a href="#" class="main-link"><i class="videos_icon"></i><span>视频</span></a></li>
+								<li><a href="#" class="main-link"><i class="activities_icon"></i><span>活动</span></a></li>
+								<li><a href="#" class="main-link"><i class="design_icon"></i><span>LEITHER原创</span></a></li>
+								<li><a href="#" class="main-link"><i class="following_icon"></i><span>我的关注</span></a></li>
+							</ul>
+							<div class="up_arrow"></div>							
+						</div>
+					</div>
+					
+				</div>
+				
+				
+				<div class="right-part">
+					<form method="get" action="" class="searching-unit">
+						<input type="text" size="27" name="" value="" class="default_value">						
+						<a href="#" class="go"></a>
+					</form>
+				</div>
+			</div>
+						
+			
+		</div>
+	</div>
+</div>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="unauth_callout">
+			<div class="intro"></div>
+			<div class="login">
+				<a href="#" class="comment_icon" id="demoBtn2"></a>
+				<a href="个人主页.html" class="user_icon"></a>
+				<a href="javascript:void(0)" class="set_icon" id="set_icon"></a>
+				<div class="with-line">天天畅想</div>				
+			</div>
+			<div class="clearfix"></div>
+			
+			<div id="floating" style="display:none">
+				<div class="smooth-notification" style="margin-left:-90px;"><a href="发布微博.html" class="notification">我雷个趣</a></div>
+				<div class="title f14">我要这天，再遮不住我的眼，要这地，再也埋不了我心 </div>
+				<div class="sub-title f16">　　要这众生，都明白我的意，要那诸佛，都烟硝云散</div>
+				<div class="floating-login">
+					<span class="words">天天畅想</span>
+					<a href="#" class="comment_icon01"></a>
+					<a href="#" class="user_icon01"></a>
+					<a href="#" class="set_icon01"></a>
+				</div>
+			</div>
+			
+			<div class="smooth-notification"><a href="发布微博.html" class="notification">我雷个趣</a></div>
+		</div>
+	</div>
+</div>
+
+<div class="plc_main">
+	<div class="waterfall">
+	<div class="border_all mb15 p10">
+		<div class="profile_top">
+			<div>
+				<div class="pf_head">
+					<img src="images/141020_img02.jpg" width="148" height="148" />
+				</div>
+				<div class="pf_info">				
+					<div class="pf_name">
+						<span class="name f22">{{userInfo.nickName}}</span>
+						<span class="f14">id（{{user.id}}）</span>
+					</div>
+					
+					
+					<ul class="user_atten f18">
+						<li>
+							<a href="#">							
+								<span>微博 </span><strong>{{weiboCount}}</strong>
+							</a>
+						</li>
+						<li>
+							<a href="#">							
+								<span>好友</span><strong>{{user.friends.length}}</strong>
+							</a>
+						</li>
+						<div class="clearfix"></div>
+					</ul>
+					
+					<div class="pf_do f16">
+						{{userInfo.location}} <a href="#" class="f12 f2ea0cd">【更多资料】</a>
+					</div>
+					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="imgModList">
+					<ul>
+						<li ng-repeat="uri in myPicUrls"><a href="#" target="_blank"><img ng-src="{{uri}}" alt=""></a></li>
+						<div class="clearfix"></div>
+					</ul>
+					
+				</div>					
+			<div class="clearfix"></div>
+		</div>
+	</div>
+		<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm current">
+       		       	<a class="S_txt1" href="#">微博</a>
+				</li>
+              	<li class="S_txt3">|</li>
+				<li class="t_itm ">
+					<a class="S_txt1" href="#">原创</a>
+				</li>
+				<li class="S_txt3">|</li>
+				<li class="t_itm">
+					<a class="S_txt1" href="#">图片</a>
+				</li>
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+		<div class="WB_feed">
+			<ul>
+				<li class="border_all WB_feed_type">
+					<div class="userPic">
+						<p><a href="#" title=""><img src="images/141020_img02.jpg" title=""  width="78"></a></p>
+						
+					</div>
+					<div class="userName">
+						<b><a href="#" title="" target="_blank">我是作者名称:</a></b>
+						<span class="msgCnt">三千大千世界的七宝，其价值都比不过一句智慧的偈语。因为，财宝有用罄的
+	时候，智慧的偈语则是生生世世，受用无穷。</span>
+					</div>
+					
+					<div class="clearfix"></div>
+					<div class="msgBox pr">
+						<span class="time fl">6分钟前</span>
+						<div class="funBox fr">
+							<a href="javascript:void(0);" class="btn-fav"><i class="fav_icon"></i>收藏(30万)</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-relay">转播</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-comt">评论</a>
+							
+							<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+							
+							<div class="mFun">
+								<div class="bg">
+									<div class="mFunDrop">							
+										<p><a href="#" class="detail line" target="_blank">关注</a></p>
+										<p><a href="#" class="alarm">删除</a></p>
+									</div>
+								</div>
+							</div>
+							
+													
+							
+						</div>
+						<div class="clearfix"></div>
+											
+						<div class="W_layer" id="fav_box" style="display:none;top: -130px;right:-10px;">
+							<div class="bg">
+								
+								<div class="fav_info p10">
+									<div class="tr"><a title="关闭" href="javascript:void(0);" class="W_close"></a></div>
+									<div class="fav_info_main tc f16" style="display:none">
+										<p>
+											<i class="fav_box_yes"></i><span>收藏成功!</span>
+										</p>
+									</div>
+									<div class="fav_info_main tc f14">
+										<p class="mb10"><i class="fav_box_no"></i><span>确定要取消收藏这条微博吗？</span></p>
+										<p class="btn">
+											<a href="#" class="w_btn_a"><span class="btn_30px">确定</span></a>
+											<a href="#"  class="w_btn_b"><span class="btn_30px">取消</span></a></p>
+									</div>
+								</div>							
+								<div class="arrow arrow_t" style="left:70px;"></div>
+							</div>
+						</div>
+						<div class="zfWrap" id="relay-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">转播本条微博，<a href="#" target="_blank" class="f10a2c7">共1条转播<em class="ffsong">&gt;&gt;</em></a>
+									</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">转播</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+						</div>
+						
+						<div class="zfWrap comt-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">评论本条微博</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">								
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">评论</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+							
+							<div class="relayList">
+								<div class="tabStyle1">
+									<b class="line"></b>
+								</div>
+								<div class="">
+									<ul>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="pages">
+									<a href="#" class="pageBtn">上一页</a>
+									<a href="#">1</a>
+									<b> 2</b>
+									<a href="#">3</a>
+									<a href="#">4</a>
+									<a href="#" class="pageBtn">下一页</a>
+								</div>
+							</div>
+							
+							
+						</div>
+						<div class="clearfix"></div>
+						
+					</div>
+				</li>
+				<li class="border_all WB_feed_type">
+					<div class="userPic">
+						<p><a href="#" title=""><img src="images/141020_img02.jpg" title=""  width="78"></a></p>
+						
+					</div>
+					<div class="userName">
+						<b><a href="#" title="" target="_blank">我是作者名称:</a></b>
+						<span class="msgCnt">三千大千世界的七宝，其价值都比不过一句智慧的偈语。因为，财宝有用罄的时候，智慧的偈语则是生生世世，受用无穷。</span>
+						<div class="lotspic_list">
+							<ul>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<div class="clearfix"></div>
+							</ul>
+						</div>
+					</div>
+					
+					<div class="clearfix"></div>
+					<div class="msgBox pr">
+						<span class="time fl">6分钟前</span>
+						<span class="funBox fr">
+							<a href="javascript:void(0);" class="btn-fav"><i class="fav_icon"></i>收藏(30万)</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-relay">转播</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-comt">评论</a>
+							<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+							
+							<div class="mFun">
+								<div class="bg">
+									<div class="mFunDrop">							
+										<p><a href="#" class="detail line" target="_blank">关注</a></p>
+										<p><a href="#" class="alarm">删除</a></p>
+									</div>
+								</div>
+							</div>
+						</span>
+						<div class="clearfix"></div>
+						<div class="W_layer" id="fav_box" style="display:none;top: -130px;right:-10px;">
+							<div class="bg">
+								
+								<div class="fav_info p10">
+									<div class="tr"><a title="关闭" href="javascript:void(0);" class="W_close"></a></div>
+									<div class="fav_info_main tc f16" style="display:none">
+										<p>
+											<i class="fav_box_yes"></i><span>收藏成功!</span>
+										</p>
+									</div>
+									<div class="fav_info_main tc f14">
+										<p class="mb10"><i class="fav_box_no"></i><span>确定要取消收藏这条微博吗？</span></p>
+										<p class="btn">
+											<a href="#" class="w_btn_a"><span class="btn_30px">确定</span></a>
+											<a href="#"  class="w_btn_b"><span class="btn_30px">取消</span></a></p>
+									</div>
+								</div>							
+								<div class="arrow arrow_t" style="left:70px;"></div>
+							</div>
+						</div>					
+						
+						<div class="zfWrap" id="relay-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">转播本条微博，<a href="#" target="_blank" class="f10a2c7">共1条转播<em class="ffsong">&gt;&gt;</em></a>
+									</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">转播</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+						</div>
+						
+						<div class="zfWrap comt-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">评论本条微博</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">								
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">评论</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+							
+							<div class="relayList">
+								<div class="tabStyle1">
+									<b class="line"></b>
+								</div>
+								<div class="">
+									<ul>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="pages">
+									<a href="#" class="pageBtn">上一页</a>
+									<a href="#">1</a>
+									<b> 2</b>
+									<a href="#">3</a>
+									<a href="#">4</a>
+									<a href="#" class="pageBtn">下一页</a>
+								</div>
+							</div>
+							
+							
+						</div>
+						<div class="clearfix"></div>
+						
+					</div>
+					
+				</li>
+				<li class="border_all WB_feed_type">
+				<div class="userPic">
+					<p><a href="#" title=""><img src="images/141020_img02.jpg" title=""  width="78"></a></p>
+					
+				</div>
+				<div class="userName">
+					<b><a href="#" class="mr10">土豆丝</a></b>转播:
+					<span class="msgCnt f10a2c7">这个太神了</span>
+					<div class="WB_media_expand mt15">
+						<div class="WB_arrow">
+							
+						</div>
+						<div class="WB_info mb5">
+							<a href="#">@全球创意</a>
+						</div>
+						<div class="WB_text">
+                			#<em class="f10a2c7">心花路放</em>#第一次大电影，第一次喜剧，第一次特殊服务人员，第一次"福兰"塑料普通话，第一次"辣味金句"，第一次拔火罐……"湖南辣妹子"献出这么多第一次，就想让你《心花路放》看得"心花怒放"！9.30，
+						</div>
+						<div class="lotspic_list">
+							<ul>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<div class="clearfix"></div>
+							</ul>
+						</div>
+						<div class="WB_from mt10">							
+							<em class="S_txt2">刚刚</em>
+							<a href="#" target="_blank" class="f10a2c7">全部转发和评论（23）</a>
+						</div>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+				<div class="msgBox pr">
+                	<span class="time fl">6分钟前</span>
+					<span class="funBox fr">
+						<a href="javascript:void(0);" class="btn-fav"><i class="fav_icon"></i>收藏(30万)</a><span>|</span>
+						<a href="javascript:void(0);" class="btn-relay">转播</a><span>|</span>
+						<a href="javascript:void(0);" class="btn-comt">评论</a>
+						<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+						
+						<div class="mFun">
+							<div class="bg">
+								<div class="mFunDrop">							
+									<p><a href="#" class="detail line" target="_blank">关注</a></p>
+									<p><a href="#" class="alarm">删除</a></p>
+								</div>
+							</div>
+						</div>
+					</span>
+					<div class="clearfix"></div>
+					<div class="W_layer" id="fav_box" style="display:none;top: -130px;right:-10px;">
+						<div class="bg">
+							
+							<div class="fav_info p10">
+								<div class="tr"><a title="关闭" href="javascript:void(0);" class="W_close"></a></div>
+								<div class="fav_info_main tc f16" style="display:none">
+									<p>
+										<i class="fav_box_yes"></i><span>收藏成功!</span>
+									</p>
+								</div>
+								<div class="fav_info_main tc f14">
+									<p class="mb10"><i class="fav_box_no"></i><span>确定要取消收藏这条微博吗？</span></p>
+									<p class="btn">
+										<a href="#" class="w_btn_a"><span class="btn_30px">确定</span></a>
+										<a href="#"  class="w_btn_b"><span class="btn_30px">取消</span></a></p>
+								</div>
+							</div>							
+							<div class="arrow arrow_t" style="left:70px;"></div>
+						</div>
+					</div>					
+					
+					<div class="zfWrap" id="relay-box" style="display:none;">
+						<div class="top c_tx5">
+							<span class="left">
+								<span class="number cNote">转播本条微博，<a href="#" target="_blank" class="f10a2c7">共1条转播<em class="ffsong">&gt;&gt;</em></a>
+								</span>
+							</span>
+							<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+						</div>
+						
+						<div class="cont">
+							<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+						</div>
+						<div class="bot">
+							<div class="fr">
+								<span class="countTxt">还能输入<em>140</em>字</span>
+								<a href="#" class="w_btn_a"><span class="btn_30px">转播</span></a>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+					
+					<div class="zfWrap comt-box" style="display:none;">
+						<div class="top c_tx5">
+							<span class="left">
+								<span class="number cNote">评论本条微博</span>
+							</span>
+							<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+						</div>
+						
+						<div class="cont">
+							<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+						</div>
+						<div class="bot">
+							<div class="fr">								
+								<span class="countTxt">还能输入<em>140</em>字</span>
+								<a href="#" class="w_btn_a"><span class="btn_30px">评论</span></a>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+						
+						<div class="relayList">
+							<div class="tabStyle1">
+								<b class="line"></b>
+							</div>
+							<div class="">
+								<ul>
+									<li class="nobor">										
+										<div class="msgCnt">
+											<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+											<span class="content">换成1T的</span>
+										</div>
+										<div class="pubInfo">
+											<span class="cNote">今天 13:50</span>
+											<a href="#" class="alarm">删除</a>
+											<a href="#" class="replyCite">评论</a>
+										</div>
+									</li>
+									<li class="nobor">										
+										<div class="msgCnt">
+											<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+											<span class="content">换成1T的</span>
+										</div>
+										<div class="pubInfo">
+											<span class="cNote">今天 13:50</span>
+											<a href="#" class="alarm">删除</a>
+											<a href="#" class="replyCite">评论</a>
+										</div>
+									</li>
+									<li class="nobor">										
+										<div class="msgCnt">
+											<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+											<span class="content">换成1T的</span>
+										</div>
+										<div class="pubInfo">
+											<span class="cNote">今天 13:50</span>
+											<a href="#" class="alarm">删除</a>
+											<a href="#" class="replyCite">评论</a>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div class="pages">
+								<a href="#" class="pageBtn">上一页</a>
+								<a href="#">1</a>
+								<b> 2</b>
+								<a href="#">3</a>
+								<a href="#">4</a>
+								<a href="#" class="pageBtn">下一页</a>
+							</div>
+						</div>
+						
+						
+					</div>
+					<div class="clearfix"></div>
+					
+				</div>
+				
+			</li>
+				<li class="border_all WB_feed_type">
+					<div class="userPic">
+						<p><a href="#" title=""><img src="images/141020_img02.jpg" title=""  width="78"></a></p>
+						
+					</div>
+					<div class="userName">
+						<b><a href="#" title="" target="_blank">我是作者名称:</a></b>
+						<span class="msgCnt">三千大千世界的七宝，其价值都比不过一句智慧的偈语。因为，财宝有用罄的
+	时候，智慧的偈语则是生生世世，受用无穷。</span>
+					</div>
+					
+					<div class="clearfix"></div>
+					<div class="msgBox pr">
+						<span class="time fl">6分钟前</span>
+						<span class="funBox fr">
+							<a href="javascript:void(0);" class="btn-fav"><i class="fav_icon"></i>收藏(30万)</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-relay">转播</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-comt">评论</a>
+							<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+							
+							<div class="mFun">
+								<div class="bg">
+									<div class="mFunDrop">							
+										<p><a href="#" class="detail line" target="_blank">关注</a></p>
+										<p><a href="#" class="alarm">删除</a></p>
+									</div>
+								</div>
+							</div>
+						</span>
+						<div class="clearfix"></div>
+						<div class="W_layer" id="fav_box" style="display:none;top: -130px;right:-10px;">
+							<div class="bg">
+								
+								<div class="fav_info p10">
+									<div class="tr"><a title="关闭" href="javascript:void(0);" class="W_close"></a></div>
+									<div class="fav_info_main tc f16" style="display:none">
+										<p>
+											<i class="fav_box_yes"></i><span>收藏成功!</span>
+										</p>
+									</div>
+									<div class="fav_info_main tc f14">
+										<p class="mb10"><i class="fav_box_no"></i><span>确定要取消收藏这条微博吗？</span></p>
+										<p class="btn">
+											<a href="#" class="w_btn_a"><span class="btn_30px">确定</span></a>
+											<a href="#"  class="w_btn_b"><span class="btn_30px">取消</span></a></p>
+									</div>
+								</div>							
+								<div class="arrow arrow_t" style="left:70px;"></div>
+							</div>
+						</div>					
+						
+						<div class="zfWrap" id="relay-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">转播本条微博，<a href="#" target="_blank" class="f10a2c7">共1条转播<em class="ffsong">&gt;&gt;</em></a>
+									</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">转播</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+						</div>
+						
+						<div class="zfWrap comt-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">评论本条微博</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">								
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">评论</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+							
+							<div class="relayList">
+								<div class="tabStyle1">
+									<b class="line"></b>
+								</div>
+								<div class="">
+									<ul>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="pages">
+									<a href="#" class="pageBtn">上一页</a>
+									<a href="#">1</a>
+									<b> 2</b>
+									<a href="#">3</a>
+									<a href="#">4</a>
+									<a href="#" class="pageBtn">下一页</a>
+								</div>
+							</div>
+							
+							
+						</div>
+						<div class="clearfix"></div>
+						
+					</div>
+				</li>
+				<li class="border_all WB_feed_type">
+					<div class="userPic">
+						<p><a href="#" title=""><img src="images/141020_img02.jpg" title=""  width="78"></a></p>
+						
+					</div>
+					<div class="userName">
+						<b><a href="#" title="" target="_blank">我是作者名称:</a></b>
+						<span class="msgCnt">三千大千世界的七宝，其价值都比不过一句智慧的偈语。因为，财宝有用罄的时候，智慧的偈语则是生生世世，受用无穷。</span>
+						<div class="lotspic_list">
+							<ul>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+								<div class="clearfix"></div>
+							</ul>
+						</div>
+					</div>
+					
+					<div class="clearfix"></div>
+					<div class="msgBox pr">
+						<span class="time fl">6分钟前</span>
+						<span class="funBox fr">
+							<a href="javascript:void(0);" class="btn-fav"><i class="fav_icon"></i>收藏(30万)</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-relay">转播</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-comt">评论</a>
+							<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+							
+							<div class="mFun">
+								<div class="bg">
+									<div class="mFunDrop">							
+										<p><a href="#" class="detail line" target="_blank">关注</a></p>
+										<p><a href="#" class="alarm">删除</a></p>
+									</div>
+								</div>
+							</div>
+						</span>
+						<div class="clearfix"></div>
+						<div class="W_layer" id="fav_box" style="display:none;top: -130px;right:-10px;">
+							<div class="bg">
+								
+								<div class="fav_info p10">
+									<div class="tr"><a title="关闭" href="javascript:void(0);" class="W_close"></a></div>
+									<div class="fav_info_main tc f16" style="display:none">
+										<p>
+											<i class="fav_box_yes"></i><span>收藏成功!</span>
+										</p>
+									</div>
+									<div class="fav_info_main tc f14">
+										<p class="mb10"><i class="fav_box_no"></i><span>确定要取消收藏这条微博吗？</span></p>
+										<p class="btn">
+											<a href="#" class="w_btn_a"><span class="btn_30px">确定</span></a>
+											<a href="#"  class="w_btn_b"><span class="btn_30px">取消</span></a></p>
+									</div>
+								</div>							
+								<div class="arrow arrow_t" style="left:70px;"></div>
+							</div>
+						</div>					
+						
+						<div class="zfWrap" id="relay-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">转播本条微博，<a href="#" target="_blank" class="f10a2c7">共1条转播<em class="ffsong">&gt;&gt;</em></a>
+									</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">转播</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+						</div>
+						
+						<div class="zfWrap comt-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">评论本条微博</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">								
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">评论</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+							
+							<div class="relayList">
+								<div class="tabStyle1">
+									<b class="line"></b>
+								</div>
+								<div class="">
+									<ul>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="pages">
+									<a href="#" class="pageBtn">上一页</a>
+									<a href="#">1</a>
+									<b> 2</b>
+									<a href="#">3</a>
+									<a href="#">4</a>
+									<a href="#" class="pageBtn">下一页</a>
+								</div>
+							</div>
+							
+							
+						</div>
+						<div class="clearfix"></div>
+						
+					</div>
+					
+				</li>
+				<li class="border_all WB_feed_type">
+					<div class="userPic">
+						<p><a href="#" title=""><img src="images/141020_img02.jpg" title=""  width="78"></a></p>
+						
+					</div>
+					<div class="userName">
+						<b><a href="#" class="mr10">土豆丝</a></b>转播:
+						<span class="msgCnt f10a2c7">这个太神了</span>
+						<div class="WB_media_expand mt15">
+							<div class="WB_arrow">
+								
+							</div>
+							<div class="WB_info mb5">
+								<a href="#">@全球创意</a>
+							</div>
+							<div class="WB_text">
+								#<em class="f10a2c7">心花路放</em>#第一次大电影，第一次喜剧，第一次特殊服务人员，第一次"福兰"塑料普通话，第一次"辣味金句"，第一次拔火罐……"湖南辣妹子"献出这么多第一次，就想让你《心花路放》看得"心花怒放"！9.30，
+							</div>
+							<div class="lotspic_list">
+								<ul>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" alt=""></a></li>
+									<div class="clearfix"></div>
+								</ul>
+							</div>
+							<div class="WB_from mt10">							
+								<em class="S_txt2">刚刚</em>
+								<a href="#" target="_blank" class="f10a2c7">全部转发和评论（23）</a>
+							</div>
+						</div>
+					</div>
+					<div class="clearfix"></div>
+					<div class="msgBox pr">
+						<span class="time fl">6分钟前</span>
+						<span class="funBox fr">
+							<a href="javascript:void(0);" class="btn-fav"><i class="fav_icon"></i>收藏(30万)</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-relay">转播</a><span>|</span>
+							<a href="javascript:void(0);" class="btn-comt">评论</a>
+							<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+							
+							<div class="mFun">
+								<div class="bg">
+									<div class="mFunDrop">							
+										<p><a href="#" class="detail line" target="_blank">关注</a></p>
+										<p><a href="#" class="alarm">删除</a></p>
+									</div>
+								</div>
+							</div>
+						</span>
+						<div class="clearfix"></div>
+						<div class="W_layer" id="fav_box" style="display:none;top: -130px;right:-10px;">
+							<div class="bg">
+								
+								<div class="fav_info p10">
+									<div class="tr"><a title="关闭" href="javascript:void(0);" class="W_close"></a></div>
+									<div class="fav_info_main tc f16" style="display:none">
+										<p>
+											<i class="fav_box_yes"></i><span>收藏成功!</span>
+										</p>
+									</div>
+									<div class="fav_info_main tc f14">
+										<p class="mb10"><i class="fav_box_no"></i><span>确定要取消收藏这条微博吗？</span></p>
+										<p class="btn">
+											<a href="#" class="w_btn_a"><span class="btn_30px">确定</span></a>
+											<a href="#"  class="w_btn_b"><span class="btn_30px">取消</span></a></p>
+									</div>
+								</div>							
+								<div class="arrow arrow_t" style="left:70px;"></div>
+							</div>
+						</div>					
+						
+						<div class="zfWrap" id="relay-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">转播本条微博，<a href="#" target="_blank" class="f10a2c7">共1条转播<em class="ffsong">&gt;&gt;</em></a>
+									</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">转播</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+						</div>
+						
+						<div class="zfWrap comt-box" style="display:none;">
+							<div class="top c_tx5">
+								<span class="left">
+									<span class="number cNote">评论本条微博</span>
+								</span>
+								<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+							</div>
+							
+							<div class="cont">
+								<textarea class="inputTxt" name="" style="overflow-y: hidden; height: 37px;"></textarea>							
+							</div>
+							<div class="bot">
+								<div class="fr">								
+									<span class="countTxt">还能输入<em>140</em>字</span>
+									<a href="#" class="w_btn_a"><span class="btn_30px">评论</span></a>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+							
+							<div class="relayList">
+								<div class="tabStyle1">
+									<b class="line"></b>
+								</div>
+								<div class="">
+									<ul>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+										<li class="nobor">										
+											<div class="msgCnt">
+												<strong><a href="#" target="_blank" class="f10a2c7">纯灰太狼</a>:</strong>
+												<span class="content">换成1T的</span>
+											</div>
+											<div class="pubInfo">
+												<span class="cNote">今天 13:50</span>
+												<a href="#" class="alarm">删除</a>
+												<a href="#" class="replyCite">评论</a>
+											</div>
+										</li>
+									</ul>
+								</div>
+								<div class="pages">
+									<a href="#" class="pageBtn">上一页</a>
+									<a href="#">1</a>
+									<b> 2</b>
+									<a href="#">3</a>
+									<a href="#">4</a>
+									<a href="#" class="pageBtn">下一页</a>
+								</div>
+							</div>
+							
+							
+						</div>
+						<div class="clearfix"></div>
+						
+					</div>
+					
+				</li>
+			</ul>
+		</div>	
+	</div>
+
+
+	<div class="side">
+		<div class="WB_right_module mb10">
+			<div class="WB_cardtitle_b">
+				<h4>
+					
+					<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+					<span class="main_title">可能感兴趣的人</span>
+				</h4>
+				
+				
+			</div>
+			
+			<div class="WB_innerwrap">
+				<ul class="person_list">
+					<li>
+						<div class="pic">
+							<a href="#" target="_blank"><img usercard="id=3156646011" src="http://tp4.sinaimg.cn/3156646011/50/40060296204/0" class="W_face_radius"></a>
+						</div>
+						<div class="con">
+							<p class="name">
+								<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+							</p>
+							<span>
+								<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+							</span>
+							<div class="change">
+								<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+							</div>
+						</div>
+						<div class="WB_right_expand">
+							<p class="S_txt2">24小时热点</p>
+						</div>
+					</li>
+					<li>
+						<div class="pic">
+							<a href="#" target="_blank"><img usercard="id=3156646011" src="http://tp4.sinaimg.cn/3156646011/50/40060296204/0" class="W_face_radius"></a>
+						</div>
+						<div class="con">
+							<p class="name">
+								<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+							</p>
+							<span>
+								<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+							</span>
+							<div class="change">
+								<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+							</div>
+						</div>
+						<div class="WB_right_expand">
+							<p class="S_txt2">24小时热点</p>
+						</div>
+					</li>
+					<li>
+						<div class="pic">
+							<a href="#" target="_blank"><img usercard="id=3156646011" src="http://tp4.sinaimg.cn/3156646011/50/40060296204/0" class="W_face_radius"></a>
+						</div>
+						<div class="con">
+							<p class="name">
+								<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+							</p>
+							<span>
+								<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+							</span>
+							<div class="change">
+								<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+							</div>
+						</div>
+						<div class="WB_right_expand">
+							<p class="S_txt2">24小时热点</p>
+						</div>
+					</li>
+				</ul>
+			</div>
+				
+		</div>
+		
+		
+		<div class="WB_right_module">
+			<div class="WB_cardtitle_b S_line2">
+				<h4>
+					<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+					<span class="main_title">热门话题</span>
+				</h4>
+			</div>
+			<div class="WB_innerwrap">
+				<ul class="hot_topic">
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+				</ul>
+			</div>
+			
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+
+
+<div id="dlgSend" class="from_wrapper" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>长微博</h4>
+	
+	<div class="wb_chang_info p10">
+		<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td width="70" align="right">标题：</td>
+				<td>
+					<input type="text" class="input_text input_text_tit" value="请输入标题，最多30字(选填)" maxlength="30">
+				</td>
+			</tr>
+			<tr>
+				<td valign="top" align="right">文字：</td>
+				<td>
+					<div style="height:300px;">
+						<img src="images/141020_img06.jpg" width="487" height="26" />
+					</div>
+				</td>
+			</tr>
+		</table>
+
+		
+	</div>
+	<div class="tc p10">		
+		<a class="send_btn W_btn_v" href="javascript:void(0);"><span class="btn_30px">发布</span></a>
+		
+	</div>
+</div>
+
+
+<div class="from_wrapper" id="showWB" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>长微博</h4>
+	<div class="publisherTop border_all mb15 p10">
+		<div class="send_weibo">		
+			<div class="title_area">
+				<div class="title fl f16">让信息没有障碍的实时传播！</div>
+				<div class="S_textb fr f14">
+					还可以输入 <em>139</em> 字
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			
+			<div class="input">
+				<textarea name="" class="input_detail">趁阳光明媚，趁微风不燥，多去看看外面的世界吧，2014你想去的城市是？</textarea>
+				
+				<div style="display: none" class="send_succpic">
+					<p class="icon_succB"></p><p class="txt">发布成功</p>
+				</div>
+			</div>
+			
+			<div class="func_area">
+				<div class="func">
+					<a class="send_btn W_btn_v W_btn_v_disable" href="javascript:void(0);"><span class="btn_30px">发布</span></a>
+				</div>
+				<div class="kind_v2">
+					<span class="kind_detail">
+						<a title="图片" href="javascript:void(0);" class="btnWeek"><i class="W_ico15 icon_sw_img"></i>图片</a>
+						<a title="长微博" href="javascript:void(0);" id="btnMonth01"><i class="W_ico15 icon_sw_chang"></i>长微博</a>
+					</span>
+					<!--添加图片-->
+					<div class="W_layer mt10" id="W_layer_lotspic" style="display:none;top:35px;">
+						<div class="bg w370">							
+							<div class="title"><a title="关闭" href="javascript:void(0);" class="W_close fr"></a>图片上传</div>
+							<div class="layer_send_pic content">								
+								<ul class="drag_pic_list">
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" width="102" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" width="102" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img03.jpg" width="102" alt=""></a></li>
+									<li><a href="#" target="_blank"><img src="images/141020_img05.jpg" width="102" alt=""></a></li>
+									<div class="clearfix"></div>
+								</ul>								
+							</div>
+						
+						</div>
+					</div>
+					
+					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="from_wrapper" id="user_set" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>账号设置</h4>
+	<div class="account_set">
+			<div class="pf_head">
+				<p class="mb10"><img width="148" height="148" src="images/141020_img02.jpg"></p>
+				<p class="tc mb10"><a href="#" class="up_file_img"></a></p>
+				<p class="f12">仅支持jpg、gif、png格式文件小于5M</p>
+			</div>
+			<div class="member_info">
+				<table border="0" cellspacing="0" cellpadding="0" width="360">
+					<tr>
+						<td width="80" align="right"><b>登录名：</b></td>
+						<td width="280">火速死死按</td>
+						
+					</tr>
+					<tr>
+						<td align="right"><b>密码：</b></td>
+						<td>
+							<input name="" type="password" value="1589224***40" class="input_text" style="width:150px" />
+						</td>
+						
+					</tr>
+					<tr>
+						<td align="right"><b>手机号：</b></td>
+						<td>
+							<input name="" type="text" value="1589224***40" class="input_text" style="width:150px" />
+						</td>
+						
+					</tr>
+					<tr>
+						<td align="right"><b>昵称：</b></td>
+						<td>
+							<input name="" type="text" value="天天畅想" class="input_text" style="width:150px" />
+						</td>
+						
+					</tr>
+					<tr>
+						<td align="right"><b>收货地址：</b></td>
+						<td>
+							<input name="" type="text" value="收货地址" class="input_text" style="width:270px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"></td>
+						<td>
+							<div class="p10">
+								<a class="send_btn W_btn_c" href="javascript:void(0);"><span class="btn_30px">保存</span></a>
+							</div>
+						</td>
+					</tr>
+					
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+</div>
+
+<script type="text/javascript">
+document.getElementById('btnMonth01').onclick = function(){	
+	easyDialog.open({
+		container : 'dlgSend',
+		fixed : true,
+		drag : true,
+		overlay : true
+	});
+};
+document.getElementById('demoBtn2').onclick = function(){	
+	easyDialog.open({
+		container : 'showWB',
+		fixed : false,
+		drag : true,
+		overlay : true
+	});
+};
+$("#set_icon").click(function(){easyDialog.open({
+		container : 'user_set',
+		fixed : false,
+		drag : true,
+		overlay : true
+	});
+});
+
+$(function(){
+	$(".btnWeek").click(function(){
+		$(".W_layer").hide(); 
+		$(".funBox .mFun").hide(); 
+		$(this).parent().parent().find("#W_layer_lotspic").show(200);
+		return false;//关键是这里，阻止冒泡 
+	}); 
+	$(".btn-fav").click(function(){	
+		$(".W_layer").hide(); 
+		$(".funBox .mFun").hide(); 
+		$(this).parent().parent().find("#fav_box").show(200);
+		return false;//关键是这里，阻止冒泡 
+	}); 
+	$(".feed_opt").click(function(){
+		$(".W_layer").hide();	
+		$(".funBox .mFun").hide(); 
+		$(this).parent().find(".mFun").show(200);
+		return false;//关键是这里，阻止冒泡 
+	});	
+	$(".W_layer").click(function(){ 
+		return false; 
+	});
+	$(".funBox .mFun").click(function(){ 
+		return false; 
+	}); 
+	$(document).click(function(){
+		$(".W_layer").hide(); 
+		$(".funBox .mFun").hide(); 
+	});
+})
+$(".W_close").click(function () {
+      $(this).parents().find(".W_layer").hide();
+	  $(this).parents().find(".zfWrap").hide();
+});
+
+$(function(){
+	$(".btn-relay").click(function(){
+		if($(this).parent().parent().find("#relay-box").is(":visible")==false){
+			$(".zfWrap").hide(); 
+			$(this).parent().parent().find("#relay-box").show(200);
+		}
+		else{
+			$(this).parent().parent().find("#relay-box").hide(200);	
+		}		
+	});	
+	$(".btn-comt").click(function(){
+		if($(this).parent().parent().find(".comt-box").is(":visible")==false){
+			$(".zfWrap").hide(); 
+			$(this).parent().parent().find(".comt-box").show(200);
+		}
+		else{
+			 
+			$(this).parent().parent().find(".comt-box").hide(200);
+		}
+	});
+		
+})
+
+
+</script>
+
+
+</body>
+</html>

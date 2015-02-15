@@ -1,0 +1,916 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<title>微博首页</title>
+<link href="css/base.css" rel="stylesheet" type="text/css" />
+<link href="css/master.css" rel="stylesheet" type="text/css" />
+<link href="css/addition.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/easydialog.min.js"></script>
+<script type="text/javascript" src="js/jquery.jtabs.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+
+
+<script type="text/javascript"> 
+var isPlusMobileVisible=false; 
+var showTid; 
+var hideTid; 
+function showPlusMobile(id){ 
+	if(isPlusMobileVisible == false) { 
+		showTid = setTimeout("document.getElementById('"+id+"').style.display='block'; isPlusMobileVisible=true;", 0); 
+	}else{ 
+		clearTimeout(hideTid); 
+	} 
+} 
+function hidePlusMobile(id){ 
+	if(isPlusMobileVisible == true) { 
+		hideTid = setTimeout("document.getElementById('"+id+"').style.display='none'; isPlusMobileVisible=false;", 500); 
+	}else { 
+		clearTimeout(showTid); 
+	} 
+}
+function b(){
+	h = $(window).height();
+	t = $(document).scrollTop();
+	if(t > 159){
+		$('#floating').show();
+	}else{
+		$('#floating').hide();
+	}
+}
+$(window).scroll(function(e){
+	b();		
+})
+
+function slideToggle(){
+	$("#online_info").slideToggle(400);
+}
+</script>
+</head>
+
+<body ng-app="postModule" ng-controller="rootController">
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="head_box">
+			
+			<a id="logo" href="#"></a>
+			<div id="menu_bar">	
+				<div class="nav">
+					<a class="nav-link" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');"><i class="nav-icon"></i><span>导航</span></a>
+					<div id="header_main_menu" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');" style="display:none;">
+						<div class="inner">	
+							<ul>
+								<li><a href="#" class="main-link"><i class="weibo_icon"></i><span>微博</span></a></li>
+								<li><a href="#" class="main-link"><i class="videos_icon"></i><span>视频</span></a></li>
+								<li><a href="#" class="main-link"><i class="activities_icon"></i><span>活动</span></a></li>
+								<li><a href="#" class="main-link"><i class="design_icon"></i><span>LEITHER原创</span></a></li>
+								<li><a href="#" class="main-link"><i class="following_icon"></i><span>我的关注</span></a></li>
+							</ul>
+							<div class="up_arrow"></div>							
+						</div>
+					</div>
+				</div>
+				<div class="right-part">
+					<form method="get" action="" class="searching-unit">
+						<input type="text" size="27" name="" value="" class="default_value"/>						
+						<a href="#" class="go"></a>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="unauth_callout">
+			<div class="intro"></div>
+			<div class="login">
+				<a href="letter.html" class="comment_icon"></a>
+				<a href="member.html" class="user_icon"></a>
+				<a href="javascript:void(0)" class="set_icon" id="set_icon"></a>
+				<div class="with-line">天天畅想</div>				
+			</div>
+			<div class="clearfix"></div>
+			
+			<div id="floating" style="display:none">
+				<div class="smooth-notification" style="margin-left:-90px;"><a href="release.html" class="notification">我雷个趣</a></div>
+				<div class="title f14">我要这天，再遮不住我的眼，要这地，再也埋不了我心 </div>
+				<div class="sub-title f16">　　要这众生，都明白我的意，要那诸佛，都烟硝云散</div>
+				<div class="floating-login">
+					<span class="words">天天畅想</span>
+					<a href="#" class="comment_icon01"></a>
+					<a href="#" class="user_icon01"></a>
+					<a href="#" class="set_icon01"></a>
+				</div>
+			</div>
+			<div class="smooth-notification"><a href="release.html" class="notification">我雷个趣</a></div>
+		</div>
+	</div>
+</div>
+
+<div class="plc_main">
+	<div ng-view></div>
+	
+<div ng-controller="ipController" class="pr">
+	<div class="online" onclick="slideToggle()">
+		<div class="online_count">
+			<div class="online_num">{{usrList.length}}</div>
+		</div>
+	</div>
+	
+	<div class="online_info" id="online_info" style="display:block;">
+		<div class="online_head">
+			<a href="javascript:void(0)" class="online_close" onclick="slideToggle()"></a>			
+		</div>
+		<div class="online_seach">
+			
+		</div>
+		
+		<div class="online_tab">
+			<a href="#"><i></i><span>我的好友</span></a>
+			<a href="#"><i></i><span>在线用户</span></a>
+		</div>
+		<div class="online_list">
+			<ul class="online_friend">
+				<li>
+					<div class="webim_list_head webim_head_30">
+						<span class="head_pic">
+							<img class="webim_user_item_img" width="30" height="30" src="images/head0.jpg">
+						</span>
+					</div>
+					<div class="webim_list_name">
+						<span class="user_name">好友名称</span>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="online_list">
+			<ul class="online_user">
+				<li ng-repeat="usr in usrList track by $index">
+					<span class="fr">{{usr.nickName}}</span>
+					<span>Nice</span>
+				</li>
+			</ul>
+		</div>
+		
+		<div class="online_cate">
+			<ul>
+				<li><a href="#"><i class="cate_icon01"></i><span>私信</span></a></li>
+				<li><a href="#"><i class="cate_icon02"></i><span>刷新</span></a></li>
+				<li><a href="#"><i class="cate_icon03"></i><span>节点</span></a></li>
+			</ul>
+		</div>
+		
+	</div>
+	
+	<div class="online_sms">
+		
+		<div class="wbim_tit2">
+			
+			<div class="wbim_tit2_lf">
+				<p class="tit2_lf_con">
+					<a target="_blank" class="webim_list_head" href="#">
+						<span class="head_pic">
+							<img alt="" src="images/head2.jpg">
+						</span>
+					</a>
+					<span class="chat_name">
+						<a href="#" class="f0a8cd2">username</a>
+					</span>
+				</p>
+				
+			</div>
+			
+			<div class="wbim_tit2_rt">
+				<a href="javascript:void(0);" class="rt_icon icon_closeY" title="关闭"></a>
+			</div>
+			
+		</div>
+		<div class="wbim_tit3">
+			
+			<div class="msg_bubble_list bubble_l">
+				<div class="msg_bubble_time">2012-11-22 17:20</div>
+				<div class="bubble_cont">
+					<div class="bubble_arrow">
+						<div class="W_arrow_bor W_arrow_bor_l"><i></i><em></em></div>
+					</div>
+					<div class="bubble_main">
+						<div class="cont_sms">
+							<p class="page">测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试</p>
+						</div>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			
+			<div class="msg_bubble_list bubble_r">
+				<div class="msg_bubble_time">2012-11-22 17:20</div>
+				<div class="bubble_cont">
+					<div class="bubble_arrow">
+						<div class="W_arrow_bor  W_arrow_bor_r"><i></i><em></em></div>
+					</div>
+					<div class="bubble_main">
+						<div class="cont_sms">
+							<p class="page">测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试</p>
+						</div>
+					</div>					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+			
+		<div class="wbim_tit4">
+			<a href="私信-信息.html" target="_blank" class="fr" style="line-height:30px; margin-right:20px;color:#808080;">聊天记录</a>
+			<div class="sendbox_menu">
+				<a href="javascript:void(0);" class="icon_face">
+				</a>
+				<a href="javascript:void(0);" class="icon_image">
+				</a>
+				<a href="javascript:void(0);" class="icon_file">
+				</a>
+			</div>
+		</div>
+		<div class="wbim_tit5">
+			<textarea id="textarea"></textarea>
+		</div>
+		<div class="wbim_tit4 tr pr15 pt5 pb5">
+			<input type="submit" value="发送" class="send_btn W_btn_v" style="margin-top:2px;border-color:#ff9b01;background:#ffa00a;">
+		</div>
+	</div>
+	
+	
+	
+	
+</div>
+
+<div id="dlgSend" class="from_wrapper" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>长微博</h4>
+	
+	<div class="wb_chang_info p10">
+		<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td width="70" align="right">标题：</td>
+				<td>
+					<input type="text" class="input_text input_text_tit" value="请输入标题，最多30字(选填)" maxlength="30"/>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top" align="right">文字：</td>
+				<td>
+					<div style="height:300px;">
+						<img src="images/141020_img06.jpg" width="487" height="26" />
+					</div>
+				</td>
+			</tr>
+		</table>
+
+		
+	</div>
+	<div class="tc p10">		
+		<a class="send_btn W_btn_v" href="javascript:void(0);"><span class="btn_30px">发布</span></a>
+	</div>
+</div>
+
+<div class="from_wrapper" id="showWB" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>长微博</h4>
+	<div class="publisherTop border_all mb15 p10">
+		<div class="send_weibo">		
+			<div class="title_area">
+				<div class="title fl f16">让信息没有障碍的实时传播！</div>
+				<div class="S_textb fr f14">
+					还可以输入 <em>139</em> 字
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			
+			<div class="input">
+				<textarea name="" class="input_detail">趁阳光明媚，趁微风不燥，多去看看外面的世界吧，2014你想去的城市是？</textarea>
+				
+				<div style="display: none" class="send_succpic">
+					<p class="icon_succB"></p><p class="txt">发布成功</p>
+				</div>
+			</div>
+			
+			<div class="func_area">
+				<div class="func">
+					<a class="send_btn W_btn_v W_btn_v_disable" href="javascript:void(0);"><span class="btn_30px">发布</span></a>
+				</div>
+				<div class="kind_v2">
+					<span class="kind_detail">
+						<a title="图片" href="javascript:void(0);" class="btnWeek"><i class="W_ico15 icon_sw_img"></i>图片</a>
+						<a title="长微博" href="javascript:void(0);" id="btnMonth01"><i class="W_ico15 icon_sw_chang"></i>长微博</a>
+					</span>
+					<!--添加图片-->					
+					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div ng-controller="accountController" class="from_wrapper" id="user_set" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>账号设置</h4>
+	<div class="account_set">
+		<form name="accountForm" novalidate>
+			<div class="pf_head">
+				<p class="mb10"><img id="myUserIcon" width="148" height="148" ng-src="{{userInfo.headPicURL}}"/></p>
+				<p class="tc mb10 pr">					
+					<a href="#" class="up_file_img"></a>
+					<input onchange="uploadMyIcon()" type="file" id="myUploadIcon" accept="image/*" class="up_file_input"></input>
+					
+				</p>
+				<p class="f12">仅支持jpg、gif、png格式文件小于5M</p>
+			</div>
+			<div class="member_info">
+				<table border="0" cellspacing="0" cellpadding="0" width="360">
+					<tr>
+						<td width="80" align="right"><b>登录名：</b></td>
+						<td width="280">火速死死按</td>
+					</tr>
+					<tr>
+						<td align="right"><b>密码：</b></td>
+						<td>
+							<input type="password" ng-model="userInfo.passwd" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>手机号：</b></td>
+						<td>
+							<input type="text" ng-model="userInfo.mobile" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>昵称：</b></td>
+						<td>
+							<input type="text" ng-model="userInfo.nickName" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>收货地址：</b></td>
+						<td>
+							<input type="text" ng-model="userInfo.location" class="input_text" style="width:270px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"></td>
+						<td>
+							<div class="p10">
+								<a ng-click="saveAccount()" class="send_btn W_btn_c" href="javascript:void(0);"><span class="btn_30px">保存</span></a>
+							</div>
+						</td>
+					</tr>
+					
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript">
+/*
+document.getElementById('set_icon').onclick = function(){	
+	easyDialog.open({
+		container : 'showWB',
+		fixed : false,
+		drag : true,
+		overlay : true
+	});
+};
+*/
+</script>
+<script type="text/ng-template" id="weibo.html">
+<div class="waterfall">
+	<ng-include src="'post.html'"></ng-include>
+	<ng-include src="'weiboList.html'"></ng-include>
+</div>
+<ng-include src="'sidebar.html'"></ng-include>
+</script>
+<script type="text/ng-template" id="allPics.html">
+<div class="waterfall">
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm current">
+       		       	<span class="f666">全部图片展示</span>
+				</li>
+              	
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div id="container">
+		<div ng-repeat="uri in imageUrls" class="grid">
+			<div class="imgholder"><img class="lazy" ng-src="{{uri}}" data-original="{{uri}}" width="200" /></div>
+			<div class="actions">
+				<a href="javascript:void(0)"></a>
+			</div>
+		</div>
+	</div>	
+</div>
+<ng-include src="'sidebar.html'"></ng-include>
+</script>
+<script type="text/ng-template" id="personal.html">
+<div class="waterfall">
+	<div class="border_all mb15 p10">
+		<div class="profile_top">
+			<div>
+				<div class="pf_head">
+					<img ng-src="{{userInfo.headPicURL}}" width="148" height="148" />
+				</div>
+				<div class="pf_info">				
+					<div class="pf_name">
+						<span class="name f22">{{userInfo.nickName}}</span>
+						<span class="f14">id({{user.id}})</span>
+					</div>
+					
+					
+					<ul class="user_atten f18">
+						<li>
+							<a href="#">							
+								<span>微博 </span><strong>{{weiboCount}}</strong>
+							</a>
+						</li>
+						<li>
+							<a href="#">							
+								<span>好友 </span><strong>{{user.friends.length}}</strong>
+							</a>
+						</li>
+						<div class="clearfix"></div>
+					</ul>
+					
+					<div class="pf_do f16">
+						{{userInfo.location}} <a href="#" class="f12 f2ea0cd">【更多资料】</a>
+					</div>
+					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="imgModList">
+					<ul>
+						<li ng-repeat="uri in myPicUrls"><a href="#" target="_blank"><img ng-src="{{uri}}" alt=""></a></li>
+						<div class="clearfix"></div>
+					</ul>
+					
+				</div>					
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<ng-include src="'weiboList.html'"></ng-include>
+</div>
+<ng-include src="'sidebarShort.html'"></ng-include>
+</script>
+<script type="text/ng-template" id="post.html">
+<div ng-controller="postController" class="publisherTop border_all mb15 p10">
+	<div class="send_weibo">
+	<form name="weiboForm" ng-submit="(!P.txtInvalid) && addNewPost()" novalidate>  
+	<div class="title_area">
+		<div class="title fl f16">让信息没有障碍的实时传播！</div>
+		<div ng-show="P.chCounter<=30" class="S_textb fr f14">
+		   还可以输入 <em>{{P.chCounter}}</em> 字
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="input">
+		<textarea ng-model="wbText" ng-change="wbtxtChanged()" class="input_detail" placeholder="趁阳光明媚，趁微风不燥，多去看看外面的世界吧，2014你想去的城市是？"></textarea>
+		<div ng-show="P.showPicUpload" class="layer_send_pic content pb10" style="border-bottom:1px solid #e3e3e1;margin: 0 -10px;padding-left: 10px;">								
+			<ul class="drag_pic_list">
+				<li ng-repeat="url in tmpPicUrls track by $index">
+					<a href="javascript:void(0);" target="_blank"><img ng-src="{{url}}" width="72" alt=""/></a>
+				</li>
+				<li>
+					<div class="drag_pic_more">
+						<div class="drag_pic_more_btn">
+							<img src="images/141020_img05.jpg" width="72" alt=""/>
+						</div>
+						<input onchange="angular.element($('#fileName')).scope().fileSelected(this.files)" type="file" multiple id="fileName" accept="image/*" class="inputstyle"></input>
+					</div>
+				</li>
+				<div class="clearfix"></div>
+			</ul>								
+		</div>
+		<div ng-show="P.sentOK" class="send_succpic">
+			<p class="icon_succB"></p><p class="txt">发布成功</p>
+		</div>
+	</div>
+	<div class="func_area">
+		<div class="func">
+			<span class="btn_30px"><input ng-class="P.submitStyle" type="submit" value="发布" ng-disabled="weiboForm.$invalid"></input></span>
+		</div>
+		<div class="kind_v2">
+			<span class="kind_detail">
+				<a ng-click="selectPics()" title="图片" href="javascript:void(0);" class="btnWeek"><i class="W_ico15 icon_sw_img"></i>图片</a>
+				<a title="长微博" href="javascript:void(0);" id="btnMonth"><i class="W_ico15 icon_sw_chang"></i>长微博</a>
+			</span>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	</form>			
+	</div>
+</div>
+</script>
+<script type="text/ng-template" id="sidebarShort.html">
+<div ng-controller="sidebarController" class="side">
+<div class="WB_right_module mb10">
+	<div class="WB_cardtitle_b">
+		<h4>
+			<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+			<span class="main_title">可能感兴趣的人</span>
+		</h4>
+	</div>
+	<div class="WB_innerwrap">
+		<ul class="person_list">
+			<li>
+				<div class="pic">
+					<a href="#" target="_blank"><img usercard="id=3156646011" src="http://tp4.sinaimg.cn/3156646011/50/40060296204/0" class="W_face_radius"></a>
+				</div>
+				<div class="con">
+					<p class="name">
+						<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+					</p>
+					<span>
+						<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+					</span>
+					<div class="change">
+						<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+					</div>
+				</div>
+				<div class="WB_right_expand">
+					<p class="S_txt2">24小时热点</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="WB_right_module">
+	<div class="WB_cardtitle_b S_line2">
+		<h4>
+			<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+			<span class="main_title">热门话题</span>
+		</h4>
+	</div>
+	<div class="WB_innerwrap">
+		<ul class="hot_topic">
+			<li>
+				<p>
+					<span class="total S_txt2" title="阅读量">784万</span>
+					<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+				</p>
+			</li>
+		</ul>
+	</div>
+	
+</div>
+<div class="clearfix"></div>
+</div>
+</script>
+<script type="text/ng-template" id="sidebar.html">
+<div ng-controller="sidebarController" class="side">
+<div class="WB_right_module mb10">
+	<div class="p10">
+		<div class="userPic">
+			<p><a href="#personal" title=""><img ng-src="{{userInfo.headPicURL}}" title="" width="78"/></a></p>				
+		</div>
+		<div class="namebox">
+			<p><b><a href="#personal" title="" class="f10a2c7">{{userInfo.nickName}}</a></b></p>
+			<p class="f12">用户等级:新手</p>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="m_profile_data">
+		<ul class="list">
+			<li>
+				<a href="#personal"><span class="text_count">{{weiboCount}}</span><span class="text_atr">广播</span></a>
+			</li>
+			<li>
+				<a href="attention.html"><span class="text_count">{{user.friends.length}}</span><span class="text_atr">好友</span></a>
+			</li>
+			<li>
+				<a href="javascript:void(0)" ng-click="showFavorites()"><span class="text_count">{{favoriteCount}}</span><span class="text_atr">收藏</span></a>
+			</li>
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+
+<div class="WB_right_module mb10">
+	<div class="WB_cardtitle_b">
+		<h4>
+			<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+			<span class="main_title">可能感兴趣的人</span>
+		</h4>
+	</div>
+	<div class="WB_innerwrap">
+		<ul class="person_list">
+			<li>
+				<div class="pic">
+					<a href="#" target="_blank"><img usercard="id=3156646011" src="http://tp4.sinaimg.cn/3156646011/50/40060296204/0" class="W_face_radius"></a>
+				</div>
+				<div class="con">
+					<p class="name">
+						<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+					</p>
+					<span>
+						<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+					</span>
+					<div class="change">
+						<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+					</div>
+				</div>
+				<div class="WB_right_expand">
+					<p class="S_txt2">24小时热点</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="WB_right_module">
+	<div class="WB_cardtitle_b S_line2">
+		<h4>
+			<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+			<span class="main_title">热门话题</span>
+		</h4>
+	</div>
+	<div class="WB_innerwrap">
+		<ul class="hot_topic">
+			<li>
+				<p>
+					<span class="total S_txt2" title="阅读量">784万</span>
+					<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+				</p>
+			</li>
+		</ul>
+	</div>
+	
+</div>
+</div>
+<div class="clearfix"></div>
+</div>
+</script>
+<script type="text/ng-template" id="weiboList.html">
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm" ng-class="tabStyle(0)">
+       		       	<a class="S_txt1" href="javascripe:void(0);" ng-click="getAllPosts()">微博</a>
+				</li>
+              	<li class="S_txt3">|</li>
+				<li class="t_itm " ng-class="tabStyle(1)">
+					<a href="javascripe:void(0);" ng-click="getPosts(bid)" class="S_txt1">原创</a>
+				</li>
+				<li class="S_txt3">|</li>
+				<li class="t_itm" ng-class="tabStyle(2)">
+					<a class="S_txt1" href="#picture">图片</a>
+				</li>
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div class="WB_feed">
+		<ul>
+			<li ng-repeat="wb in weiboList track by $index" class="border_all WB_feed_type">
+				<div class="userPic">
+					<p><a href="#" title=""><img ng-src="{{wb.headPicURL}}" title=""  width="78"/></a></p>
+				</div>
+				<div class="userName">
+					<b><a href="#" title="" target="_blank">{{wb.author}}: </a></b>
+					<span class="msgCnt">{{wb.body}}</span>
+					
+					<div ng-repeat="p in wb.parentWeibo track by $index" class="WB_media_expand mt15">
+						<div class="WB_arrow">						
+						</div>
+						<div class="WB_info mb5">
+							<a href="#">@{{p.author}}</a>
+						</div>
+						<div class="WB_text">
+                			{{p.body}}
+						</div>
+						<div class="lotspic_list">
+							<ul>
+								<li ng-repeat="uri in p.tmpPicUrls track by $index">
+								<img ng-src="{{uri}}" alt=""/>
+								</li>
+								<div class="clearfix"></div>
+							</ul>
+						</div>
+					</div>
+
+					<div class="lotspic_list">
+						<ul>
+							<li ng-repeat="uri in wb.tmpPicUrls track by $index">
+								<img ng-src="{{uri}}" alt=""/>
+							</li>
+							<div class="clearfix"></div>
+						</ul>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+				<div ng-controller="reviewController" class="msgBox pr">
+                	<span class="time fl">{{wb.timeStamp | timePassed}}</span>
+					<span class="funBox fr">
+						<a href="javascript:void(0);" ng-click="checkFavorite(wb)" class="btn-fav"><i ng-show="wb.isFavorite" class="fav_icon"></i><span ng-hide="wb.isFavorite">收藏</span></a><span>|</span>
+						<a href="javascript:void(0);" ng-click="showRelay(wb)" class="btn-relay">转播{{wb.relays.length | bracket}}</a><span>|</span>
+						<a href="javascript:void(0);" ng-click="showReview(wb)" class="btn-comt">评论{{wb.reviews.length | bracket}}</a>
+						
+						<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+						
+						<div class="mFun">
+							<div class="bg">
+								<div class="mFunDrop">							
+									<p><a href="#" class="detail line" target="_blank">关注</a></p>
+									<p><a href="#" class="alarm">删除</a></p>
+								</div>
+							</div>
+						</div>
+												
+					</span>
+					<div class="clearfix"></div>					
+					<div class="zfWrap" id="relay-box" ng-show="wb.wbID === R.relayedWeibo">
+						<div class="top c_tx5">
+							<span class="left">
+								<span class="number cNote">转播本条微博</span>
+							</span>
+							<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+						</div>
+						
+						<div class="cont">
+							<textarea ng-model="relay.body" ng-change="relayChanged()" class="inputTxt" style="overflow-y: hidden; height: 37px;"></textarea>							
+						</div>
+						<div class="bot">
+							<div class="fr">
+								<span ng-show="R.chCounter<=30" class="countTxt">还能输入<em>{{R.chCounter}}</em>字</span>
+								<a ng-click="(!R.txtInvalid) && addRelay(wb)" class="w_btn_a"><span class="btn_30px">转播</span></a>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+						<div class="relayList">
+							<div class="tabStyle1">
+								<b class="line"></b>
+							</div>
+							<div class="">
+								<ul>
+									<li ng-repeat="r in relayList track by $index" class="nobor">										
+										<div class="msgCnt">
+											<strong><a href="#" target="_blank" class="f10a2c7">{{r.author}}</a>:</strong>
+											<span class="content">{{r.body}}</span>
+										</div>
+										<div class="pubInfo">
+											<span class="cNote">{{r.timeStamp | timePassed}}</span>
+											<a href="#" class="alarm">删除</a>
+											<a href="#" class="replyCite">评论</a>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div class="pages">
+								<a href="#" class="pageBtn">上一页</a>
+								<a href="#">1</a>
+								<b> 2</b>
+								<a href="#">3</a>
+								<a href="#">4</a>
+								<a href="#" class="pageBtn">下一页</a>
+							</div>
+						</div>
+					</div>
+					
+					<div class="zfWrap comt-box" ng-show="wb.wbID === R.reviewedWeibo">
+					<form name="reviewForm" novalidate>
+						<div class="top c_tx5">
+							<span class="left">
+								<span class="number cNote">评论本条微博</span>
+							</span>
+							<a href="javascript:void(0);" class="W_close fr" title="关闭"></a>
+						</div>
+						
+						<div class="cont">
+							<textarea ng-model="review.body" ng-change="reviewChanged()" class="inputTxt" style="overflow-y: hidden; height: 37px;"></textarea>							
+						</div>
+						<div class="bot">
+							<div class="fr">								
+								<span ng-show="R.chCounter<=30" class="countTxt">还能输入<em>{{R.chCounter}}</em>字</span>
+								<a ng-click="(!R.txtInvalid) && addReview(wb)" class="w_btn_a"><span class="btn_30px">评论</span></a>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+						</form>
+						<div class="relayList">
+							<div class="tabStyle1">
+								<b class="line"></b>
+							</div>
+							<div class="">
+								<ul>
+									<li ng-repeat="r in reviewList track by $index" class="nobor">										
+										<div class="msgCnt">
+											<strong><a href="#" target="_blank" class="f10a2c7">{{r.author}}</a>:</strong>
+											<span class="content">{{r.body}}</span>
+										</div>
+										<div class="pubInfo">
+											<span class="cNote">{{r.timeStamp | timePassed}}</span>
+											<a href="#" class="alarm">删除</a>
+											<a href="#" class="replyCite">评论</a>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div class="pages">
+								<a href="#" class="pageBtn">上一页</a>
+								<a href="#">1</a>
+								<b> 2</b>
+								<a href="#">3</a>
+								<a href="#">4</a>
+								<a href="#" class="pageBtn">下一页</a>
+							</div>
+						</div>
+					</div>
+					<div class="clearfix"></div>
+					
+				</div>
+			</li>
+		</ul>
+	</div>
+</script>
+<script type="text/javascript">
+$("#set_icon").click(function(){
+	easyDialog.open({
+	container : 'user_set',
+	fixed : false,
+	drag : true,
+	overlay : true
+	});
+});
+
+$(function(){
+	$(".btnWeek").click(function(){
+		$(".W_layer").hide(); 
+		$(".funBox .mFun").hide(); 
+		$(this).parent().parent().find("#W_layer_lotspic").show(200);
+		return false;//关键是这里，阻止冒泡 
+	}); 
+	$(".btn-fav").click(function(){	
+		$(".W_layer").hide(); 
+		$(".funBox .mFun").hide(); 
+		$(this).parent().parent().find("#fav_box").show(200);
+		return false;//关键是这里，阻止冒泡 
+	}); 
+	$(".feed_opt").click(function(){
+		$(".W_layer").hide();	
+		$(".funBox .mFun").hide(); 
+		$(this).parent().find(".mFun").show(200);
+		return false;//关键是这里，阻止冒泡 
+	});	
+	$(".W_layer").click(function(){ 
+		return true; 
+	});
+	$(".funBox .mFun").click(function(){ 
+		return false; 
+	}); 
+	$(document).click(function(){
+		//$(".W_layer").hide(); 
+		$(".funBox .mFun").hide(); 
+	});
+});
+
+$(".W_close").click(function () {
+	$(this).parents().find(".W_layer").hide();
+	$(this).parents().find(".zfWrap").hide();
+});
+
+$(function(){
+	$(".btn-relay").click(function(){
+		if($(this).parent().parent().find("#relay-box").is(":visible")==false){
+			$(".zfWrap").hide(); 
+			$(this).parent().parent().find("#relay-box").show(200);
+		}
+		else{
+			$(this).parent().parent().find("#relay-box").hide(200);	
+		}		
+	});	
+	$(".btn-comt").click(function(){
+		if($(this).parent().parent().find(".comt-box").is(":visible")==false){
+			$(".zfWrap").hide(); 
+			$(this).parent().parent().find(".comt-box").show(200);
+		}
+		else{
+			 
+			$(this).parent().parent().find(".comt-box").hide(200);
+		}
+		return false;
+	});
+});
+</script>
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="lib/ui-bootstrap-tpls.min.js"></script>
+<script type="text/javascript" src="lib/angular-ui-router.min.js"></script>
+<script type="text/javascript" src="js/hprose-html5.js"></script>
+<script type="text/javascript" src="app/GlobalDataStruct.js"></script>
+<script type="text/javascript" src="app/review.js"></script>
+<script type="text/javascript" src="app/directives.js"></script>
+<script type="text/javascript" src="app/account.js"></script>
+<script type="text/javascript" src="app/message.js"></script>
+<script type="text/javascript" src="app/rootModule.js"></script>
+<script type="text/javascript" src="app/states.js"></script>
+</body>
+</html>

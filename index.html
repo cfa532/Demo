@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Leither首页</title>
+<le-link href="base" rel="stylesheet" type="text/css"></le-link>
+<le-link href="master" rel="stylesheet" type="text/css"></le-link>
+<le-link href="addition" rel="stylesheet" type="text/css"></le-link>
+<le-script type="text/javascript" src="jQuery"></le-script>
+<le-script type="text/javascript" src="jQueryTab"></le-script>
+<le-script type="text/javascript" src="review"></le-script>
+<le-script type="text/javascript" src="directive"></le-script>
+<le-script type="text/javascript" src="account"></le-script>
+<le-script type="text/javascript" src="message"></le-script>
+<le-script type="text/javascript" src="root"></le-script>
+<le-script type="text/javascript" src="state"></le-script>
+<le-script type="text/javascript" src="sms"></le-script>
+<style>
+<!--
+body{ background:#010b15;}
+-->
+</style>
+<script type="text/javascript">
+var G_VARS = {
+		bidPath : window.location.pathname+"/appID/userID/",
+		IPList :["112.124.113.235:30003"],
+		IPNum : 0,
+		sid : 'cb05e9e7296ed8539152776e56df2ccfcd607d09',
+		bid : 'jE1gwQDVCfvtYgaqRAamx3em9JFP7ViL1yBapJxGyVc',
+		hprose : '-l1PnT32Vi5FEf-tGRQTStUPe1bNXZZN9H26ib0q50o',
+		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',
+		css : {
+			base : 'mzLwjK4PTr0nzrP-DAn3amfQwe4U7Vye6Gk4lvkpcCw',
+			master : 'Y-NLrveHiDj5XEn-E5Ga7Ngw90YPmvKWEbjFtBWiH24',
+			addition : 'bK9oj0oFP7Sz-y7d4YYcTfOlSBB_VMDaAhis1PBnkIA',
+			bootstrap : '5YSSC_6cYcvIUw3W7yVQ7eYClAY9XHRc4-hlbyZ-HhM',
+		},
+		dep : {		//dependency of app module that has to be loaded in advance
+			GlobalDataStruct : 'beZrxe6sjQPcn2e3XEOWq-L0jVnDBk57NRYeeuFx2XQ',
+			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
+			uiBootstrapTpls : 'Q787mpszKswRAkLWSIqNbXL428EpCpXrUdTFe6gePZc',
+		},
+		js : {		//js code that can be loaded with a script tag
+			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
+			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
+			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
+			account : 'P6cchtmD59VCOt-LSFYFAMAQVDoIK8tmTcmeQeipYXg',
+			message : 'Gcyod1PvoK-IW4SuAGott3puV1zRpSfRRYRMiRQyMzM',
+			state : '_dktww5jVGnjL0cC6ditB8MC6XNfMiAzv1jSRQSuo-M',
+			root : 'r2P9jIeMBO3MyLIzTG7ELvS34kNV50P4x4v3OQrwpt4',
+			sms : '_EakOkfCoS6pnrDCdR4m0vKMuhxCzid9lrHHxVF4kug',
+			review : 'J6I9C_MX29D8ixotlK1-zH23e5PWNi0Dl_Ti5KFvspI',
+			directive : 'yPzvyZ6dQ-icrdZlUbN34P_dToKGVB4SNHLwSzPldm0'
+		},
+		httpClient : null,
+		weiboApp : null,				//["ui.bootstrap", "ui.router", "msgModule", "accountModule"]
+		MaxWeiboLength	: 40,
+		httpClient	: null,
+				
+		//define global variables used as KEY
+		Posts		: "WeiboKeyList",		//keys for all the posts by user, post date is used as Field in hset()
+		Favorites	: "MyFavorites",		//favorites are stored by user as Post. authorID+/t+wbID is field in hset();
+		UserInfo	: "WeiboUser",			//user information for weibo app
+		Reviews		: "ReviewKeyList",		//all of the reviews send by user, post date is used as Field
+		Request		: "Request-to-become-friends",
+		Friends		: "friends-in-weibo",
+		UnreadSMS	: "unread-sms-message",
+		WB_EVENTS: {
+			weiboAdded: 'new-weibo-added',
+			favoriteChanged: 'favorite-weibo-changed'
+		},
+		PAGINATION_SIZE : 2,
+		slice : function(src, target, start, end) {
+			//clear target array without creating a shadow
+			target.length=0;
+			for (var i=start; i<end && i<src.length; i++) {
+				target.push(src[i]);
+			};
+		},
+		search : function(items, value) {
+			for (var i=0; i<items.length; i++) {
+				if (items[i].wbID == value.wbID) {
+					return i;
+				};
+			};
+			return -1;
+		},
+		loadImg : function(bid, src) {
+			var q = angular.injector(['ng']).get('$q');
+			return q(function(resolve, reject) {
+				G_VARS.httpClient.get(G_VARS.sid, bid, src, function(data) {
+					var r = new FileReader();
+					r.onloadend = function(e) {
+						resolve(e.target.result);
+					};
+					r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+				}, function(name, err) {
+					console.log(err);
+					reject(err);
+				});
+			});
+		},
+	};
+
+	//Both check server availability and load hprose
+	function loadHprose(ip, callback) {
+		var script = document.createElement("script")
+		script.type = "text/javascript";
+		script.async = "async";
+		if (script.readyState) { //IE
+			script.onreadystatechange = function() {
+				if (script.readyState == "loaded" || script.readyState == "complete") {
+					script.onreadystatechange = null;
+					callback(ip);
+				};
+			};
+		} else { //Others
+			script.onload = function() {
+				callback(ip);
+			};
+		};
+		script.addEventListener("error", function() {
+			//try next server IP in a predefined list
+			console.log("check next server=" + G_VARS.IPList[G_VARS.IPNum])
+			checkServer(G_VARS.IPList[G_VARS.IPNum++]);
+		});
+		//here is a problem with illegitimate sid
+		script.src = 'http://'+ip+'/getres?type=application/x-javascript&sid='+G_VARS.sid+'&bid='+G_VARS.bid+'&key='+G_VARS.hprose;
+		console.log(script);
+		document.getElementsByTagName("head")[0].appendChild(script);
+	};
+
+	function checkServer(ip) {
+		if (ip===null || typeof(ip)==='undefined') {
+			console.log("no server available");
+			return;
+		};
+		//try to load hprose from potential server
+		loadHprose(ip, function(ip) {
+			//the server is live, hprose loaded from it
+			G_VARS.httpClient = new hprose.HttpClient("http://"+ip+"/webapi/", 
+					["register","login","getvar","begin","set","commit","rollback","get","setdata",
+					 "sendmsg","readmsg","lpush","lrange","hset","hget","hgetall","hlen","hdel","hkeys"]);
+			G_VARS.httpClient.login(null, "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2pFMWd3UURWQ2Z2dFlnYXFSQWFteDNlbTlKRlA3VmlMMXlCYXBKeEd5VmMA", function(sid) {
+				console.log("login with ppt, sid=" + sid);
+				G_VARS.sid = sid;
+				if (localStorage[G_VARS.bidPath+"angular"]===null || typeof(localStorage[G_VARS.bidPath+"angular"])==='undefined') {
+					G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, G_VARS.angular, function(data) {
+						var r = new FileReader();
+						r.onload = function(e) {
+							localStorage[G_VARS.bidPath+'angular'] = e.target.result;
+							console.log("angular saved in local");
+							eval(localStorage[G_VARS.bidPath+"angular"]);	//it works because angular is defined as window.angular
+							loadGlobals();
+						};
+						r.readAsText(new Blob([data[1]]));
+					}, function(name, err) {
+						console.log(err);
+					});
+				} else {
+					eval(localStorage[G_VARS.bidPath+"angular"]);
+					console.log("angular loaded")
+					loadGlobals();
+				};
+			}, function(name, err) {
+				console.log(err);
+			});
+		});
+	};
+
+	function loadGlobals() {
+		var q = angular.injector(['ng']).get('$q');
+		//console.log(angular)
+		var ds = [];
+		for (var k in G_VARS.dep) {
+			//dependency need to be loaded with a script tag
+			ds.push(loadScript(k, G_VARS.dep[k], true));
+		};
+		for (var k in G_VARS.js) {
+			ds.push(loadScript(k, G_VARS.js[k]));
+		};
+		//console.log(ds.length)
+		q.all(ds).then(function() {
+			console.log("load modules")
+			loadModules();
+		}, function(reason) {
+			console.log(reason);
+		});
+	};
+	
+	//the 1st param is angular.$q service, the 2nd is key to a js script
+	function loadScript(k, v, dep) {
+		var q = angular.injector(['ng']).get('$q');
+		return q(function(resolve, reject) {
+			if (angular.isUndefined(localStorage[G_VARS.bidPath+'js/'+k]) || localStorage[G_VARS.bidPath+'js/'+k]===null) {
+				G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, v, function(data) {
+					if (data[1] !== null) {
+						var r = new FileReader();
+						r.onload = function(e) {
+							console.log(e.target.result)
+							localStorage[G_VARS.bidPath+'js/'+k] = e.target.result;
+							if (dep) {
+								var script = document.createElement("script")
+								script.type = "text/javascript";
+								script.textContent = localStorage[G_VARS.bidPath+'js/'+k];
+								document.getElementsByTagName("head")[0].appendChild(script);
+							}
+							resolve();
+						};
+						r.readAsText(new Blob([data[1]]));
+					} else {
+						reject("source code data not found, key="+k);
+					};
+				}, function(name, err) {
+					console.log(err);
+					reject(err);
+				});
+			} else {
+				//console.log(k);
+				if (dep) {
+					var script = document.createElement("script")
+					script.type = "text/javascript";
+					script.textContent = localStorage[G_VARS.bidPath+'js/'+k];
+					document.getElementsByTagName("head")[0].appendChild(script);
+				}
+				resolve();
+			};
+		});
+	};
+
+	function loadModules() {
+		G_VARS.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"])
+		console.log(G_VARS.weiboApp);
+		G_VARS.weiboApp.config(function($controllerProvider) {
+			G_VARS.weiboApp.myController = $controllerProvider;
+		});
+		G_VARS.weiboApp.controller("appController", function($scope, $rootScope) {
+			$scope.text = "Hello World";
+			console.log("In app controller");
+			
+			//do little here, just initiate some global variables
+			//var myRootScope = angular.element(document.getElementById("myAppRoot")).scope();
+			$rootScope.weiboList = [];			//all the weibos read into memory
+			$rootScope.currentList = [];		//weibos being displayed in current page
+			$rootScope.myFriends = {};			//all my friends
+			$rootScope.appID = "newWeibo";
+			$rootScope.myUserInfo = new UserInfo();
+			$rootScope.currUserInfo = $rootScope.myUserInfo; 	//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
+			$rootScope.chatSessions = {};
+			
+			$rootScope.global = {
+				weiboCount : 0,
+				favoriteCount : 0,
+				currentPage : 1,
+				itemsPerPage : 5
+			};
+		})
+		.directive("leScript", function() {
+			return {
+				restrict : "E",
+				replace : true,
+				scope : {
+					src : "@",
+					type : "@",
+					di : "@"
+				},
+				link : function(scope, element, attrs) {
+					var js = document.createElement("script");
+					js.id = "js."+scope.src
+					//js.async = "async";
+					js.type = scope.type;
+					js.textContent = localStorage[G_VARS.bidPath+'js/'+scope.src];
+					console.log(js);
+					js.addEventListener("onload", function() {
+						//it seems without "src", there is no onload event
+						console.log("js loaded")
+					});
+					document.getElementsByTagName("body")[0].appendChild(js);
+				}
+			}
+		})
+		.directive("leLink", function() {
+			function loadCSS(scope) {
+				var cs = document.createElement("style");
+				cs.id = "css."+scope.href
+				cs.rel = scope.rel;
+				cs.type = scope.type;
+				cs.textContent = localStorage[G_VARS.bidPath+"css/"+scope.href];
+				console.log(cs);
+				document.getElementsByTagName("head")[0].appendChild(cs);
+			};
+			return {
+				restrict : "E",
+				replace : true,
+				//template : "<link href='css/addition.css' rel='stylesheet' type='text/css' />",
+				scope : {
+					href : "@",
+					rel : "@",
+					type : "@"
+				},
+				link : function(scope, element, attrs) {
+					//console.log(G_VARS.css[scope.href]);
+					if (localStorage[G_VARS.bidPath+'css/'+scope.href]===null || typeof(localStorage[G_VARS.bidPath+'css/'+scope.href])==='undefined') {
+						G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, G_VARS.css[scope.href], function(data) {
+							//console.log(data[1])
+							var r = new FileReader();
+							r.onload = function(e) {
+								localStorage[G_VARS.bidPath+"css/"+scope.href] = e.target.result;
+								loadCSS(scope);
+							};
+							r.readAsText(new Blob([data[1]]));
+						}, function(name, err) {
+							console.log(err);
+						});
+					} else {
+						//console.log(localStorage[G_VARS.bidPath+"css."+scope.href]);
+						loadCSS(scope);
+					};
+				}
+			};
+		})
+		angular.bootstrap(document, ['appModule']);
+		console.log("start app");
+		console.log(G_VARS.weiboApp.controller("ctrl"));
+		return;
+		G_VARS.weiboApp.myController.register("appController", function($rootScope) {
+			$rootScope.myUserInfo = new UserInfo();
+			$rootScope.currUserInfo = $rootScope.myUserInfo; 	//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
+		});
+	};
+
+checkServer(G_VARS.IPList[G_VARS.IPNum++]);
+
+</script>
+</head>
+
+<body ng-controller="appController">
+<div class="guide_wrap">
+	<div class="guide">
+		<div class="logo"></div>
+		<div class="guide_name">
+			<input name="" type="text" class="guide_input" placeholder="给自己起个霸气侧漏的昵称吧！" />
+			<input name="" type="button" class="guide_btn" value="进入雷趣" />
+			<div class="clearfix"></div>
+		</div>
+		
+		<div class="guide_ts">
+			<p><b>Hello {{myUserInfo.nickName}}</b></p>
+			<p>我要这天，再遮不住我的眼，要这地，再也埋不了我的心</p>
+			<p>要这众生，都明白我的意，要拿诸佛，都烟消云散！</p>
+		</div>
+	</div>
+</div>
+</body>
+</html>

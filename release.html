@@ -1,0 +1,1019 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<title>微博首页</title>
+<le-link href="bootstrap" rel="stylesheet" type="text/css"></le-link>
+<le-link href="base" rel="stylesheet" type="text/css"></le-link>
+<le-link href="master" rel="stylesheet" type="text/css"></le-link>
+<le-link href="addition" rel="stylesheet" type="text/css"></le-link>
+<script type="text/javascript"> 
+var G_VARS = {
+		bidPath : window.location.pathname+"/appID/userID/",
+//		IPList :["97.74.126.127:4800"],
+		IPList :["112.124.113.235:30003"],
+		IPNum : 0,
+		sid : '0f24d8d2956508cc571e67da23ee75ae47c1879c',
+//		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK0IzTDEtbGw1b2s5dW85UlRpRHQ1aEpjU28za0JaRlItX3ZUUEs4MUptVVEA",
+//appowner
+		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
+		dataBid : 'gVQXZWd0RgNuB-5R5tX1gxhOb200TdwEVs-LHbLXpLo',	//from which JS data are read
+		hprose : '-l1PnT32Vi5FEf-tGRQTStUPe1bNXZZN9H26ib0q50o',
+		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',
+		css : {
+			base : 'Fci4FS6sRzZ1BqJVfY-nKGr3D0J11hLKXWQaw01o8BM',
+			master : 'NybE1ul4p2UuP1_74CS4M7I7zAtLY81yPBLnvZiNrkM',
+			addition : 'e4BCO-kL50Ds2iTlB2C3f7DeGHmsL7f3YcfVGeiEffo',
+			bootstrap : '5YSSC_6cYcvIUw3W7yVQ7eYClAY9XHRc4-hlbyZ-HhM'
+		},
+		dep : {		//dependency of app module that has to be loaded before module declaration
+			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
+			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
+			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
+			GlobalDataStruct : 'T60a0ufKj31dpzSHOh_q2mmRlc_KFwAJp0dMUlNAH-8',
+			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
+			uiBootstrapTpls : 'Q787mpszKswRAkLWSIqNbXL428EpCpXrUdTFe6gePZc',
+			main : '_4cMMIZ4oXQXAZmTrpFFfEvxEBzRZwpNLPm73QrtvJY'
+		},
+		js : {		//js code that can be loaded with a script tag, has to load after app declaration
+			account : 'DPVN3z5gIMRjO30WD30EdndkxWLCzimMKdSElH8CW-4',
+			message : 'Gcyod1PvoK-IW4SuAGott3puV1zRpSfRRYRMiRQyMzM',
+			sms : 'g5lBNsIljD80fS3IQs9FXN5-2Wi7KPMsXVrkOUdBk2s',
+			state : '7rcAke1541_4N2pw2KlGPSXO99i5Er3QIAR4-G-8nTI',
+			root : 'zOFNpKdNfL7Rmy8aSqyEE8kLDuL3XiH4kfcHm7YDIP0',
+			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
+			directive : 'Gs09kv-eoprBmm4atHDOGkcmJCQcgSZ-zjLN2wWSf_g'
+		},
+		httpClient : null,
+		weiboApp : null,				//["ui.bootstrap", "ui.router"]
+		MaxWeiboLength	: 40,
+				
+		//define global variables used as KEY
+		Posts		: "WeiboKeyList",		//keys for all the posts by user, post date is used as Field in hset()
+		PostPics	: "pictures-in-posts",	//SET: [keys]
+		Favorites	: "MyFavorites",		//favorites are stored by user as Post. HSET: Key, bid, key of the favorite post
+		UserInfo	: "WeiboUser",			//user information for weibo app
+		Reviews		: "ReviewKeyList",		//all of the reviews send by user, post date is used as Field
+		Request		: "Request-to-become-friends",
+		Friends		: "friends-in-weibo",
+		UnreadSMS	: "unread-sms-message",
+		Version		: "database-version",
+
+		slice : function(src, target, start, end) {
+			//clear target array without creating a shadow
+			target.length=0;
+			
+			for (var i=start; i<end && i<src.length; i++) {
+				target.push(src[i]);
+			};
+		},
+		search : function(items, value) {
+			for (var i=0; i<items.length; i++) {
+				if (items[i].wbID == value.wbID) {
+					return i;
+				};
+			};
+			return -1;
+		},
+	};
+
+	//Both check server availability and load hprose
+	function loadHprose(ip, callback) {
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.async = "async";
+		if (script.readyState) { //IE
+			script.onreadystatechange = function() {
+				if (script.readyState == "loaded" || script.readyState == "complete") {
+					script.onreadystatechange = null;
+					callback(ip);
+				};
+			};
+		} else { //Others
+			script.onload = function() {
+				callback(ip);
+			};
+		};
+		script.addEventListener("error", function() {
+			//try next server IP in a predefined list
+			console.log("check next server=" + G_VARS.IPList[G_VARS.IPNum])
+			checkServer(G_VARS.IPList[G_VARS.IPNum++]);
+		});
+		//here is a problem with illegitimate sid
+		script.src = 'http://'+ip+'/getres?type=application/x-javascript&sid='+G_VARS.sid+'&bid='+G_VARS.dataBid+'&key='+G_VARS.hprose;
+		console.log(script);
+		document.getElementsByTagName("head")[0].appendChild(script);
+	};
+
+	function checkServer(ip) {
+		if (ip===null || typeof(ip)==='undefined') {
+			console.log("no server available");
+			return;
+		};
+		//try to load hprose from potential server
+		loadHprose(ip, function(ip) {
+			//the server is live, hprose loaded from it
+			G_VARS.httpClient = new hprose.HttpClient("http://"+ip+"/webapi/", 
+					["register","login","getvar","begin","set","commit","rollback","get","setdata",
+					 "sendmsg","readmsg","lpush","lrange","hset","hget","hgetall","hlen","hdel","hkeys"]);
+			G_VARS.httpClient.login(null, G_VARS.ppt, function(sid) {
+				console.log("login with ppt, sid=" + sid);
+				G_VARS.sid = sid;
+				G_VARS.httpClient.getvar(sid, 'self', function(usr) {
+					G_VARS.bid = usr.id;
+					if (localStorage[G_VARS.bidPath+"angular"]===null || typeof(localStorage[G_VARS.bidPath+"angular"])==='undefined') {
+						G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.angular, function(data) {
+							var r = new FileReader();
+							r.onload = function(e) {
+								localStorage[G_VARS.bidPath+'angular'] = e.target.result;
+								console.log("angular saved in local");
+								eval(localStorage[G_VARS.bidPath+"angular"]);	//it works because angular is defined as window.angular
+								loadExternalJS();
+							};
+							r.readAsText(new Blob([data[1]]));
+						}, function(name, err) {
+							console.log(err);
+						});
+					} else {
+						eval(localStorage[G_VARS.bidPath+"angular"]);
+						console.log("angular loaded")
+						loadExternalJS();
+					};
+				}, function(name, err) {
+					console.log("getSysUser err=" + err);
+				});
+			}, function(name, err) {
+				console.log(err);
+			});
+		});
+	};
+
+	//if there is a new version, update backend js and css files
+	function checkVersion() {
+		var reloadScript = function(path, key) {
+			G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, key, function(data) {
+				console.log(key);
+				if (data[1]) {
+					var r = new FileReader();
+					r.onload = function(e) {
+						console.log(e.target.result)
+						localStorage[path] = e.target.result;
+					};
+					r.readAsText(new Blob([data[1]]));
+				};
+			}, function(name, err) {
+				console.log(err);
+			});
+		};
+		
+		//first check DB version, if there is an update, reload everything
+		G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.Version, function(appVersion) {
+			//get app version number
+			G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, G_VARS.Version, function(myVersion) {
+				console.log(appVersion[1] + " " +myVersion[1]);
+				if (appVersion[1] !== myVersion[1]) {
+					//reload all the resource files
+					for (var k in G_VARS.dep) {
+						reloadScript(G_VARS.bidPath+'js/'+k, G_VARS.dep[k]);
+					};
+					for (var k in G_VARS.js) {
+						reloadScript(G_VARS.bidPath+'js/'+k, G_VARS.js[k]);
+					};
+					for (var k in G_VARS.css) {
+						reloadScript(G_VARS.bidPath+'css/'+k, G_VARS.css[k]);
+					};
+					reloadScript(G_VARS.bidPath+'angular', G_VARS.angular);
+					
+					//update my version number
+					G_VARS.httpClient.set(G_VARS.sid, G_VARS.bid, G_VARS.Version, appVersion[1], function() {
+						console.log("version number update = " +appVersion[1]);
+					}, function(name, err) {
+						console.log(err);
+					});
+				};
+			}, function(name, err) {
+				console.log(err);
+			});
+		}, function(name, err) {
+			console.log(err);
+		});
+	};
+	
+	function loadExternalJS() {
+		var q = angular.injector(['ng']).get('$q');
+		//console.log(angular)
+		var ds = [];
+		for (var k in G_VARS.dep) {
+			//dependency need to be loaded with a script tag and executed
+			ds.push(loadScript(k, G_VARS.dep[k], true));
+		};
+		for (var k in G_VARS.js) {
+			//download my js and save it in localStorage, but NOT execute
+			ds.push(loadScript(k, G_VARS.js[k]));
+		};
+		q.all(ds).then(function() {
+			console.log("loaded all js code")
+			loadModules();
+		}, function(reason) {
+			console.log(reason);
+		});
+	};
+	
+	function ExecMyJS() {
+		for (var k in G_VARS.js) {
+			var script = document.createElement("script")
+			script.type = "text/javascript";
+			script.textContent = localStorage[G_VARS.bidPath+'js/'+k];
+			document.getElementsByTagName("head")[0].appendChild(script);
+		};
+	};
+	
+	//the 1st param is key to a js script, 2nd is the script
+	function loadScript(k, v, dep) {
+		var q = angular.injector(['ng']).get('$q');
+		return q(function(resolve, reject) {
+			if (angular.isUndefined(localStorage[G_VARS.bidPath+'js/'+k]) || localStorage[G_VARS.bidPath+'js/'+k]===null) {
+				G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, v, function(data) {
+					if (data[1]) {
+						var r = new FileReader();
+						r.onload = function(e) {
+							console.log(e.target.result)
+							localStorage[G_VARS.bidPath+'js/'+k] = e.target.result;
+							if (dep) {
+								//this script is dependency of others, load it right away
+								var script = document.createElement("script")
+								script.type = "text/javascript";
+								script.textContent = localStorage[G_VARS.bidPath+'js/'+k];
+								document.getElementsByTagName("head")[0].appendChild(script);
+							}
+							resolve();
+						};
+						r.readAsText(new Blob([data[1]]));
+					} else {
+						reject("source code data not found, key="+k);
+					};
+				}, function(name, err) {
+					console.log(err);
+					reject(err);
+				});
+			} else {
+				//console.log(k);
+				if (dep) {
+					var script = document.createElement("script")
+					script.type = "text/javascript";
+					script.textContent = localStorage[G_VARS.bidPath+'js/'+k];
+					document.getElementsByTagName("head")[0].appendChild(script);
+				}
+				resolve();
+			};
+		});
+	};
+
+	function loadModules() {
+		G_VARS.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"])
+		//after app defined, attach my controller, services to it
+		ExecMyJS();
+		checkVersion();
+		
+		//console.log(G_VARS.weiboApp);
+		G_VARS.weiboApp.controller("appController", function($scope, $rootScope, $window) {
+			console.log("In app controller");
+			$scope.dataBid = G_VARS.dataBid;	//app publisher's bid
+			
+			//do little here, just initiate some global variables
+			//var myRootScope = angular.element(document.getElementById("myAppRoot")).scope();
+			$rootScope.weiboList = [];			//all the weibos read into memory
+			$rootScope.currentList = [];		//weibos being displayed in current page
+			//$rootScope.myFriends = {};		//all my friends
+			$rootScope.appID = "newWeibo";
+			$rootScope.myUserInfo = new UserInfo();
+			$rootScope.currUserInfo = $rootScope.myUserInfo; 	//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
+			$rootScope.chatSessions = {};
+			$rootScope.global = {
+				currentPage : 1,
+				itemsPerPage : 5
+			};
+		})
+		
+		angular.bootstrap(document, ['appModule']);
+		console.log("app started");
+	};
+
+checkServer(G_VARS.IPList[G_VARS.IPNum++]);
+
+</script>
+</head>
+
+<body id="myAppRoot" ng-controller="appController">
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="head_box">
+			
+			<a id="logo" href="#"></a>
+			<div id="menu_bar">	
+				<div class="nav">
+					<a class="nav-link" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');"><i class="nav-icon"></i><span>导航</span></a>
+					<div id="header_main_menu" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');" style="display:none;">
+						<div class="inner">	
+							<ul>
+								<li><a href="#" class="main-link"><i class="weibo_icon"></i><span>微博</span></a></li>
+								<li><a href="#" class="main-link"><i class="videos_icon"></i><span>视频</span></a></li>
+								<li><a href="#" class="main-link"><i class="activities_icon"></i><span>活动</span></a></li>
+								<li><a href="#" class="main-link"><i class="design_icon"></i><span>LEITHER原创</span></a></li>
+								<li><a href="#" class="main-link"><i class="following_icon"></i><span>我的关注</span></a></li>
+							</ul>
+							<div class="up_arrow"></div>							
+						</div>
+					</div>
+				</div>
+				<div class="right-part">
+					<form method="get" action="" class="searching-unit">
+						<input type="text" size="27" name="" value="" class="default_value"/>						
+						<a href="#" class="go"></a>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="unauth_callout">
+			<div class="intro"></div>
+			<div class="login">
+				<a ui-sref="root.chat.history" class="comment_icon"></a>
+				<a ui-sref="root.personal.allPosts({bid:myUserInfo.bid})" class="user_icon"></a>
+				<a href="javascript:void(0)" class="set_icon" id="set_icon"></a>
+				<div class="with-line">天天畅想</div>				
+			</div>
+			<div class="clearfix"></div>
+
+ 			<div id="floating" style="display:none">
+				<div class="smooth-notification" style="margin-left:-90px;"><a ui-sref="root.main.allPosts" class="notification">我雷个趣</a></div>
+				<div class="title f14">我要这天，再遮不住我的眼，要这地，再也埋不了我心 </div>
+				<div class="sub-title f16">　　要这众生，都明白我的意，要那诸佛，都烟硝云散</div>
+				<div class="floating-login">
+					<span class="words">天天畅想</span>
+					<a href="#" class="comment_icon01"></a>
+					<a href="#" class="user_icon01"></a>
+					<a href="#" class="set_icon01"></a>
+				</div>
+			</div>
+			<div class="smooth-notification"><a ui-sref="root.main.allPosts" class="notification">我雷个趣</a></div>
+		</div>
+	</div>
+</div>
+
+<div class="plc_main">
+	<div ui-view></div>
+</div>
+
+<div id="myChatBox" ng-controller="chatController" class="pr">
+	<div class="online_info" id="online_info" style="display:none;">
+		<div class="online_head">
+			<a href="javascript:void(0)" class="online_close" onclick="slideToggle()"></a>			
+		</div>
+		<div class="online_seach"></div>
+		
+		<div class="online_tab">
+			<a href="#"><i></i><span>我的好友</span></a>
+			<a href="#"><i></i><span>在线用户</span></a>
+		</div>
+		<div class="online_list" style="display:block;">
+			<ul class="online_friend">
+				<li ng-repeat="(bid, fri) in myUserInfo.friends" ng-dblClick="startChat(fri);">
+					<div class="webim_list_head webim_head_30">
+						<span class="head_pic">
+							<img class="webim_user_item_img" width="30" height="30" ng-src="{{fri.headPicUrl}}"/>
+						</span>
+					</div>
+					<div class="webim_list_name">
+						<span class="user_name">{{fri.nickName}}</span>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="online_list">
+			<ul class="online_user">
+				<li ng-repeat="(bid, usr) in usrList" ng-dblClick="openRequest(usr);">
+					<span class="fr">{{usr.nickName}}</span>
+					<span class="head_pic">
+						<img class="webim_user_item_img" width="30" height="30" ng-src="{{usr.headPicUrl}}"/>
+					</span>
+				</li>
+			</ul>
+		</div>
+		
+		<div class="online_cate">
+			<ul>
+				<li><a ui-sref="root.chat.history"><i class="cate_icon01"></i><span>私信</span></a></li>
+				<li><a href="javascript:void(0);" ng-click="getOnlineUsers()"><i class="cate_icon02"></i><span>刷新</span></a></li>
+				<li><a href="javascript:void(0);"><i class="cate_icon03"></i><span>节点</span></a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="online" onclick="slideToggle()">
+		<div class="online_count">
+			<div class="online_num">{{myUserInfo.friendCount}}</div>
+		</div>
+	</div>
+
+	<div class="online_sms" id="online_sms" style="display:none;">
+		<div class="wbim_tit2">
+			<div class="wbim_tit2_lf">
+				<p class="tit2_lf_con">
+					<a target="_blank" class="webim_list_head" href="#">
+						<span class="head_pic"><img alt="" ng-src="{{chatFriend.headPicUrl}}"/></span>
+					</a>
+					<span class="chat_name"><a href="#" class="f0a8cd2">{{chatFriend.nickName}}</a></span>
+				</p>
+			</div>
+			<div class="wbim_tit2_rt">
+				<a href="javascript:void(0);" class="rt_icon icon_closeY" title="关闭" onclick="hideChat()"></a>
+			</div>			
+		</div>
+		<div id="myChatBox1" class="wbim_tit3">
+			<div ng-repeat="m in chatSessions[chatFriend.bid].messages track by $index" ng-class="getMsgClass(m.bid, 1)">
+				<div class="msg_bubble_time">{{m.timeStamp | chatTime}}</div>
+				<div class="bubble_cont">
+					<div class="bubble_arrow">
+						<div ng-class="getMsgClass(m.bid, 2)"><i></i><em></em></div>
+					</div>
+					<div class="bubble_main">
+						<div class="cont_sms"><p class="page">{{m.content}}</p></div>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+			
+		<div class="wbim_tit4">
+			<a ui-sref="root.chat.detail({bid:chatFriend.bid})" class="fr" style="line-height:30px; margin-right:20px;color:#808080;">聊天记录</a>
+			<div class="sendbox_menu">
+				<a href="javascript:void(0);" class="icon_face">
+				</a>
+				<a href="javascript:void(0);" class="icon_image">
+				</a>
+				<a href="javascript:void(0);" class="icon_file">
+				</a>
+			</div>
+		</div>
+		<div class="wbim_tit5">
+			<textarea id="textarea" ng-model="txtChat"></textarea>
+		</div>
+		<div class="wbim_tit4 tr pr15 pt5 pb5">
+			<input type="submit" ng-click="sendSMS(chatFriend.bid)" value="发送" class="send_btn W_btn_v" style="margin-top:2px;border-color:#ff9b01;background:#ffa00a;"/>
+		</div>
+	</div>
+</div>
+
+<script type="text/ng-template" id="chatdetail.html">
+		<div class="border_all p10 mb15">
+			<div class="replycontent p10">
+				<textarea ng-model="txtChat" ng-change="txtChanged();" class="input_text" style="width:560px;"></textarea>
+			</div>
+			<div>
+				<div class="wbpm_left fl">
+					插入：
+					<span class="wbpmimgname">
+						<span mor="showimg" style="cursor:pointer;">
+							<span class="wbpm_ico_img"></span>
+							<span style="text-decoration:underline;">141027r....png</span>
+						</span>
+						<a href="javascript:void(0);" ck="rmimg" class="ico_letterdel">x</a>
+					</span>
+				</div>
+				<div class="fr" style="padding:10px 20px 20px 10px; width:205px;">		
+					<span ng-show="C.chCounter<=30" class="S_textb f14 mr10">还可以输入 <em>{{C.chCounter}}</em> 字</span>		
+					<a class="send_btn W_btn_c" href="javascript:void(0);" ng-click="(!C.txtInvalid) && sendSMS(inPageBid)"><span class="btn_30px">发布</span></a>	
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+		<div class="wbpmlist">
+			<div ng-repeat="m in inPageMsgs track by $index" class="wbpmunit border_all mb15 pr">
+				<div class="userPic">
+					<p><a ui-sref="root.personal.allPosts({bid:m.bid})" title=""><img ng-src="{{myUserInfo.friends[m.bid].headPicUrl || myUserInfo.headPicUrl}}" title=""  width="78"></a></p>
+				</div>
+				<div class="wbpmcontent">
+					<p class="mb10"><b>
+<a ui-sref="root.personal.allPost({bid:m.bid})" title="" class="f10a2c7">{{myUserInfo.friends[m.bid].nickName || myUserInfo.nickName}}</a></b></p>
+					<div class="message">{{m.content}}</div>
+					<div class="pubtime">{{m.timeStamp | chatTime}}</div>
+				</div>
+				
+				<div class="clearfix"></div>
+			</div>			
+		</div>
+</script>
+
+<script type="text/ng-template" id="chathistory.html">
+		<div class="border_all mb15">
+			<div class="tab_radious pr">
+				<ul>
+					<li class="t_itm current">
+						<span class="f666">私信</span>
+					</li>
+					<div class="clearfix"></div>
+				</ul>
+				<a href="javascript:;" class="btn-Attention btn_compose">&nbsp;发私信&nbsp;</a>
+			</div>
+		</div>
+		<div ng-repeat="(bid, ui) in myUserInfo.friends" class="wbpmlist">
+			<div ng-show="ui.lastSMS" class="wbpmunit border_all mb15 pr">
+				<div class="userPic">
+					<p><a ui-sref="root.chat.detail({bid:bid})" title=""><img ng-src="{{ui.headPicUrl}}" title=""  width="48"></a></p>
+				</div>
+				<div class="wbpmcontent">
+					<p class="mb10"><b><a ui-sref="root.chat.detail({bid:bid})" title="" class="f10a2c7">{{ui.nickName}}</a></b></p>
+					<div class="message">最后对话: {{ui.lastSMS.content}}</div>
+					<div class="pubtime">{{ui.lastSMS.timeStamp | chatTime}}</div>
+				</div>
+				<div class="wbpmallreaddiv">
+					<a ui-sref="root.chat.detail({bid:bid})" class="btn_reply">回复</a>
+					<a href="javascript:void(0);" ng-click="delChat(ui.bid)">删除</a>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+</script>
+
+<script type="text/ng-template" id="chat.html">
+<div class="waterfall">
+	<div ui-view>chat</div>
+	<ng-include src="'floating.html'"></ng-include>
+</div>
+<ng-include src="'upperSidebar.html'"></ng-include>
+<ng-include src="'lowerSidebar.html'"></ng-include>
+</script>
+
+<script type="text/ng-template" id="friends.html">
+<div class="waterfall">
+		<div class="WB_feed">
+			<ul>
+				<li ng-repeat="(bid, ui) in myUserInfo.friends" class="border_all WB_feed_type pr">
+					<div class="userPic">
+						<p><a ui-sref="root.personal.allPosts({bid:bid})" title=""><img ng-src="{{ui.headPicUrl}}" title=""  width="78"></a></p>
+						
+					</div>
+					<div class="userName">
+						<p class="mb10"><b><a ui-sref="root.personal.allPosts({bid:bid})" title="">{{ui.nickName}}</a></b></p>
+						<p class="mb10 wb_newest_time">最新微博：{{ui.lastPost.timeStamp | chatTime}}</p>
+						<p class="mb10 wb_newest_info">{{ui.lastPost.body}}</p>
+						<p class="user_nums"><span>好友<em class="f2ea0cd">{{ui.friendCount}}</em>人</span></p>
+					</div>
+					<div class="wb_att_box">
+						<div class="foStatus">
+							<span class="followEach"></span><a href="javascript:void(0)" ng-click="delFriend(bid)" class="btn-Attention">取消</a>
+						</div>
+						
+					</div>
+					<div class="clearfix"></div>
+					
+				</li>
+			</ul>
+		</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="main.html">
+<div class="waterfall">
+	<ng-include src="'post.html'"></ng-include>
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm" ui-sref-active="current">
+       		       	<a class="S_txt1" ui-sref="root.main.allPosts">微博</a>
+				</li>
+              	<li class="S_txt3">|</li>
+				<li class="t_itm " ui-sref-active="current">
+					<a ui-sref="root.main.original" class="S_txt1">原创</a>
+				</li>
+				<li class="S_txt3">|</li>
+				<li class="t_itm " ui-sref-active="current">
+					<a ui-sref="root.main.favorite" class="S_txt1">收藏</a>
+				</li>
+				<li class="S_txt3">|</li>
+				<li class="t_itm" ui-sref-active="current">
+					<a ui-sref="root.main.pictureGrid" class="S_txt1">图片</a>
+				</li>
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div ui-view><h1>welcome page</h1></div>
+	<ng-include src="'floating.html'"></ng-include>
+</div>
+<ng-include src="'upperSidebar.html'"></ng-include>
+<ng-include src="'lowerSidebar.html'"></ng-include>
+</script>
+
+<script type="text/ng-template" id="allPics.html">
+<div class="waterfall">
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm current">
+       		       	<span class="f666">全部图片展示</span>
+				</li>
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div id="container">
+		<div ng-repeat="uri in myPicUrls" class="grid">
+			<div class="imgholder"><img class="lazy" ng-src="{{uri}}" width="200" /></div>
+			<div class="actions">
+				<a href="javascript:void(0)"></a>
+			</div>
+		</div>
+	</div>	
+</div>
+</script>
+<script type="text/ng-template" id="personal.html">
+<div class="waterfall">
+	<div class="border_all mb15 p10">
+		<div class="profile_top">
+			<div>
+				<div class="pf_head">
+					<img ng-src="{{currUserInfo.headPicUrl}}" width="148"/>
+				</div>
+				<div class="pf_info">				
+					<div class="pf_name">
+						<span class="name f22">{{currUserInfo.nickName}}</span>
+						<span class="f14">id({{currUserInfo.bid}})</span>
+					</div>
+					<ul class="user_atten f18">
+						<li">
+							<a ui-sref="root.personal.allPosts({bid:currUserInfo.bid})">							
+								<span>微博 </span><strong>{{currUserInfo.weiboCount}}</strong>
+							</a>
+						</li>
+						<li">
+							<a ui-sref="root.personal.friends({bid:currUserInfo.bid})">							
+								<span>好友 </span><strong>{{currUserInfo.friendCount}}</strong>
+							</a>
+						</li>
+						<li">
+							<a ui-sref="root.personal.favorite({bid:currUserInfo.bid})">							
+								<span>收藏 </span><strong>{{currUserInfo.favoriteCount}}</strong>
+							</a>
+						</li>
+						<div class="clearfix"></div>
+					</ul>
+					
+					<div class="pf_do f16">
+						{{currUserInfo.location}} <a href="#" class="f12 f2ea0cd">【更多资料】</a>
+					</div>
+					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="imgModList">
+				<ul>
+					<li ng-repeat="uri in myPicKeys">
+						<a href="#" target="_blank"><img le-src="{{uri}}" authorid="{{currUserInfo.bid}}" alt=""></a>
+					</li>
+					<div class="clearfix"></div>
+				</ul>
+			</div>					
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm" ui-sref-active="current">
+       		       	<a class="S_txt1" ui-sref="root.personal.allPosts({bid:currUserInfo.bid})">微博</a>
+				</li>
+              	<li class="S_txt3">|</li>
+				<li class="t_itm " ui-sref-active="current">
+					<a ui-sref="root.personal.original({bid:currUserInfo.bid})" class="S_txt1">原创</a>
+				</li>
+				<li class="S_txt3">|</li>
+				<li class="t_itm " ui-sref-active="current">
+					<a ui-sref="root.personal.favorite({bid:currUserInfo.bid})" class="S_txt1">收藏</a>
+				</li>
+              	<li class="S_txt3">|</li>
+				<li class="t_itm" ui-sref-active="current">
+					<a ui-sref="root.personal.pictureGrid({bid:currUserInfo.bid})" class="S_txt1">图片</a>
+				</li>
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div ui-view><h1>peresonal page</h1></div>
+	<ng-include src="'floating.html'"></ng-include>
+</div>
+<ng-include src="'lowerSidebar.html'"></ng-include>
+</script>
+<script type="text/ng-template" id="post.html">
+<div ng-controller="postController" class="publisherTop border_all mb15 p10">
+	<div class="send_weibo">
+	<form name="weiboForm" ng-submit="(!P.txtInvalid) && addNewPost()" novalidate>  
+	<div class="title_area">
+		<div class="title fl f16">让信息没有障碍的实时传播！</div>
+		<div ng-show="P.chCounter<=30" class="S_textb fr f14">
+		   还可以输入 <em>{{P.chCounter}}</em> 字
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="input">
+		<textarea ng-model="wbText" ng-change="wbtxtChanged()" class="input_detail" placeholder="趁阳光明媚，趁微风不燥，多去看看外面的世界吧，2014你想去的城市是？">
+		</textarea>
+		<div ng-show="P.showPicUpload" class="layer_send_pic content pb10" style="border-bottom:1px solid #e3e3e1;margin: 0 -10px;padding-left: 10px;">								
+			<ul class="drag_pic_list">
+				<li ng-repeat="url in tmpPicUrls track by $index">
+					<a href="javascript:void(0);" target="_blank"><img ng-src="{{url}}" width="72" alt=""/></a>
+				</li>
+				<li>
+					<div class="drag_pic_more">
+						<div class="drag_pic_more_btn">
+							<img src="data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QN1aHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YzI4ZGRkMWEtM2EwZS0xODRlLWIzM2YtYjdkNDE0ZmI3ZDgzIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjM2M0FFNURENTlCMTExRTQ5QTU3RkRDMjg5QzlEMjM4IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjM2M0FFNURDNTlCMTExRTQ5QTU3RkRDMjg5QzlEMjM4IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgV2luZG93cyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMwQzNGMERFMDI1OUU0MTFCMDVGOUE1NkI2NDg1OTg5IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOmMyOGRkZDFhLTNhMGUtMTg0ZS1iMzNmLWI3ZDQxNGZiN2Q4MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pv/uAA5BZG9iZQBkwAAAAAH/2wCEAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHB8fHx8fHx8fHx8BBwcHDQwNGBAQGBoVERUaHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fH//AABEIAGYAZgMBEQACEQEDEQH/xABvAAEAAwEBAQAAAAAAAAAAAAAAAQMEAgUIAQEAAAAAAAAAAAAAAAAAAAAAEAADAAECAwIKCwAAAAAAAAAAAQIDEQQhMRJRFNEykrLSE3OzVAVBcYGRoSJCY5MkNBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A+mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHOTLixT1ZLmJ5dVNJfiBV3/AGPxOLy58IF0XFyqilUvlSeqf2oCQAAAAAAAAAABXb03e0f7le6sD0OsDzdr4uT22b3tAXAAAAAAAAAOcuScWK8leLEuq07EtQKu8Zvhcv34vTA56s+Tcbd+ovHOO3VVTjTToqf01T5sDd1gYMV58SuHtsla5MlKpePRqrdLnafJgTe8vHFXe2yzEp1Va43olxb4WBpAAAAAAAAo3/8Ah3Psr81gWquADqAdQDqAo39f0dx7K/NYGkAAAAAAACLibiopazSapdqfBgUdw2/bk/ly+kBVlwRhzbd46v8ANbmlWS6TXRT5U2voA0gZdttseXHV5KyOnkyLhkyJaK2lwVJcgLX8v2zWlespPmnlyNP606A0gAAAAAAAAAGXfXEVt7tqYnI+qnwS1ilxYEd/2PxGPy58IHXy9p7fqXFVkyOX2p5KaYGkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//2Q==" width="72" alt=""/>
+						</div>
+						<input onchange="angular.element($('#fileName')).scope().fileSelected(this.files)" type="file" multiple id="fileName" accept="image/*" class="inputstyle"></input>
+					</div>
+				</li>
+				<div class="clearfix"></div>
+			</ul>								
+		</div>
+		<div ng-show="P.sentOK" class="send_succpic">
+			<p class="icon_succB"></p><p class="txt">发布成功</p>
+		</div>
+	</div>
+	<div class="func_area">
+		<div class="func">
+			<span class="btn_30px"><input ng-class="P.submitStyle" type="submit" value="发布" ng-disabled="weiboForm.$invalid"></input></span>
+		</div>
+		<div class="kind_v2">
+			<span class="kind_detail">
+				<a ng-click="selectPics()" title="图片" href="javascript:void(0);" class="btnWeek"><i class="W_ico15 icon_sw_img"></i>图片</a>
+				<a title="长微博" href="javascript:void(0);" id="btnMonth"><i class="W_ico15 icon_sw_chang"></i>长微博</a>
+			</span>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	</form>			
+	</div>
+</div>
+
+<div id="dlgSend" class="from_wrapper" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>长微博</h4>
+	<div class="wb_chang_info p10">
+		<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td width="70" align="right">标题：</td>
+				<td>
+					<input type="text" class="input_text input_text_tit" value="请输入标题，最多30字(选填)" maxlength="30"/>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top" align="right">文字：</td>
+				<td>
+					<div style="height:300px;">
+						<img src="data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QMpaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgV2luZG93cyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpDMzc5NzUxMDU5QjYxMUU0QTZEMUVDOTVBRDgwRDI0RiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpDMzc5NzUxMTU5QjYxMUU0QTZEMUVDOTVBRDgwRDI0RiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMzNzk3NTBFNTlCNjExRTRBNkQxRUM5NUFEODBEMjRGIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkMzNzk3NTBGNTlCNjExRTRBNkQxRUM5NUFEODBEMjRGIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQABgQEBAUEBgUFBgkGBQYJCwgGBggL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" width="487" height="26" />
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="tc p10">		
+		<a class="send_btn W_btn_v" href="javascript:void(0);"><span class="btn_30px">发布</span></a>
+	</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="weiboList.html">
+	<div class="WB_feed">
+		<ul>
+			<li ng-repeat="wb in currentList track by $index" class="border_all WB_feed_type">
+				<div class="userPic">
+					<p><a ui-sref="root.personal.allPosts({bid:wb.authorID})" title="">
+					<img ng-src="{{myUserInfo.friends[wb.authorID].headPicUrl || myUserInfo.headPicUrl}}" width="78"></img></a></p>
+				</div>
+				<div class="userName">
+					<b><a ui-sref="root.personal.allPosts({bid:wb.authorID})" title="">{{wb.author}}: </a></b>
+					<span class="msgCnt">{{wb.body}}</span>
+					
+					<div ng-if="wb.parentID!==null" class="WB_media_expand mt15">
+						<div class="WB_arrow"></div>
+						<div class="WB_info mb5">
+							<a ui-sref="root.personal.allPosts({bid:wb.parentWeibo.authorID})">@{{wb.parentWeibo.author}}</a>
+						</div>
+						<div class="WB_text">
+                			{{wb.parentWeibo.body}}
+						</div>
+						<div class="lotspic_list">
+							<ul>
+								<li ng-repeat="uri in wb.parentWeibo.picUrls track by $index">
+									<a href="javascript:void(0);" ng-click="showFullPic(wb.parentWeibo.authorID, uri)" target="_blank">
+										<img ng-src="{{uri}}" alt=""/></a>
+								</li>
+								<div class="clearfix"></div>
+							</ul>
+						</div>
+					</div>
+
+					<div class="lotspic_list">
+						<ul>
+							<li ng-repeat="uri in wb.picUrls track by $index">
+								<a href="javascript:void(0);" ng-click="showFullPic(uri)">
+									<img ng-src="{{uri}}"></img></a>
+							</li>
+							<div class="clearfix"></div>
+						</ul>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+				<div ng-controller="reviewController" class="msgBox pr">
+                	<span class="time fl">{{wb.timeStamp | timePassed}}</span>
+					<span class="funBox fr">
+						<a href='javascript:void(0);' ng-click='myUserInfo.toggleFavorite(wb)' class='btn-fav'>
+							<i ng-show='wb.isFavorite' class='fav_icon'></i><span ng-hide='wb.isFavorite'>收藏</span>
+						</a><span>|</span>
+						<a href="javascript:void(0);" ng-click="showRelay(wb)" class="btn-relay">转播{{wb.relays.length | bracket}}</a><span>|</span>
+						<a href="javascript:void(0);" ng-click="showReview(wb)" class="btn-comt">评论{{wb.reviews.length | bracket}}</a>
+						<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+						<div class="mFun">
+							<div class="bg">
+								<div class="mFunDrop">							
+									<p><a href="#" class="detail line" target="_blank">关注</a></p>
+									<p><a href="#" class="alarm">删除</a></p>
+								</div>
+							</div>
+						</div>
+												
+					</span>
+					<div class="clearfix"></div>					
+					<le-relay add="relayPost" author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" show-relay="{{wb.wbID===R.relayedWeibo}}">
+					</le-relay>
+
+					<le-review author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" display="{{wb.wbID===R.reviewedWeibo}}">
+						<span class='number cNote'>评论本条微博</span>
+					</le-review>
+					<div class="clearfix"></div>
+					
+				</div>
+			</li>
+		</ul>
+		<pager total-items="totalItems" items-per-page="global.itemsPerPage" ng-model="global.currentPage" ng-change="pageChanged()"></pager>
+	</div>
+</script>
+
+<script type="text/ng-template" id="upperSidebar.html">
+<div ng-controller="sidebarController" class="side">
+<div class="WB_right_module mb10">
+	<div class="p10">
+		<div class="userPic">
+			<p><a ui-sref="root.personal.allPosts({bid:currUserInfo.bid})" title="">
+				<img ng-src="{{currUserInfo.headPicUrl}}" title="" width="78"/></a></p>				
+		</div>
+		<div class="namebox">
+			<p><b><a ui-sref="root.personal.allPosts({bid:currUserInfo.bid})" title="" class="f10a2c7">{{currUserInfo.nickName}}</a></b></p>
+			<p class="f12">用户等级:新手</p>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="m_profile_data">
+		<ul class="list">
+			<li>
+				<a ui-sref="root.personal.allPosts({bid:currUserInfo.bid})"><span class="text_count">{{currUserInfo.weiboCount}}</span><span class="text_atr">广播</span></a>
+			</li>
+			<li>
+				<a ui-sref="root.personal.friends({bid:currUserInfo.bid})"><span class="text_count">{{currUserInfo.friendCount}}</span><span class="text_atr">好友</span></a>
+			</li>
+			<li>
+				<a ui-sref="root.personal.favorite({bid:currUserInfo.bid})"><span class="text_count">{{currUserInfo.favoriteCount}}</span><span class="text_atr">收藏</span></a>
+			</li>
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="lowerSidebar.html">
+<!--used when displaying personal weibo, there is no personal infor on sidebar-->
+<div class="side">
+<div class="WB_right_module mb10">
+	<div class="WB_cardtitle_b">
+		<h4>
+			<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+			<span class="main_title">可能感兴趣的人</span>
+		</h4>
+	</div>
+	<div class="WB_innerwrap">
+		<ul class="person_list">
+			<li>
+				<div class="pic">
+					<a href="#" target="_blank"><img src="data:image/jpeg;base64,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" class="W_face_radius"></a>
+				</div>
+				<div class="con">
+					<p class="name">
+						<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+					</p>
+					<span>
+						<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+					</span>
+					<div class="change">
+						<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+					</div>
+				</div>
+				<div class="WB_right_expand">
+					<p class="S_txt2">24小时热点</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="WB_right_module">
+	<div class="WB_cardtitle_b S_line2">
+		<h4>
+			<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+			<span class="main_title">热门话题</span>
+		</h4>
+	</div>
+	<div class="WB_innerwrap">
+		<ul class="hot_topic">
+			<li>
+				<p>
+					<span class="total S_txt2" title="阅读量">784万</span>
+					<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+				</p>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="clearfix"></div>
+</div>
+</script>
+
+<script type="text/ng-template" id="floating.html">
+<!-- floating stuff  -->
+
+<div ng-controller="accountController" class="from_wrapper" id="user_set" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>账号设置</h4>
+	<div class="account_set">
+		<form name="accountForm" novalidate>
+			<div class="pf_head">
+				<p class="mb10"><img id="myUserIcon" width="148" ng-src="{{myUserInfo.headPicUrl}}"/></p>
+				<p class="tc mb10 pr">					
+					<a href="javascript:void(0);" class="up_file_img"></a>
+					<input onchange="uploadMyIcon()" type="file" id="myUploadIcon" accept="image/*" class="up_file_input"></input>
+					
+				</p>
+				<p class="f12">仅支持jpg、gif、png格式文件小于5M</p>
+			</div>
+			<div class="member_info">
+				<table border="0" cellspacing="0" cellpadding="0" width="360">
+					<tr>
+						<td width="80" align="right"><b>登录名：</b></td>
+						<td width="280">火速死死按</td>
+					</tr>
+					<tr>
+						<td align="right"><b>密码：</b></td>
+						<td>
+							<input type="password" ng-model="myUserInfo.passwd" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>手机号：</b></td>
+						<td>
+							<input type="text" ng-model="myUserInfo.mobile" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>昵称：</b></td>
+						<td>
+							<input type="text" ng-model="myUserInfo.nickName" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>收货地址：</b></td>
+						<td>
+							<input type="text" ng-model="myUserInfo.location" class="input_text" style="width:270px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"></td>
+						<td>
+							<div class="p10">
+								<a ng-click="saveAccount()" class="send_btn W_btn_c" href="javascript:void(0);"><span class="btn_30px">保存</span></a>
+							</div>
+						</td>
+					</tr>
+					
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</form>
+	</div>
+</div>
+</script>
+
+<script type="text/javascript">
+</script>
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>更多图片</title>
+<link href="css/base.css" rel="stylesheet" type="text/css" />
+<link href="css/master.css" rel="stylesheet" type="text/css" />
+<link href="css/addition.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/easydialog.min.js"></script>
+<script type="text/javascript" src="js/jquery.lazyload.min.js"></script>
+<script type="text/javascript" src="js/blocksit.min.js"></script>
+
+<script type="text/javascript"> 
+var isPlusMobileVisible=false; 
+var showTid; 
+var hideTid; 
+function showPlusMobile(id){ 
+	if(isPlusMobileVisible == false) { 
+		showTid = setTimeout("document.getElementById('"+id+"').style.display='block'; isPlusMobileVisible=true;", 0); 
+	}else{ 
+		clearTimeout(hideTid); 
+	} 
+} 
+function hidePlusMobile(id){ 
+	if(isPlusMobileVisible == true) { 
+		hideTid = setTimeout("document.getElementById('"+id+"').style.display='none'; isPlusMobileVisible=false;", 500); 
+	}else { 
+	clearTimeout(showTid); 
+	} 
+} 
+</script>
+</head>
+
+<body>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="head_box">
+			
+			
+			<a id="logo" href="#"></a>
+			<div id="menu_bar">
+				
+				<div class="nav">
+					<a class="nav-link" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');"><i class="nav-icon"></i><span>导航</span></a>
+					
+					<div id="header_main_menu" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');" style="display:none;">
+						<div class="inner">	
+							<ul>
+								<li><a href="#" class="main-link"><i class="weibo_icon"></i><span>微博</span></a></li>
+								<li><a href="#" class="main-link"><i class="videos_icon"></i><span>视频</span></a></li>
+								<li><a href="#" class="main-link"><i class="activities_icon"></i><span>活动</span></a></li>
+								<li><a href="#" class="main-link"><i class="design_icon"></i><span>LEITHER原创</span></a></li>
+								<li><a href="#" class="main-link"><i class="following_icon"></i><span>我的关注</span></a></li>
+							</ul>
+							<div class="up_arrow"></div>							
+						</div>
+					</div>
+					
+				</div>
+				
+				
+				<div class="right-part">
+					<form method="get" action="" class="searching-unit">
+						<input type="text" size="27" name="" value="" class="default_value">						
+						<a href="#" class="go"></a>
+					</form>
+				</div>
+			</div>
+			
+			
+			
+			
+			
+			
+		</div>
+	</div>
+</div>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="unauth_callout">
+			<div class="intro"></div>
+			<div class="login">
+				<a href="#" class="comment_icon"></a>
+				<a href="个人主页.html" class="user_icon"></a>
+				<a href="javascript:void(0)" class="set_icon" id="set_icon"></a>
+				<div class="with-line">天天畅想</div>				
+			</div>
+		</div>
+	</div>
+</div>
+<div class="plc_main">
+	<div class="waterfall">
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm current">
+       		       	<span class="f666">全部图片展示</span>
+				</li>
+              	
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div id="container">
+		<div ng-repeat="uri in imageUrls" class="grid">
+			<div class="imgholder"><img class="lazy" ng-src="{{uri}}" data-original="{{uri}}" width="200" /></div>
+			<div class="actions">
+				<a href="javascript:void(0)"></a>
+			</div>
+		</div>
+	</div>	
+		
+	</div>
+	<div class="side">
+	
+		<div class="WB_right_module mb10">
+			<div class="p10">
+				<div class="userPic">
+					<p><a href="#" title=""><img src="images/141020_img02.jpg" title="" width="78"></a></p>				
+				</div>
+				<div class="namebox">
+					<p><b><a href="#" title="" target="_blank" class="f10a2c7">我是作者名称</a></b></p>
+					<p class="f12">用户等级:新手</p>
+					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="m_profile_data">
+				<ul class="list">
+					<li>
+						<a href="#"><span class="text_count">257</span><span class="text_atr">广播</span></a>
+					</li>
+					<li>
+						<a href="#"><span class="text_count">299</span><span class="text_atr">收听</span></a>
+					</li>
+					<li>
+						<a href="#"><span class="text_count">172</span><span class="text_atr">听众</span></a>
+					</li>
+				</ul>
+				<div class="clearfix"></div>
+			</div>
+			<div class="medal_for_apollo">
+				<ul>
+					<li><a href="提到我的.html"><i class="ico_badge01"></i>提到我的</a></li>
+					<li><a href="私信.html"><i class="ico_badge02"></i>私信</a></li>
+					<li><a href="#"><i class="ico_badge03"></i>收藏</a></li>
+				</ul>
+			</div>
+			<div class="WB_cardtitle_a p10">
+				<a href="#" class="f10a2c7"><img src="images/141020_img07.jpg" width="16" style="vertical-align:middle; margin-right:5px;" />如何获取更多诺币？</a>
+			</div>
+		</div>
+	
+		<div class="WB_right_module mb10">
+			<div class="WB_cardtitle_b">
+				<h4>
+					
+					<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+					<span class="main_title">可能感兴趣的人</span>
+				</h4>
+				
+				
+			</div>
+			
+			<div class="WB_innerwrap">
+				<ul class="person_list">
+					<li>
+						<div class="pic">
+							<a href="#" target="_blank"><img usercard="id=3156646011" src="http://tp4.sinaimg.cn/3156646011/50/40060296204/0" class="W_face_radius"></a>
+						</div>
+						<div class="con">
+							<p class="name">
+								<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+							</p>
+							<span>
+								<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+							</span>
+							<div class="change">
+								<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+							</div>
+						</div>
+						<div class="WB_right_expand">
+							<p class="S_txt2">24小时热点</p>
+						</div>
+					</li>
+					<li>
+						<div class="pic">
+							<a href="#" target="_blank"><img usercard="id=3156646011" src="http://tp4.sinaimg.cn/3156646011/50/40060296204/0" class="W_face_radius"></a>
+						</div>
+						<div class="con">
+							<p class="name">
+								<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+							</p>
+							<span>
+								<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+							</span>
+							<div class="change">
+								<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+							</div>
+						</div>
+						<div class="WB_right_expand">
+							<p class="S_txt2">24小时热点</p>
+						</div>
+					</li>
+					<li>
+						<div class="pic">
+							<a href="#" target="_blank"><img usercard="id=3156646011" src="http://tp4.sinaimg.cn/3156646011/50/40060296204/0" class="W_face_radius"></a>
+						</div>
+						<div class="con">
+							<p class="name">
+								<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+							</p>
+							<span>
+								<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+							</span>
+							<div class="change">
+								<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+							</div>
+						</div>
+						<div class="WB_right_expand">
+							<p class="S_txt2">24小时热点</p>
+						</div>
+					</li>
+				</ul>
+			</div>
+				
+		</div>
+		
+		
+		<div class="WB_right_module">
+			<div class="WB_cardtitle_b S_line2">
+				<h4>
+					<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+					<span class="main_title">热门话题</span>
+				</h4>
+			</div>
+			<div class="WB_innerwrap">
+				<ul class="hot_topic">
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+					<li>
+						<p>
+							<span class="total S_txt2" title="阅读量">784万</span>
+							<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+						</p>
+					</li>
+				</ul>
+			</div>
+			
+		</div>
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+<div class="from_wrapper" id="user_set" style="display:none;">
+	<h4><a href="javascript:void(0);" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>账号设置</h4>
+	<div class="account_set">
+			<div class="pf_head">
+				<p class="mb10"><img width="148" height="148" src="images/141020_img02.jpg"></p>
+				<p class="tc mb10"><a href="#" class="up_file_img"></a></p>
+				<p class="f12">仅支持jpg、gif、png格式文件小于5M</p>
+			</div>
+			<div class="member_info">
+				<table border="0" cellspacing="0" cellpadding="0" width="360">
+					<tr>
+						<td width="80" align="right"><b>登录名：</b></td>
+						<td width="280">火速死死按</td>
+						
+					</tr>
+					<tr>
+						<td align="right"><b>密码：</b></td>
+						<td>
+							<input name="" type="password" value="1589224***40" class="input_text" style="width:150px" />
+						</td>
+						
+					</tr>
+					<tr>
+						<td align="right"><b>手机号：</b></td>
+						<td>
+							<input name="" type="text" value="1589224***40" class="input_text" style="width:150px" />
+						</td>
+						
+					</tr>
+					<tr>
+						<td align="right"><b>昵称：</b></td>
+						<td>
+							<input name="" type="text" value="天天畅想" class="input_text" style="width:150px" />
+						</td>
+						
+					</tr>
+					<tr>
+						<td align="right"><b>收货地址：</b></td>
+						<td>
+							<input name="" type="text" value="收货地址" class="input_text" style="width:270px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"></td>
+						<td>
+							<div class="p10">
+								<a class="send_btn W_btn_c" href="javascript:void(0);"><span class="btn_30px">保存</span></a>
+							</div>
+						</td>
+					</tr>
+					
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+</div>
+
+<script type="text/javascript">
+
+$("#set_icon").click(function(){easyDialog.open({
+		container : 'user_set',
+		fixed : false,
+		drag : true,
+		overlay : true
+	});
+});
+
+$(function(){
+	$("img.lazy").lazyload({		
+		load:function(){
+			$('#container').BlocksIt({
+				numOfCol:3
+				
+			});
+		}
+	});	
+	$(window).scroll(function(){
+			// 当滚动到最底部以上50像素时， 加载新内容
+		if ($(document).height() - $(this).scrollTop() - $(this).height()<50){
+			$('#container').append($("#test").html());		
+			$('#container').BlocksIt({
+				numOfCol:3
+			});
+			$("img.lazy").lazyload();
+		}
+	});
+	
+	//window resize
+	var currentWidth = 630;
+	$(window).resize(function() {
+		var winWidth = $(window).width();
+		var conWidth;
+		if(winWidth < 630) {
+			conWidth = 420;
+			col = 2
+		}  else {
+			conWidth = 630;
+			col = 3;
+		}
+		
+		if(conWidth != currentWidth) {
+			currentWidth = conWidth;
+			$('#container').width(conWidth);
+			$('#container').BlocksIt({
+				numOfCol: col
+			});
+		}
+	});
+});
+</script>
+</body>
+</html>

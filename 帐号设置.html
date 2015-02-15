@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>帐号设置</title>
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/angular-cookies.js"></script>
+<script type="text/javascript" src="js/hprose-html5.js"></script>
+<script src="app/GlobalDataStruct.js"></script>
+<script src="app/module.js"></script>
+<script src="app/postSubmit.js"></script>
+<script src="app/account.js"></script>
+
+<link href="css/base.css" rel="stylesheet" type="text/css" />
+<link href="css/master.css" rel="stylesheet" type="text/css" />
+<link href="css/addition.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript"> 
+var isPlusMobileVisible=false; 
+var showTid; 
+var hideTid; 
+function showPlusMobile(id){ 
+	if(isPlusMobileVisible == false) { 
+		showTid = setTimeout("document.getElementById('"+id+"').style.display='block'; isPlusMobileVisible=true;", 0); 
+	}else{ 
+		clearTimeout(hideTid); 
+	} 
+} 
+function hidePlusMobile(id){ 
+	if(isPlusMobileVisible == true) { 
+		hideTid = setTimeout("document.getElementById('"+id+"').style.display='none'; isPlusMobileVisible=false;", 500); 
+	}else { 
+	clearTimeout(showTid); 
+	} 
+} 
+</script>
+</head>
+
+<body ng-app="postModule" ng-controller="accountController">
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="head_box">
+			
+			
+			<a id="logo" href="#"></a>
+			<div id="menu_bar">
+				
+				<div class="nav">
+					<a class="nav-link" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');"><i class="nav-icon"></i><span>导航</span></a>
+					
+					<div id="header_main_menu" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');" style="display:none;">
+						<div class="inner">	
+							<ul>
+								<li><a href="#" class="main-link"><i class="weibo_icon"></i><span>微博</span></a></li>
+								<li><a href="#" class="main-link"><i class="videos_icon"></i><span>视频</span></a></li>
+								<li><a href="#" class="main-link"><i class="activities_icon"></i><span>活动</span></a></li>
+								<li><a href="#" class="main-link"><i class="design_icon"></i><span>LEITHER原创</span></a></li>
+								<li><a href="#" class="main-link"><i class="following_icon"></i><span>我的关注</span></a></li>
+							</ul>
+							<div class="up_arrow"></div>							
+						</div>
+					</div>
+					
+				</div>
+				
+				
+				<div class="right-part">
+					<form method="get" action="" class="searching-unit">
+						<input type="text" size="27" name="" value="" class="default_value">						
+						<a href="#" class="go"></a>
+					</form>
+				</div>
+			</div>
+			
+			
+			
+			
+			
+			
+		</div>
+	</div>
+</div>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="unauth_callout">
+			<div class="intro"></div>
+			<div class="login">
+				<a href="#" class="comment_icon"></a>
+				<a href="#" class="user_icon"></a>
+				<a href="#" class="set_icon"></a>
+				<div class="with-line">天天畅想</div>				
+			</div>
+		</div>
+	</div>
+</div>
+<div class="waterfall">
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm current">
+       		       	<span class="f666">帐号设置</span>
+				</li>
+              	
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div class="border_all">
+		<div class="account_set">
+			<div class="pf_head">
+				<p class="mb10"><img width="148" height="148" src="images/141020_img02.jpg"></p>
+				<p class="tc mb10"><a href="#" class="up_file_img"></a></p>
+				<p>仅支持jpg、gif、png格式文件小于5M</p>
+			</div>
+			<div class="member_info">
+				<table border="0" cellspacing="0" cellpadding="0" width="430">
+					<tr>
+						<td width="70" align="right"><b>登录名：</b></td>
+						<td width="300">{{bid}}</td>
+						<td width="60" align="right"><a href="#" class="f10a2c7">修改密码</a></td>
+					</tr>
+					<tr>
+						<td align="right"><b>手机号：</b></td>
+						<td>{{mobile}}</td>
+						<td align="right"><a href="#" class="f10a2c7">编辑</a></td>
+					</tr>
+					<tr>
+						<td align="right"><b>昵称：</b></td>
+						<td>{{nickName}}</td>
+						<td align="right"><a href="#" class="f10a2c7">编辑</a></td>
+					</tr>
+					<tr>
+						<td align="right"><b>地域：</b></td>
+						<td>{{location}}</td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
