@@ -143,7 +143,7 @@
 			var ui = new UserInfo();
 			ui.get(bid).then(function(readOK) {
 				if (readOK) {
-					//console.log(ui);
+					console.log(ui);
 					ht[bid] = ui;
 					$scope.$apply();
 				};

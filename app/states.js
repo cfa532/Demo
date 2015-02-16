@@ -50,6 +50,8 @@
 								//get my head pic
 								deferredStart.resolve(123);
 							};
+						}, function(reason) {
+							console.log(reason);
 						});
 					});
 					return deferredStart.promise;
@@ -136,21 +138,39 @@
 		.state("root.chat.detail", {
 			url : "/detail/{bid}",
 			templateUrl : "chatdetail.html",
-			controller : function($scope, $stateParams, msgService, SMSService) {
-				//var bid = $stateParams.bid;
-				//register this scope with SMSservice
-				$scope.inPageCS;
-				$scope.inPageBid = $stateParams.bid;
+			resolve : {
+				initUI : function(logon, $q, $stateParams, $rootScope) {
+					var df = $q.defer();
+					if ($rootScope.myUserInfo.friends[$stateParams.bid]) {
+						df.resolve($rootScope.myUserInfo.friends[$stateParams.bid]);
+					} else {
+						var ui = new UserInfo();
+						ui.get($stateParams.bid).then(function(readOK) {
+							if (readOK) {
+								df.resolve(ui);
+							};
+						}, function(reason) {
+							df.reject(reason);
+						});
+					};
+					return df.promise;
+				},
+			},
+			controller : function(initUI, $scope, $rootScope, $stateParams, msgService, SMSService) {
+				$rootScope.currUserInfo = initUI;
+				console.log(initUI);
+				$scope.inPageBid = $stateParams.bid;	//bid of user I am talking to
 				$scope.inPageMsgs = [];
 				$scope.C = {
 						sentOK			: false,
 						txtInvalid		: true,
 						chCounter		: G_VARS.MaxWeiboLength,
-					};
+				};
 				
 				//called by processMsg when a new msg is received
 				var sort = function(bid) {
-					if (bid !== $stateParams.bid) return;	//a new msg from bid come in, ingore it
+					if (bid !== $stateParams.bid) return;	//a new msg other bid come in, ingore it
+					
 					$scope.inPageMsgs.length = 0;
 					for (var i=0; i<$scope.chatSessions[bid].messages.length; i++) {
 						$scope.inPageMsgs.push($scope.chatSessions[bid].messages[i]);
@@ -204,7 +224,7 @@
 				var getChatHistory = function(bid) {
 					$scope.inPageMsgs.length = 0;
 					if ($scope.chatSessions[bid]) {
-						//a chat with the friend is going on. resort the msgs for in page display
+						//a chat with a friend is going on. resort the msgs for in page display
 						for (var i=0; i<$scope.chatSessions[bid].messages.length; i++) {
 							$scope.inPageMsgs.push($scope.chatSessions[bid].messages[i]);
 						};
@@ -309,33 +329,45 @@
 			abstract : true,
 			url : "/personal/{bid}",
 			templateUrl : "personal.html",
-			controller : function(logon, $scope, $rootScope, $stateParams) {
-				console.log("in personal state, bid="+$stateParams.bid+" logon="+logon);				
-				if (!$stateParams.bid || $stateParams.bid===G_VARS.bid) {
-					//console.log("look at me")
-					$rootScope.currUserInfo = $scope.myUserInfo;
-				}
-				else {
-					if ($scope.myUserInfo.friends[$stateParams.bid]) {
-						$rootScope.currUserInfo = $scope.myUserInfo.friends[$stateParams.bid];
-					} else {
-						var ui = new UserInfo();
-						ui.get($stateParams.bid).then(function(readOK) {
-							if (readOK) {
-								console.log(ui);
-								$rootScope.currUserInfo = ui;
-								$scope.myUserInfo.friends[$stateParams.bid] = ui;
-							};
-						});
+			resolve : {
+				initUI : function(logon, $q, $stateParams, $rootScope) {
+					var df = $q.defer();
+					if (!$stateParams.bid || $stateParams.bid===G_VARS.bid) {
+						//console.log("look at me")
+						$rootScope.currUserInfo = $rootScope.myUserInfo;
+						df.resolve();
+					}
+					else {
+						if ($rootScope.myUserInfo.friends[$stateParams.bid]) {
+							$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
+							df.resolve();
+						} else {
+							var ui = new UserInfo();
+							ui.get($stateParams.bid).then(function(readOK) {
+								if (readOK) {
+									console.log(ui);
+									$rootScope.currUserInfo = ui;
+									$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
+									df.resolve();
+								};
+							}, function(reason) {
+								console.log(reason);
+								df.reject(reason);
+							});
+						};
 					};
-				};
+					return df.promise;
+				},
+			},
+			controller : function(initUI, $scope, $rootScope, $stateParams) {
+				console.log("in personal state ctrl, bid="+$stateParams.bid);			
 			}
 		})
 		.state("root.personal.friends", {
 			url : "/friends",
 			templateUrl : "friends.html",
 			controller : function(logon, $scope) {				
-				//console.log($scope.myUserInfo.friends)
+				console.log("in personal.friends ctrl, logon=" + logon);			
 				if ($scope.myUserInfo.bid === $scope.currUserInfo.bid) {
 					//only show my friends list for now
 					for (var i=0; i<$scope.myUserInfo.b.friends.length; i++) {
@@ -394,9 +426,6 @@
 		console.log("in weibo controller")
 		var q = angular.injector(['ng']).get('$q');
 		
-		//starting from today, read each day's weibo backward. Until we have enough posts for on screen display
-		var wbDay = parseInt(new Date().getTime()/86400000);
-		
 		$scope.pageChanged = function() {
 			if ($state.is("root.main.allPosts")) {
 				//everytime the controller is loaded, refresh all the weibo list
@@ -422,20 +451,21 @@
 		// if original is true, get only the original ones.
 		//try to read all the weibos from the last 5 days
 		var getAllPosts = function(currentDay, original) {
-			//console.log("in getAllPosts(), page num=" +$scope.global.currentPage);
+			console.log("in getAllPosts(), page num=" +$scope.global.currentPage+" current day="+currentDay);
 			$scope.totalItems = $scope.global.currentPage * $scope.global.itemsPerPage + 1;
 			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
-			if ($scope.weiboList.length < $scope.global.currentPage * $scope.global.itemsPerPage) {
+
+			if (wbListLen < $scope.global.currentPage * $scope.global.itemsPerPage) {
 				getPostPerDay(currentDay, original);
 				if (wbDay-currentDay > 5) {
-					wbDay = currentDay;	//remember the last day from which post is read
+					wbDay = currentDay-1;	//remember the last day from which post is read
 					console.log("get out of loop, " + currentDay)
 					return;
 				} else {
 					currentDay--;
 					setTimeout(function() {
 						getAllPosts(currentDay, original);
-					}, 2000);		//if no enough items, read for me every 2 seconds
+					}, 1000);		//if no enough items, read more for me every 1 second
 				};
 			} else {
 				//remember the last date of weibo read and exit
@@ -447,7 +477,8 @@
 			//read all posts into a list, including self
 			//read my own weibo
 			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Posts, day, function(keys) {
-				if (angular.isDefined(keys[1]) && keys[1]!==null) {
+				if (keys[1]) {
+					wbListLen += keys[1].length;
 					//make sure there is weibo in the list
 					for(var j=0; j<keys[1].length; j++) {
 						getWeibo(G_VARS.bid, keys[1][j], original);
@@ -474,7 +505,8 @@
 						//also get the head pic of this user
 						$scope.myUserInfo.friends[bid] = ui;
 						G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, day, function(keys) {
-							if (angular.isDefined(keys[1]) && keys[1]!==null) {
+							if (keys[1]) {
+								wbListLen += keys[1].length;
 								//make sure there is weibo in the list
 								for(var j=0; j<keys[1].length; j++) {
 									getWeibo(bid, keys[1][j], original);
@@ -487,7 +519,8 @@
 				});
 			} else {
 				G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, day, function(keys) {
-					if (angular.isDefined(keys[1]) && keys[1]!==null) {
+					if (keys[1]) {
+						wbListLen += keys[1].length;
 						//make sure there is weibo in the list
 						for(var j=0; j<keys[1].length; j++) {
 							getWeibo(bid, keys[1][j], original);
@@ -518,38 +551,30 @@
 		var getWeiboOfDay = function(bid, days, i, original) {
 			if (i >= days.length) return;
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, days[i], function(keys) {
-				//wbCount += keys.length;
-				if ($scope.weiboList.length > $scope.global.currentPage*$scope.global.itemsPerPage) {
+				//console.log(keys[1]);
+				for (var j=0; j<keys[1].length; j++) {
+					getWeibo(bid, keys[1][j], original);
+				};
+				wbListLen += keys[1].length;
+				if (wbListLen > $scope.global.currentPage*$scope.global.itemsPerPage) {
 					iDay = i+1;
+					console.log("iDay="+iDay)
 					return;
 				} else {
-					getWeiboList(bid, days[i], original);
 					getWeiboOfDay(bid, days, i+1, original);
 				};
 			});
 		};
 		
-		var iDay = 0;		//index of the most recent day
 		//read all the post of a certain friend
 		var getPosts = function(bid, iDay, original) {
-			console.log("in getPosts(), pagenum=" +$scope.global.currentPage);
+			console.log("in getPosts(), pagenum=" +$scope.global.currentPage+" iDay="+iDay);
 			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
-			if (bid === G_VARS.bid)
-				$scope.totalItems = $scope.myUserInfo.weiboCount;
-			else {
-				if (angular.isUndefined($scope.myUserInfo.friends[bid]) || $scope.myUserInfo.friends[bid]===null) {
-					var ui = new UserInfo();
-					ui.get(bid).then(function(readOK) {
-						$scope.myUserInfo.friends[bid] = ui;
-						$scope.totalItems = $scope.myUserInfo.friends[bid].weiboCount;
-					}, function(reason) {
-						console.log(reason);
-					});
-				} else {
-					$scope.totalItems = $scope.myUserInfo.friends[bid].weiboCount;
-				};
-			};
+			$scope.totalItems = $scope.currUserInfo.weiboCount;
 			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.Posts, function(days) {
+				//get list of date on which there are posts
+				days.sort(function(a,b) {return b-a});
+				//console.log(days);
 				if (iDay < days.length)
 					getWeiboOfDay(bid, days, iDay, original);
 			}, function(name, err) {
@@ -586,73 +611,39 @@
 		};
 		
 		//state switch
+		var iDay = 0;			//index of the most recent day, used by getPosts() to read single user's posts
+		var wbListLen = 0;		//length of weibo list
+		//starting from today, read each day's weibo backward. Until we have enough posts for on screen display
+		var wbDay = parseInt(new Date().getTime()/86400000);
+		$scope.weiboList.length = 0;
+		$scope.currentList.length = 0;
+		$scope.global.currentPage = 1;
+				
 		if ($state.is("root.main.allPosts")) {
 			//everytime the controller is loaded, refresh all the weibo list
 			console.log("state is main.allPosts");
-			$scope.weiboList.length = 0;
-			$scope.currentList.length = 0;
-			$scope.global.currentPage = 1;
 			getAllPosts(wbDay, false);
 		}
 		else if ($state.is("root.main.original")) {
 			console.log("state is main.original");
-			$scope.weiboList.length = 0;
-			$scope.currentList.length = 0;
-			$scope.global.currentPage = 1;
 			getAllPosts(wbDay, true);
 		}
 		else if ($state.is("root.main.favorite")) {
 			console.log("state is favorite");
-			$scope.weiboList.length = 0;
-			$scope.currentList.length = 0;
-			$scope.global.currentPage = 1;
 			showFavorites(G_VARS.bid);
 		}
 		else if ($state.is("root.personal.allPosts")) {
 			console.log("state is personal.allposts");
-			$scope.weiboList.length = 0;
-			$scope.currentList.length = 0;
-			$scope.global.currentPage = 1;
 			getPosts($stateParams.bid, iDay, false);
 		}
 		else if ($state.is("root.personal.original")) {
 			console.log("state is personal.original");
-			$scope.weiboList.length = 0;
-			$scope.currentList.length = 0;
-			$scope.global.currentPage = 1;
 			getPosts($stateParams.bid, iDay, true);
 		}
 		else if ($state.is("root.personal.favorite")) {
 			console.log("state is favorite");
-			$scope.weiboList.length = 0;
-			$scope.currentList.length = 0;
-			$scope.global.currentPage = 1;
 			showFavorites($stateParams.bid);
 		};
-	
-		$(function(){
-			$(".btn-relay").click(function(){
-				if($(this).parent().parent().find("#relay-box").is(":visible")==false){
-					$(".zfWrap").hide(); 
-					$(this).parent().parent().find("#relay-box").show(200);
-				}
-				else{
-					$(this).parent().parent().find("#relay-box").hide(200);	
-				}		
-			});	
-			$(".btn-comt").click(function(){
-				if($(this).parent().parent().find(".comt-box").is(":visible")==false){
-					$(".zfWrap").hide(); 
-					$(this).parent().parent().find(".comt-box").show(200);
-					showReview(wb); 
-				}
-				else{
-					 
-					$(this).parent().parent().find(".comt-box").hide(200);
-				}
-				return false;
-			});
-		});
 	}])
 	.filter("chatTime", function() {
 		return function(ts) {

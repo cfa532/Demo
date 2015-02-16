@@ -5,6 +5,77 @@
 	.controller("sidebarController", ["$stateParams", "$scope", "$rootScope", "$location", function($stateParams, $scope, $rootScope, $location) {
 		console.log("in sidebar controller");
 	}])
+	.controller("pictureController", ["$state", "$stateParams", "$scope", function($state, $stateParams, $scope) {
+		console.log("in picture controller");
+		
+		//pic keys are saved in G_VARS.PostPics, indexed by weibo date
+		//for now, read all pics into the following list without pagination.
+		$scope.myPicUrls = [];
+		
+		function onlyUnique(value, index, self) { 
+		    return self.indexOf(value) === index;
+		};
+		
+		var getPicsOfDay = function(day, bid) {
+			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.PostPics, day, function(keys) {
+				if (keys[1]) {
+					console.log(keys[1]);
+					for (var i=0; i<keys[1].length; i++) {
+						G_VARS.httpClient.get(G_VARS.sid, bid, keys[1][i], function(data) {
+							if (data[1]) {
+								var r = new FileReader();
+								r.onloadend = function(e) {
+									$scope.myPicUrls.push(e.target.result);
+									$scope.$apply();
+									//console.log(e.target.result)
+								};
+								r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+							};
+						}, function(name, err) {
+							console.log(err);
+						});
+					};
+				};
+			}, function(name, err) {
+				console.log(err);
+			});
+		};
+		
+		//get all the pics of a user. Pic keys are saved in a global list
+		function getUserPics(bid) {
+			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.PostPics, function(wbDays) {
+				//console.log(wbDays);
+				if (wbDays.length>0) {
+					wbDays.sort(function(a,b) {return b-a;});
+					for (var i=0; i<wbDays.length; i++) {
+						getPicsOfDay(wbDays[i], bid);
+					};
+				};
+			}, function(name, err) {
+				console.log("pic controller err= " + err);
+			});
+		};
+		
+		$scope.showFullPic = function(src) {
+			window.open(src, "_blank");
+		};
+
+		function getAllPics() {
+			//read all posts into a list, including self
+			getUserPics(G_VARS.bid);
+			for(var i=0; i< $scope.myUserInfo.b.friends.length; i++) {
+				getUserPics($scope.myUserInfo.b.friends[i].bid);
+			};
+		};
+		
+		if ($state.is("root.main.pictureGrid")) {
+			console.log("in main picture state");
+			getAllPics();
+		} else if ($state.is("root.personal.pictureGrid")) {
+			console.log("in personal picture state");
+			getUserPics($stateParams.bid);
+		};
+	}])
 	.controller("postController", ["$scope", "$rootScope", "$state", function($scope, $rootScope, $state) {
 		//publish new post
 		console.log("In Post controller")
@@ -75,7 +146,7 @@
 					$scope.global.currentPage = 1;
 					$scope.$apply();
 					
-					//save pictures key in a global list
+					//save pictures key in a global list. The same pic will generate the saem Key
 					if (wb.pictures.length > 0) {
 						var day = parseInt(new Date().getTime()/86400000);
 						G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, function(keys) {
@@ -172,7 +243,7 @@
 				r.readAsDataURL(files[i], {type: 'image/png'});
 			};
 		};
-		
+
 		document.getElementById('btnMonth').onclick = function(){
 			easyDialog.open({
 				container : 'dlgSend',
@@ -180,68 +251,6 @@
 				drag : true,
 				overlay : true
 			});
-		};
-	}])
-	.controller("pictureController", ["$state", "$stateParams", "$scope", function($state, $stateParams, $scope) {
-		console.log("in picture controller");
-		$scope.myPicUrls = [];
-		
-		function onlyUnique(value, index, self) { 
-		    return self.indexOf(value) === index;
-		};
-		
-		var getPicsOfDay = function(day, bid) {
-			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.PostPics, day, function(keys) {
-				if (keys[1]) {
-					console.log(keys[1])
-					for (var i=0; i<keys[1].length; i++) {
-						G_VARS.httpClient.get(G_VARS.sid, bid, keys[1][i], function(data) {
-							if (data[1]) {
-								var r = new FileReader();
-								r.onloadend = function(e) {
-									$scope.myPicUrls.push(e.target.result);
-									$scope.$apply();
-									//console.log(e.target.result)
-								};
-								r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
-							};
-						}, function(name, err) {
-							console.log(err);
-						});
-					};
-				};
-			}, function(name, err) {
-				console.log(err);
-			});
-		};
-		
-		//get all the pics in MY weibo
-		function getUserPics(bid) {
-			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.PostPics, function(wbDays) {
-				//console.log(wbDays);
-				if (wbDays.length>0) {
-					wbDays.sort(function(a,b) {return b-a;});
-					for (var i=0; i<wbDays.length; i++) {
-						getPicsOfDay(wbDays[i], bid);
-					};
-				};
-			}, function(name, err) {
-				console.log("pic controller err= " + err);
-			});
-		};
-		
-		function getAllPics() {
-			//read all posts into a list, including self
-			getUserPics(G_VARS.bid);
-			for(var i=0; i< $scope.myUserInfo.b.friends.length; i++) {
-				getUserPics($scope.myUserInfo.b.friends[i].bid);
-			};
-		};
-		
-		if ($state.is("root.main.pictureGrid")) {
-			getAllPics();
-		} else if ($state.is("root.personal.pictureGrid")) {
-			getUserPics($stateParams.bid);
 		};
 	}])
 })();

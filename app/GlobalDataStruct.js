@@ -98,16 +98,24 @@ function UserInfo() {
 						//only read login user's weibo count
 						self.getFavoriteCount().then(function(count) {
 							self.favoriteCount = count;
+							
+							if (self.favoriteCount !== self.b.favoriteCount) {
+								//update
+								self.set();
+							};
 						}, function(err) {
 							console.log(err);
 						});
 						self.getWeiboCount().then(function(count) {
 							self.weiboCount = count;
+							if (self.weiboCount !== self.b.weiboCount) {
+								self.set();
+							};
 						}, function(err) {
 							console.log(err);
 						});
 						//get deep copy of each friend
-						self.getFriends();
+						//self.getFriends();
 					} else {
 						//reading someone else's UI, read a shallow copy
 						//self.friends = self.b.friends;
@@ -155,6 +163,7 @@ function UserInfo() {
 		f.get(bid).then(function(readOK) {
 			if (readOK) {
 				ht[bid] = f;	//get a full copy of UI obj of the friend
+				console.log(f);
 				if (scope) scope.$apply();
 			};
 		}, function(reason) {

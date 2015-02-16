@@ -79,6 +79,30 @@ $("#set_icon").click(function(){
 });
 
 $(function(){
+	$(".btn-relay").click(function(){
+		if($(this).parent().parent().find("#relay-box").is(":visible")==false){
+			$(".zfWrap").hide(); 
+			$(this).parent().parent().find("#relay-box").show(200);
+		}
+		else{
+			$(this).parent().parent().find("#relay-box").hide(200);	
+		}		
+	});	
+	$(".btn-comt").click(function(){
+		if($(this).parent().parent().find(".comt-box").is(":visible")==false){
+			$(".zfWrap").hide(); 
+			$(this).parent().parent().find(".comt-box").show(200);
+			showReview(wb); 
+		}
+		else{
+			 
+			$(this).parent().parent().find(".comt-box").hide(200);
+		}
+		return false;
+	});
+});
+
+$(function(){
 	$(".btnWeek").click(function(){
 		$(".W_layer").hide(); 
 		$(".funBox .mFun").hide(); 
