@@ -11,7 +11,7 @@
 <script type="text/javascript"> 
 var G_VARS = {
 		bidPath : window.location.pathname+"/appID/userID/",
-//		IPList :["97.74.126.127:4800"],
+//		IPList :["218.74.25.10:8100"],
 		IPList :["112.124.113.235:30003"],
 		IPNum : 0,
 		sid : '0f24d8d2956508cc571e67da23ee75ae47c1879c',
@@ -31,17 +31,17 @@ var G_VARS = {
 			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
 			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
 			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
-			GlobalDataStruct : 'T60a0ufKj31dpzSHOh_q2mmRlc_KFwAJp0dMUlNAH-8',
+			GlobalDataStruct : '8oa7mGZ5qHN2XARhIYxKFKBrrz_CtLv3IaYAIU02ZNc',
 			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
 			uiBootstrapTpls : 'Q787mpszKswRAkLWSIqNbXL428EpCpXrUdTFe6gePZc',
-			main : '_4cMMIZ4oXQXAZmTrpFFfEvxEBzRZwpNLPm73QrtvJY'
+			main : '5w3k5ZTrhKnO2QPEJsfl_F1NkhhO7_j64uD0D4LcHwc'
 		},
 		js : {		//js code that can be loaded with a script tag, has to load after app declaration
 			account : 'DPVN3z5gIMRjO30WD30EdndkxWLCzimMKdSElH8CW-4',
 			message : 'Gcyod1PvoK-IW4SuAGott3puV1zRpSfRRYRMiRQyMzM',
 			sms : 'g5lBNsIljD80fS3IQs9FXN5-2Wi7KPMsXVrkOUdBk2s',
-			state : '7rcAke1541_4N2pw2KlGPSXO99i5Er3QIAR4-G-8nTI',
-			root : 'zOFNpKdNfL7Rmy8aSqyEE8kLDuL3XiH4kfcHm7YDIP0',
+			state : 'oTEtsoN-cIew4P0bTdVAtVZ3IxJxtfK2297hgDohCf4',
+			root : '7AthPOY1yIXRN91NNAuwiTgH-eikrnXrpnby7zdG4_w',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'Gs09kv-eoprBmm4atHDOGkcmJCQcgSZ-zjLN2wWSf_g'
 		},
@@ -623,10 +623,11 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		</div>
 	</div>
 	<div id="container">
-		<div ng-repeat="uri in myPicUrls" class="grid">
-			<div class="imgholder"><img class="lazy" ng-src="{{uri}}" width="200" /></div>
+		<div ng-repeat="uri in myPicUrls track by $index" class="grid">
+			<div class="imgholder" ng-click="showFullPic(uri)"><img class="lazy" ng-src="{{uri}}" width="200" height="200"/></div>
 			<div class="actions">
-				<a href="javascript:void(0)"></a>
+				<a href="javascript:void(0)">
+				</a>
 			</div>
 		</div>
 	</div>	
@@ -808,7 +809,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 						<div class="lotspic_list">
 							<ul>
 								<li ng-repeat="uri in wb.parentWeibo.picUrls track by $index">
-									<a href="javascript:void(0);" ng-click="showFullPic(wb.parentWeibo.authorID, uri)" target="_blank">
+									<a href="javascript:void(0);" ng-click="showFullPic(uri)" target="_blank">
 										<img ng-src="{{uri}}" alt=""/></a>
 								</li>
 								<div class="clearfix"></div>
@@ -835,12 +836,12 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 						</a><span>|</span>
 						<a href="javascript:void(0);" ng-click="showRelay(wb)" class="btn-relay">转播{{wb.relays.length | bracket}}</a><span>|</span>
 						<a href="javascript:void(0);" ng-click="showReview(wb)" class="btn-comt">评论{{wb.reviews.length | bracket}}</a>
-						<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
+						<a href="javascript:void(0);" class="feed_opt"><i class="btn_ldrop"></i></a>
 						<div class="mFun">
 							<div class="bg">
 								<div class="mFunDrop">							
-									<p><a href="#" class="detail line" target="_blank">关注</a></p>
-									<p><a href="#" class="alarm">删除</a></p>
+									<p><a href="javascript:void(0);" class="detail line">关注</a></p>
+									<p><a href="javascript:void(0);" class="alarm">删除</a></p>
 								</div>
 							</div>
 						</div>

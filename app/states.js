@@ -85,9 +85,9 @@
 		.state("root.chat.history", {
 			url : "/history",
 			templateUrl : "chathistory.html",
-			controller : function($scope) {
+			controller : function($scope, $rootScope) {
 				console.log("in chat history controller");
-				console.log($scope.myUserInfo.b)
+				$rootScope.currUserInfo = $scope.myUserInfo;
 
 				var getLastSMS = function(bid) {
 					if ($scope.myUserInfo.friends[bid]) {
@@ -157,6 +157,7 @@
 				},
 			},
 			controller : function(initUI, $scope, $rootScope, $stateParams, msgService, SMSService) {
+				//set current UI to the user I am chatting to
 				$rootScope.currUserInfo = initUI;
 				console.log(initUI);
 				$scope.inPageBid = $stateParams.bid;	//bid of user I am talking to
