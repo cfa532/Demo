@@ -130,6 +130,7 @@
 						});
 					};
 				};
+				
 				for (var i=0; i<$scope.myUserInfo.b.friends.length; i++) {
 					getLastSMS($scope.myUserInfo.b.friends[i].bid);
 				};
@@ -360,8 +361,14 @@
 					return df.promise;
 				},
 			},
-			controller : function(initUI, $scope, $rootScope, $stateParams) {
-				console.log("in personal state ctrl, bid="+$stateParams.bid);			
+			controller : function(initUI, $scope, $stateParams) {
+				console.log("in personal state ctrl, bid="+$stateParams.bid);
+				//get a list of pics by this user
+				$scope.currUserInfo.getPictures($scope).then(function(pics) {
+					$scope.myPicKeys = pics;
+				}, function(reason) {
+					console.log(reason);
+				});
 			}
 		})
 		.state("root.personal.friends", {
@@ -452,13 +459,20 @@
 		// if original is true, get only the original ones.
 		//try to read all the weibos from the last 5 days
 		var getAllPosts = function(currentDay, original) {
-			console.log("in getAllPosts(), page num=" +$scope.global.currentPage+" current day="+currentDay);
-			$scope.totalItems = $scope.global.currentPage * $scope.global.itemsPerPage + 1;
+			console.log("in getAllPosts(), page num=" +$scope.global.currentPage+" current date="+currentDay+ " wbLen="+wbListLen);
+			$scope.totalItems = wbListLen + $scope.global.itemsPerPage;
 			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 
 			if (wbListLen < $scope.global.currentPage * $scope.global.itemsPerPage) {
-				getPostPerDay(currentDay, original);
-				if (wbDay-currentDay > 5) {
+				//read my own weibo
+				getPostPerDay(G_VARS.bid, currentDay, original);
+				
+				//read my friend's weibo
+				for (var i=0; i<$scope.myUserInfo.b.friends.length; i++) {
+					getPostOfFriend($scope.myUserInfo.b.friends[i].bid, currentDay, original);
+				};
+
+				if (wbDay-currentDay > 30) {	//look for weibo in the past month
 					wbDay = currentDay-1;	//remember the last day from which post is read
 					console.log("get out of loop, " + currentDay)
 					return;
@@ -474,63 +488,33 @@
 			};
 		};
 		
-		var getPostPerDay = function(day, original) {
-			//read all posts into a list, including self
-			//read my own weibo
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Posts, day, function(keys) {
-				if (keys[1]) {
-					wbListLen += keys[1].length;
-					//make sure there is weibo in the list
-					for(var j=0; j<keys[1].length; j++) {
-						getWeibo(G_VARS.bid, keys[1][j], original);
-					};
-				};
-			}, function(name, err) {
-				console.log("getAllPosts err= " + err);
-			});
-			//read my friend's weibo
-			for (var f in $scope.myUserInfo.friends) {
-				getWeiboList(f, day, original);
-			};
-		};
-
 		//read weibo of a certain person on a given day
-		var getWeiboList = function(bid, day, original) {
-			//console.log("in getWeiboList()");
+		var getPostOfFriend = function(bid, day, original) {
 			if (angular.isUndefined($scope.myUserInfo.friends[bid]) && bid!==G_VARS.bid) {
 				//the friend's UserInfo is not ready, get it
 				var ui = new UserInfo();
 				//console.log(ui)
 				ui.get(bid).then(function(readOK) {
 					if (readOK) {							
-						//also get the head pic of this user
 						$scope.myUserInfo.friends[bid] = ui;
-						G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, day, function(keys) {
-							if (keys[1]) {
-								wbListLen += keys[1].length;
-								//make sure there is weibo in the list
-								for(var j=0; j<keys[1].length; j++) {
-									getWeibo(bid, keys[1][j], original);
-								};
-							};
-						}, function(name, err) {
-							console.log("getAllPosts err= " + err);
-						});
 					};
-				});
-			} else {
-				G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, day, function(keys) {
-					if (keys[1]) {
-						wbListLen += keys[1].length;
-						//make sure there is weibo in the list
-						for(var j=0; j<keys[1].length; j++) {
-							getWeibo(bid, keys[1][j], original);
-						};
-					};
-				}, function(name, err) {
-					console.log("getAllPosts err= " + err);
 				});
 			};
+			getPostPerDay(bid, day, original);
+		};
+		
+		var getPostPerDay = function(bid, day, original) {
+			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, day, function(keys) {
+				if (keys[1]) {
+					wbListLen += keys[1].length;
+					//make sure there is weibo in the list
+					for(var j=0; j<keys[1].length; j++) {
+						getWeibo(bid, keys[1][j], original);
+					};
+				};
+			}, function(name, err) {
+				console.log(err);
+			});
 		};
 		
 		//read one weibo and add it to weiboList
@@ -552,6 +536,7 @@
 		var getWeiboOfDay = function(bid, days, i, original) {
 			if (i >= days.length) return;
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, days[i], function(keys) {
+				console.log("in getWeiboOfDay(), pagenum=" +$scope.global.currentPage+" iDay="+days[i]);
 				//console.log(keys[1]);
 				for (var j=0; j<keys[1].length; j++) {
 					getWeibo(bid, keys[1][j], original);
@@ -592,8 +577,8 @@
 				if (data === null) {
 					return;
 				};
-				//data (field) is array of author id of favorites
-				//data[i].value is array of wbID by a certain author
+				//data[i].field is author id of favorites
+				//data[i].value is array of wbID by the author
 				for(var i=0; i<data.length; i++) {
 					//count the total number of favorites to be displayed
 					$scope.totalItems += data[i].value.length;

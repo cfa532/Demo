@@ -101,7 +101,7 @@ function UserInfo() {
 							
 							if (self.favoriteCount !== self.b.favoriteCount) {
 								//update
-								self.set();
+								this.set();
 							};
 						}, function(err) {
 							console.log(err);
@@ -109,7 +109,7 @@ function UserInfo() {
 						self.getWeiboCount().then(function(count) {
 							self.weiboCount = count;
 							if (self.weiboCount !== self.b.weiboCount) {
-								self.set();
+								this.set();
 							};
 						}, function(err) {
 							console.log(err);
@@ -157,6 +157,31 @@ function UserInfo() {
 		});
 	};
 	
+	//return 20 pictures each time this is called
+	var picList = [];
+	var picIndex = 1;
+	this.getPictures = function(scope) {
+		var df = q.defer();
+		if (picList.length > 0) {
+			df.resolve(picList);
+		} else {
+			G_VARS.httpClient.hgetall(G_VARS.sid, self.bid, G_VARS.PostPics, function(data) {
+				if (data) {
+					//data[i].field is date in which picture is posted
+					//data[i].value is array of wbID by at the day
+					data.sort(function(a,b) {b.field - a.field});
+					for(var i=0; i<data.length; i++) {
+						picList = picList.concat(data[i].value);
+					};
+					df.resolve(picList);
+				};
+			}, function(name, err) {
+				df.reject(err);
+			});
+		};
+		return df.promise;
+	};
+	
 	//get UI of a bid and add it to a hashtable
 	var getUI = function(bid, ht, scope) {	
 		var f = new UserInfo();
@@ -189,7 +214,7 @@ function UserInfo() {
 		f.group = "default";
 		self.b.friends.push(f);
 		self.friendCount = self.b.friends.length;
-		self.set().then(function() {
+		this.set().then(function() {
 			console.log("friend added, bid=" +bid);
 		}, function(reason) {
 			console.log(reason);
@@ -206,7 +231,7 @@ function UserInfo() {
 				break;
 			};
 		};
-		self.set().then(function() {
+		this.set().then(function() {
 			console.log("friend deleted, bid=" +bid);
 		}, function(reason) {
 			console.log(reason);
@@ -218,8 +243,8 @@ function UserInfo() {
 		var df = q.defer();
 		var count = 0;
 		G_VARS.httpClient.hgetall(G_VARS.sid, self.b.bid, G_VARS.Posts, function(data) {
-			if (data !== null) {
-				//data (field) is array of date in which weibo is posted
+			if (data) {
+				//data[i].field is date in which weibo is posted
 				//data[i].value is array of wbID by at the day
 				for(var i=0; i<data.length; i++) {
 					count += data[i].value.length;
@@ -240,7 +265,7 @@ function UserInfo() {
 		var count = 0;
 		G_VARS.httpClient.hgetall(G_VARS.sid, self.b.bid, G_VARS.Favorites, function(data) {
 			if (data !== null) {
-				//data (field) is array of author id of favorites
+				//data[i].field is author id of favorites
 				//data[i].value is array of wbID by a certain author
 				for(var i=0; i<data.length; i++) {
 					count += data[i].value.length;
@@ -293,7 +318,7 @@ function UserInfo() {
 				console.log("Add favorite err=" +err);
 			});
 		};
-		self.set();
+		this.set();
 	};
 	
 	this.getLastWeibo = function() {
@@ -317,7 +342,7 @@ function UserInfo() {
 	this.setLastWeibo = function(wb) {
 		self.lastPost = wb;
 		self.b.lastPostKey = wb.wbID;
-		self.set();
+		this.set();
 	}
 
 	this.isFriend = function(bid) {
