@@ -157,7 +157,7 @@ function UserInfo() {
 		});
 	};
 	
-	//return 20 pictures each time this is called
+	//return all pictures each time this is called
 	var picList = [];
 	var picIndex = 1;
 	this.getPictures = function(scope) {
@@ -185,9 +185,9 @@ function UserInfo() {
 	//get UI of a bid and add it to a hashtable
 	var getUI = function(bid, ht, scope) {	
 		var f = new UserInfo();
+		ht[bid] = f;	//get a full copy of UI obj of the friend
 		f.get(bid).then(function(readOK) {
 			if (readOK) {
-				ht[bid] = f;	//get a full copy of UI obj of the friend
 				console.log(f);
 				if (scope) scope.$apply();
 			};

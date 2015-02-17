@@ -87,7 +87,7 @@
 			templateUrl : "chathistory.html",
 			controller : function($scope, $rootScope) {
 				console.log("in chat history controller");
-				$rootScope.currUserInfo = $scope.myUserInfo;
+				$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
 
 				var getLastSMS = function(bid) {
 					if ($scope.myUserInfo.friends[bid]) {
@@ -107,9 +107,9 @@
 						});
 					} else {
 						var f = new UserInfo();
+						$scope.myUserInfo.friends[bid] = f;
 						f.get(bid).then(function(readOK) {
 							if (readOK) {
-								$scope.myUserInfo.friends[bid] = f;
 								G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(data) {
 									if (data.length > 0) {
 										data.sort(function(a, b) {return b-a});
@@ -146,6 +146,7 @@
 						df.resolve($rootScope.myUserInfo.friends[$stateParams.bid]);
 					} else {
 						var ui = new UserInfo();
+						$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
 						ui.get($stateParams.bid).then(function(readOK) {
 							if (readOK) {
 								df.resolve(ui);
@@ -241,6 +242,7 @@
 							cs.friend = $scope.myUserInfo.friends[bid];
 						else {
 							var f = new UserInfo();
+							$scope.myUserInfo.friends[bid] = f;
 							f.get(bid).then(function(readOK) {
 								if (readOK) {
 									cs.friend = f;
@@ -345,6 +347,7 @@
 							df.resolve();
 						} else {
 							var ui = new UserInfo();
+							$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
 							ui.get($stateParams.bid).then(function(readOK) {
 								if (readOK) {
 									console.log(ui);
@@ -388,9 +391,10 @@
 							});
 						} else {
 							var f = new UserInfo();
+							$scope.myUserInfo.friends[bid] = f;
 							f.get(bid).then(function(readOK) {
 								if (readOK) {
-									$scope.myUserInfo.friends[bid] = f;
+									//$scope.myUserInfo.friends[bid] = f;
 									f.getLastWeibo().then(function(wb) {
 										$scope.$apply();
 									}, function(reason) {
@@ -459,7 +463,7 @@
 		// if original is true, get only the original ones.
 		//try to read all the weibos from the last 5 days
 		var getAllPosts = function(currentDay, original) {
-			console.log("in getAllPosts(), page num=" +$scope.global.currentPage+" current date="+currentDay+ " wbLen="+wbListLen);
+			//console.log("in getAllPosts(), page num=" +$scope.global.currentPage+" current date="+currentDay+ " wbLen="+wbListLen);
 			$scope.totalItems = wbListLen + $scope.global.itemsPerPage;
 			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 
@@ -478,9 +482,9 @@
 					return;
 				} else {
 					currentDay--;
-					setTimeout(function() {
-						getAllPosts(currentDay, original);
-					}, 1000);		//if no enough items, read more for me every 1 second
+					getAllPosts(currentDay, original);
+					//setTimeout(function() {
+					//}, 1000);		//if no enough items, read more for me every 1 second
 				};
 			} else {
 				//remember the last date of weibo read and exit
@@ -493,6 +497,7 @@
 			if (angular.isUndefined($scope.myUserInfo.friends[bid]) && bid!==G_VARS.bid) {
 				//the friend's UserInfo is not ready, get it
 				var ui = new UserInfo();
+				$scope.myUserInfo.friends[bid] = ui;
 				//console.log(ui)
 				ui.get(bid).then(function(readOK) {
 					if (readOK) {							
@@ -507,6 +512,7 @@
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, day, function(keys) {
 				if (keys[1]) {
 					wbListLen += keys[1].length;
+					$scope.totalItems = wbListLen + $scope.global.itemsPerPage;
 					//make sure there is weibo in the list
 					for(var j=0; j<keys[1].length; j++) {
 						getWeibo(bid, keys[1][j], original);
