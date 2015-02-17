@@ -31,7 +31,7 @@ var G_VARS = {
 			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
 			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
 			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
-			GlobalDataStruct : '8oa7mGZ5qHN2XARhIYxKFKBrrz_CtLv3IaYAIU02ZNc',
+			GlobalDataStruct : 'CTMLUNbCtbkWCVEzC1xWpvSFn2wtZ26dbrUGjXdphwk',
 			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
 			uiBootstrapTpls : 'Q787mpszKswRAkLWSIqNbXL428EpCpXrUdTFe6gePZc',
 			main : '5w3k5ZTrhKnO2QPEJsfl_F1NkhhO7_j64uD0D4LcHwc'
@@ -40,7 +40,7 @@ var G_VARS = {
 			account : 'DPVN3z5gIMRjO30WD30EdndkxWLCzimMKdSElH8CW-4',
 			message : 'Gcyod1PvoK-IW4SuAGott3puV1zRpSfRRYRMiRQyMzM',
 			sms : 'g5lBNsIljD80fS3IQs9FXN5-2Wi7KPMsXVrkOUdBk2s',
-			state : 'oTEtsoN-cIew4P0bTdVAtVZ3IxJxtfK2297hgDohCf4',
+			state : 'PCvIS6Jxqm_ILiVowePG_mZJdfw1DP755lZ-ekGb-Cs',
 			root : '7AthPOY1yIXRN91NNAuwiTgH-eikrnXrpnby7zdG4_w',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'Gs09kv-eoprBmm4atHDOGkcmJCQcgSZ-zjLN2wWSf_g'
@@ -643,7 +643,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 				</div>
 				<div class="pf_info">				
 					<div class="pf_name">
-						<span class="name f22">{{currUserInfo.nickName}}</span>
+						<div class="name f22">{{currUserInfo.nickName}}</div>
 						<span class="f14">id({{currUserInfo.bid}})</span>
 					</div>
 					<ul class="user_atten f18">
@@ -674,8 +674,8 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 			</div>
 			<div class="imgModList">
 				<ul>
-					<li ng-repeat="uri in myPicKeys">
-						<a href="#" target="_blank"><img le-src="{{uri}}" authorid="{{currUserInfo.bid}}" alt=""></a>
+					<li ng-repeat="uri in myPicKeys track by $index">
+						<a href="#"><img width="80" height="80" le-src="{{uri}}" authorid="{{currUserInfo.bid}}" alt=""></a>
 					</li>
 					<div class="clearfix"></div>
 				</ul>
