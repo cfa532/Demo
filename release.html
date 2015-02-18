@@ -40,7 +40,7 @@ var G_VARS = {
 			account : 'DPVN3z5gIMRjO30WD30EdndkxWLCzimMKdSElH8CW-4',
 			message : 'Gcyod1PvoK-IW4SuAGott3puV1zRpSfRRYRMiRQyMzM',
 			sms : '1mVY0FVrFpOTyrMJcK3HFBmwEZMAJ9zITEbxkKvVyvw',
-			state : 'pAUFi-2wOe2nQNVVDo-UfigQlAFuFlkaVcTeI7_xe_c',
+			state : 'KqUEqBfc0wbaU-SYf1Oi8cSytSbGUigSXYWmPdD2eNw',
 			root : '7AthPOY1yIXRN91NNAuwiTgH-eikrnXrpnby7zdG4_w',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'Gs09kv-eoprBmm4atHDOGkcmJCQcgSZ-zjLN2wWSf_g'
@@ -292,7 +292,7 @@ var G_VARS = {
 			$rootScope.chatSessions = {};
 			$rootScope.global = {
 				currentPage : 1,
-				itemsPerPage : 5
+				itemsPerPage : 10,
 			};
 		})
 		
@@ -375,7 +375,6 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 			<a href="javascript:void(0)" class="online_close" onclick="slideToggle()"></a>			
 		</div>
 		<div class="online_seach"></div>
-		
 		<div class="online_tab">
 			<a href="#"><i></i><span>我的好友</span></a>
 			<a href="#"><i></i><span>在线用户</span></a>
@@ -424,10 +423,10 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		<div class="wbim_tit2">
 			<div class="wbim_tit2_lf">
 				<p class="tit2_lf_con">
-					<a target="_blank" class="webim_list_head" href="#">
+					<a class="webim_list_head" ui-sref="root.chat.detail({bid:chatFriend.bid})">
 						<span class="head_pic"><img alt="" ng-src="{{chatFriend.headPicUrl}}"/></span>
 					</a>
-					<span class="chat_name"><a href="#" class="f0a8cd2">{{chatFriend.nickName}}</a></span>
+					<span class="chat_name"><a ui-sref="root.chat.detail({bid:chatFriend.bid})" class="f0a8cd2">{{chatFriend.nickName}}</a></span>
 				</p>
 			</div>
 			<div class="wbim_tit2_rt">
@@ -524,7 +523,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		<div ng-repeat="(bid, ui) in myUserInfo.friends" class="wbpmlist">
 			<div ng-show="ui.lastSMS" class="wbpmunit border_all mb15 pr">
 				<div class="userPic">
-					<p><a ui-sref="root.chat.detail({bid:bid})" title=""><img ng-src="{{ui.headPicUrl}}" title=""  width="48"></a></p>
+					<p><a ui-sref="root.chat.detail({bid:bid})" title=""><img ng-src="{{ui.headPicUrl}}" title="" width="48" height="48"></a></p>
 				</div>
 				<div class="wbpmcontent">
 					<p class="mb10"><b><a ui-sref="root.chat.detail({bid:bid})" title="" class="f10a2c7">{{ui.nickName}}</a></b></p>

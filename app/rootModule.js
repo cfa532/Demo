@@ -19,7 +19,7 @@
 		var getPicsOfDay = function(day, bid) {
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.PostPics, day, function(keys) {
 				if (keys[1]) {
-					console.log(keys[1]);
+					//console.log(keys[1]);
 					for (var i=0; i<keys[1].length; i++) {
 						G_VARS.httpClient.get(G_VARS.sid, bid, keys[1][i], function(data) {
 							if (data[1]) {

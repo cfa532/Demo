@@ -232,7 +232,7 @@
 							$scope.inPageMsgs.push($scope.chatSessions[bid].messages[i]);
 						};
 						$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp})
-						$scope.$apply();
+						//$scope.$apply();
 					} else {
 						//no existing chat session, open one. Clean unread msgs only when user opened a new chat session
 						//assume that is when the user read any old msgs
