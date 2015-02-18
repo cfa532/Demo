@@ -576,6 +576,7 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
            bid = $scope.inputest
        }
        client.getvar($scope.sid, "swarm", bid, function (sw) {
+    	   console.log(sw)
            $scope.appstatus = "bid=" + bid + ";LastId=" + sw.lastId + ";CurId=" + sw.curId;
            $scope.$apply()
            console.log($scope.appstatus);

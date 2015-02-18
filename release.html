@@ -12,7 +12,7 @@
 var G_VARS = {
 		bidPath : window.location.pathname+"/appID/userID/",
 //		IPList :["218.74.25.10:8100"],
-		IPList :["112.124.113.235:30003"],
+		IPList :["112.124.113.235:30003"],		//api for IP lists
 		IPNum : 0,
 		sid : '0f24d8d2956508cc571e67da23ee75ae47c1879c',
 //		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK0IzTDEtbGw1b2s5dW85UlRpRHQ1aEpjU28za0JaRlItX3ZUUEs4MUptVVEA",
@@ -40,7 +40,7 @@ var G_VARS = {
 			account : 'DPVN3z5gIMRjO30WD30EdndkxWLCzimMKdSElH8CW-4',
 			message : 'Gcyod1PvoK-IW4SuAGott3puV1zRpSfRRYRMiRQyMzM',
 			sms : '1mVY0FVrFpOTyrMJcK3HFBmwEZMAJ9zITEbxkKvVyvw',
-			state : 'ZV_txrDma2-Hi-Vje7ETBhkTEzz_lMNr2RFtzRPU_vM',
+			state : 'pAUFi-2wOe2nQNVVDo-UfigQlAFuFlkaVcTeI7_xe_c',
 			root : '7AthPOY1yIXRN91NNAuwiTgH-eikrnXrpnby7zdG4_w',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'Gs09kv-eoprBmm4atHDOGkcmJCQcgSZ-zjLN2wWSf_g'
@@ -553,7 +553,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 <div class="waterfall">
 		<div class="WB_feed">
 			<ul>
-				<li ng-repeat="(bid, ui) in myUserInfo.friends" class="border_all WB_feed_type pr">
+				<li ng-repeat="(bid, ui) in currUserInfo.friends" class="border_all WB_feed_type pr">
 					<div class="userPic">
 						<p><a ui-sref="root.personal.allPosts({bid:bid})" title=""><img ng-src="{{ui.headPicUrl}}" title=""  width="78"></a></p>
 						
@@ -815,6 +815,13 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 								<div class="clearfix"></div>
 							</ul>
 						</div>
+
+					<span class="funBox fr">
+						<a href="javascript:void(0);" ng-click="" class="btn-relay">转播{{wb.parentWeibo.relays.length | bracket}}</a><span>|</span>
+						<a href="javascript:void(0);" ng-click="" class="btn-comt">评论{{wb.parentWeibo.reviews.length | bracket}}</a>
+					</span>
+					<div class="clearfix"></div>					
+
 					</div>
 
 					<div class="lotspic_list">
@@ -845,7 +852,6 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 								</div>
 							</div>
 						</div>
-												
 					</span>
 					<div class="clearfix"></div>					
 					<le-relay add="relayPost" author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" show-relay="{{wb.wbID===R.relayedWeibo}}">

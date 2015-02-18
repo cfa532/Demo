@@ -379,32 +379,29 @@
 			templateUrl : "friends.html",
 			controller : function(logon, $scope) {				
 				console.log("in personal.friends ctrl, logon=" + logon);			
-				if ($scope.myUserInfo.bid === $scope.currUserInfo.bid) {
-					//only show my friends list for now
-					for (var i=0; i<$scope.myUserInfo.b.friends.length; i++) {
-						var bid = $scope.myUserInfo.b.friends[i].bid;
-						if ($scope.myUserInfo.friends[bid]) {
-							$scope.myUserInfo.friends[bid].getLastWeibo().then(function(wb) {
-								$scope.$apply();
-							}, function(reason) {
-								console.log(reason);
-							});
-						} else {
-							var f = new UserInfo();
-							$scope.myUserInfo.friends[bid] = f;
-							f.get(bid).then(function(readOK) {
-								if (readOK) {
-									//$scope.myUserInfo.friends[bid] = f;
-									f.getLastWeibo().then(function(wb) {
-										$scope.$apply();
-									}, function(reason) {
-										console.log(reason);
-									});
-								};
-							}, function(reason) {
-								console.log(reason);
-							});
-						};
+				for (var i=0; i<$scope.currUserInfo.b.friends.length; i++) {
+					var bid = $scope.currUserInfo.b.friends[i].bid;
+					if ($scope.currUserInfo.friends[bid]) {
+						$scope.currUserInfo.friends[bid].getLastWeibo().then(function(wb) {
+							$scope.$apply();
+						}, function(reason) {
+							console.log(reason);
+						});
+					} else {
+						var f = new UserInfo();
+						$scope.currUserInfo.friends[bid] = f;
+						f.get(bid).then(function(readOK) {
+							if (readOK) {
+								//$scope.myUserInfo.friends[bid] = f;
+								f.getLastWeibo().then(function(wb) {
+									$scope.$apply();
+								}, function(reason) {
+									console.log(reason);
+								});
+							};
+						}, function(reason) {
+							console.log(reason);
+						});
 					};
 				};
 			},
