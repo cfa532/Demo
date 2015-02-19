@@ -78,12 +78,12 @@ function UserInfo() {
 	
 	//populate UI object with data of given userid (bid)
 	this.get = function(bid) {
+		self.bid = bid;
 		return q(function(resolve, reject) {
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.UserInfo, bid, function(data) {
 				if (data[1]) {
 					console.log(data[1]);
 					angular.copy(data[1], self.b);
-					self.bid = bid;
 					self.nickName = self.b.nickName;
 					self.intro = self.b.intro;
 					self.mobile = self.b.mobile;
@@ -334,7 +334,7 @@ function UserInfo() {
 			df.resolve(self.lastPost);
 		}, function(name, err) {
 			console.log(err);
-			reject(err);
+			df.reject(err);
 		});
 		return df.promise;
 	};
