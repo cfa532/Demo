@@ -2,9 +2,9 @@
 
 (function() {
 	G_VARS.weiboApp
-	.controller("chatController", ["$window", "$scope", "msgService", 'SMSService',
-	                               function($window, $scope, msgService, SMSService) {
-		console.log("in SMS controller")
+	.controller("chatController", ["$window", "$scope", "msgService", 'SMSService', "$modal",
+	                               function($window, $scope, msgService, SMSService, $modal) {
+		debug.log("in SMS controller")
 		
 		//take a UserInfo obj as param. Ask for the user to become friend
 		$scope.openRequest = function(ui) {
@@ -29,7 +29,7 @@
 			//call a jQuery function defined in html, to open chat box
 			$window.showChat();
 			$scope.chatFriend = friend;
-			console.log(friend);
+			debug.log(friend);
 			var wtf = $('#myChatBox1');		//for scroll to the bottom
 			
 			if ($scope.chatSessions[friend.bid]) {
@@ -54,7 +54,7 @@
 					} else {
 						//no unread msgs, load msgs from last day
 						//get all of them for now
-						console.log("no unread msgs");
+						debug.log("no unread msgs");
 						G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, friend.bid, function(ts) {
 							if (ts!==null && ts.length>0) {
 								for (var i=0; i<ts.length; i++) {
@@ -66,20 +66,20 @@
 											wtf.scrollTop(100000);
 										};
 									}, function(name, err) {
-										console.log(err);
+										debug.error(err);
 									});
 								};
 							};
 						}, function(name, err) {
-							console.log(err);
+							debug.error(err);
 						});
 					};
 					
 					//delete unread msgs record
 					G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, friend.bid, function() {
-						console.log("unread msgs deleted");
+						debug.log("unread msgs deleted");
 					}, function(name, err) {
-						console.log(err);
+						debug.error(err);
 					});
 				});
 			};
@@ -98,7 +98,7 @@
 			m.timeStamp = new Date().getTime();
 			msgService.sendSMS(bid, m);
 			
-			console.log($scope.chatSessions[bid]);
+			debug.log($scope.chatSessions[bid]);
 			$scope.chatSessions[bid].messages.push(m);
 			$scope.chatSessions[bid].timeStamp = m.timeStamp;
 			$scope.txtChat = '';
@@ -124,12 +124,12 @@
 		
 		$scope.getOnlineUsers = function() {
 			//get all my friends list, again
-			$scope.myUserInfo.getFriends($scope);
+			//$scope.myUserInfo.getFriends($scope);
 			
 			//get nearby users those are not friends
 			G_VARS.httpClient.getvar(G_VARS.sid, "usernearby", function(data) {
 				//an array of userid on the same node
-				//console.log(data);
+				//debug.log(data);
 				$scope.usrList = {};
 				angular.forEach(data, function(bid) {
 					if (bid!==G_VARS.bid && bid!==null && !$scope.myUserInfo.isFriend(bid)) {
@@ -144,7 +144,7 @@
 			ht[bid] = ui;
 			ui.get(bid).then(function(readOK) {
 				if (readOK) {
-					console.log(ui);
+					debug.log(ui);
 					$scope.$apply();
 				};
 			});
@@ -157,7 +157,7 @@
 		//$scope.getOnlineUsers();
 	}])
 	.service("SMSService", ['$rootScope', function($rootScope) {
-		console.log("in SMS Service");
+		debug.log("in SMS Service");
 		
 		//refresh chatbox content to show new messages
 		var chatScopes = [];
@@ -192,12 +192,12 @@
 
 					//update unread msgs with both old and new ones
 					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, htSMS[bid], function() {
-						//console.log(htSMS[bid]);
+						//debug.log(htSMS[bid]);
 					}, function(name, err) {
-						console.log(err);
+						debug.error(err);
 					});
 				}, function(name, err) {
-					console.log(err);
+					debug.error(err);
 				});								
 
 				//save the new message into permanent db
@@ -209,7 +209,7 @@
 		
 		//bid is the chatting friend's bid
 		this.saveSMS = function(bid, msg) {
-			//console.log(msg);
+			//debug.log(msg);
 			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, msg.timeStamp, function(data) {
 				if (data[1]) {
 					//most unlikely, but 2 msgs happened at the same time
@@ -217,8 +217,7 @@
 					this.saveSMS(msg);
 				} else {
 					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, bid, msg.timeStamp, msg, function() {
-						console.log("msg saved in db");
-						console.log(msg);
+						debug.log("msg saved in db", msg);
 
 						//make the new messages shown in chat box
 						for (var i=0; i<chatScopes.length; i++) {
@@ -226,11 +225,11 @@
 							chatScopes[i](bid);
 						};
 					}, function(name, err) {
-						console.log(err);
+						debug.error(err);
 					});
 				};
 			}, function(name, err) {
-				console.log(err);
+				debug.error(err);
 			});
 		};
 	}])

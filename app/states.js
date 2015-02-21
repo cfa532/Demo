@@ -6,9 +6,9 @@
 	.run(function($state, $rootScope) {
 		//$state.go("root")
 		function message(to, toP, from, fromP) { return from.name  + angular.toJson(fromP) + " -> " + to.name + angular.toJson(toP); }
-		$rootScope.$on("$stateChangeStart", function(evt, to, toP, from, fromP) { console.log("Start:   " + message(to, toP, from, fromP)); });
-		$rootScope.$on("$stateChangeSuccess", function(evt, to, toP, from, fromP) { console.log("Success: " + message(to, toP, from, fromP)); });
-		$rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) { console.log(error); });
+		$rootScope.$on("$stateChangeStart", function(evt, to, toP, from, fromP) { debug.log("Start:   " + message(to, toP, from, fromP)); });
+		$rootScope.$on("$stateChangeSuccess", function(evt, to, toP, from, fromP) { debug.log("Success: " + message(to, toP, from, fromP)); });
+		$rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) { debug.log(error); });
 	})
 	.config(["logonServiceProvider", "$stateProvider", "$logProvider", "$urlRouterProvider",
 	         function(logonServiceProvider, $stateProvider, $logProvider, $urlRouterProvider) {
@@ -21,56 +21,49 @@
 			template : "<div ui-view></div>",
 			resolve : {
 				logon : function(logonService, $q, $rootScope) {
-					console.log("S>>>>>>>>>>>>>>>>>>>>>>start login process>>>>>>>>>>>>>>>>>>>>>>>>>S")
+					debug.log("S>>>>>>>>>>>>>>>>>>>>>>start login process>>>>>>>>>>>>>>>>>>>>>>>>>S")
 					var deferredStart = $q.defer();
 					logonService.getSysUser().then(function(sysdata) {
-						console.log(sysdata);
+						debug.log(sysdata);
 						var bidPath = window.location.pathname+"/appID/userID";
 						$rootScope.user = sysdata[0];
 						$rootScope.ver = sysdata[1];
 						G_VARS.sid = sessionStorage.sid;
 						G_VARS.bid = $rootScope.user.id;
 						localStorage[bidPath] = G_VARS.bid;
-						console.log("E<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<login done<<<<<<<<<<<<<<<<<<<<<<<<<<<<E")
+						debug.log("E<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<login done<<<<<<<<<<<<<<<<<<<<<<<<<<<<E")
 
 						//login succeed, read owner's data
-						console.log("login bid="+G_VARS.bid);
+						debug.log("login bid="+G_VARS.bid);
 						$rootScope.myUserInfo.get(G_VARS.bid).then(function(readOK) {
 							if (!readOK) {
 								//UserInfo does not exit, create a default one
 								$rootScope.myUserInfo.bid = G_VARS.bid;
 								//save the newly created UserInfo
 								$rootScope.myUserInfo.set().then(function() {
-									//console.log($rootScope.myUserInfo);
+									//debug.log($rootScope.myUserInfo);
 									deferredStart.resolve(321);									
 								}, function(reason) {
-									console.log(reason);
+									debug.error(reason);
 								});
 							} else {
 								//get my head pic
 								deferredStart.resolve(123);
 							};
 						}, function(reason) {
-							console.log(reason);
+							debug.error(reason);
 						});
 					});
 					return deferredStart.promise;
 				}
 			},
-			controller : function(logon, $q, $scope, msgService, reviewService, SMSService) {
-				console.log("in root state controller = " +logon);
-				console.log($scope.myUserInfo)
+			controller : function(logon, $scope, msgService, $interval) {
+				debug.log("in root state controller = " +logon);
+				debug.log($scope.myUserInfo)
 				
 				//check for new message every 5 seconds
-				var checkMsgLoop = function() {
-					//process incoming new messages and save them in db, in case the login user does not read them.
-					msgService.readMsg(reviewService.processMsg, SMSService.processMsg);
-					setTimeout(function() {checkMsgLoop();}, 5000);
-				};
-				setTimeout(function() {checkMsgLoop();}, 5000);
-
+				$interval(function() {msgService.readMsg();}, 5000);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
-				//setTimeout(function() {myChatBox.getOnlineUsers();}, 5000);
 				myChatBox.getOnlineUsers();
 			}
 		})
@@ -87,7 +80,7 @@
 			url : "/history",
 			templateUrl : "chathistory.html",
 			controller : function($scope, $rootScope) {
-				console.log("in chat history controller");
+				debug.log("in chat history controller");
 				$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
 
 				var getLastSMS = function(bid) {
@@ -95,16 +88,16 @@
 						G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(data) {
 							if (data.length > 0) {
 								data.sort(function(a, b) {return b-a});
-								console.log(data[0] + " " +bid);
+								debug.log(data[0] + " " +bid);
 								G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
 									$scope.myUserInfo.friends[bid].lastSMS = m[1];
 									$scope.$apply();
 								}, function(name, err) {
-									console.log(err);
+									debug.error(err);
 								});
 							};
 						}, function(name, err) {
-							console.log(err);
+							debug.error(err);
 						});
 					} else {
 						var f = new UserInfo();
@@ -117,17 +110,17 @@
 										G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
 											$scope.myUserInfo.friends[bid].lastSMS = m[1];
 											$scope.$apply();
-											console.log(m);
+											debug.log(m);
 										}, function(name, err) {
-											console.log(err);
+											debug.error(err);
 										});
 									};
 								}, function(name, err) {
-									console.log(err);
+									debug.error(err);
 								});
 							};
 						}, function(reason) {
-							console.log(reason);
+							debug.error(reason);
 						});
 					};
 				};
@@ -162,7 +155,7 @@
 			controller : function(initUI, $scope, $rootScope, $stateParams, msgService, SMSService) {
 				//set current UI to the user I am chatting to
 				$rootScope.currUserInfo = initUI;
-				console.log(initUI);
+				debug.log(initUI);
 				$scope.inPageBid = $stateParams.bid;	//bid of user I am talking to
 				$scope.inPageMsgs = [];
 				$scope.C = {
@@ -198,7 +191,7 @@
 					m.timeStamp = new Date().getTime();
 					msgService.sendSMS(bid, m);
 					
-					console.log($scope.chatSessions[bid]);
+					debug.log($scope.chatSessions[bid]);
 					$scope.chatSessions[bid].messages.unshift(m);
 					$scope.chatSessions[bid].timeStamp = m.timeStamp;
 					$scope.txtChat = '';
@@ -210,7 +203,7 @@
 				
 				//message input in the textarea
 				$scope.txtChanged = function() {
-					//console.log($scope.txtChat)
+					//debug.log($scope.txtChat)
 					if ($scope.txtChat.replace(/\s+/g,"") !== '') {
 						$scope.C.txtInvalid = false;
 						if ($scope.txtChat.toString().length > G_VARS.MaxWeiboLength) {
@@ -249,7 +242,7 @@
 									cs.friend = f;
 								};
 							}, function(reason) {
-								console.log(reason);
+								debug.error(reason);
 							});
 						};
 						$scope.chatSessions[bid] = cs;
@@ -265,35 +258,35 @@
 							} else {
 								//no unread msgs, load msgs from last day
 								//get all of them for now
-								//console.log($("#myChatBox")[0]);
+								//debug.log($("#myChatBox")[0]);
 								G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(ts) {
 									if (ts!==null && ts.length>0) {
-										//console.log(ts);
-										//console.log(bid);
+										//debug.log(ts);
+										//debug.log(bid);
 										for (var i=0; i<ts.length; i++) {
 											G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, ts[i], function(msg) {
 												if (msg[1]) {
-													//console.log(msg[1]);
+													//debug.log(msg[1]);
 													$scope.chatSessions[bid].messages.push(msg[1]);
 													$scope.inPageMsgs.push(msg[1]);
 													$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
 													$scope.$apply();
 												}
 											}, function(name, err) {
-												console.log(err);
+												debug.error(err);
 											});
 										};
 									};
 								}, function(name, err) {
-									console.log(err);
+									debug.error(err);
 								});
 							};
 							
 							//delete unread msgs record
 							G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, function() {
-								console.log("unread msgs deleted");
+								debug.log("unread msgs deleted");
 							}, function(name, err) {
-								console.log(err);
+								debug.error(err);
 							});
 						});
 					};
@@ -306,7 +299,7 @@
 			url : "/main",
 			templateUrl : "main.html",
 			controller : function(logon, $scope, $rootScope) {
-				console.log("in main state controller="+logon);
+				debug.log("in main state controller="+logon);
 				$rootScope.currUserInfo = $rootScope.myUserInfo;
 			}
 		})
@@ -338,7 +331,7 @@
 				initUI : function(logon, $q, $stateParams, $rootScope) {
 					var df = $q.defer();
 					if (!$stateParams.bid || $stateParams.bid===G_VARS.bid) {
-						//console.log("look at me")
+						//debug.log("look at me")
 						$rootScope.currUserInfo = $rootScope.myUserInfo;
 						df.resolve();
 					}
@@ -351,13 +344,13 @@
 							$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
 							ui.get($stateParams.bid).then(function(readOK) {
 								if (readOK) {
-									console.log(ui);
+									debug.log(ui);
 									$rootScope.currUserInfo = ui;
 									$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
 									df.resolve();
 								};
 							}, function(reason) {
-								console.log(reason);
+								debug.error(reason);
 								df.reject(reason);
 							});
 						};
@@ -366,12 +359,12 @@
 				},
 			},
 			controller : function(initUI, $scope, $stateParams) {
-				console.log("in personal state ctrl, bid="+$stateParams.bid);
+				debug.log("in personal state ctrl, bid="+$stateParams.bid);
 				//get a list of pics by this user
 				$scope.currUserInfo.getPictures($scope).then(function(pics) {
 					$scope.myPicKeys = pics;
 				}, function(reason) {
-					console.log(reason);
+					debug.error(reason);
 				});
 			}
 		})
@@ -379,14 +372,14 @@
 			url : "/friends",
 			templateUrl : "friends.html",
 			controller : function(logon, $scope) {				
-				console.log("in personal.friends ctrl, logon=" + logon);			
+				debug.log("in personal.friends ctrl, logon=" + logon);			
 				for (var i=0; i<$scope.currUserInfo.b.friends.length; i++) {
 					var getLast = function(bid) {
 						if ($scope.currUserInfo.friends[bid]) {
 							$scope.currUserInfo.friends[bid].getLastWeibo().then(function(wb) {
 								$scope.$apply();
 							}, function(reason) {
-								console.log(reason);
+								debug.error(reason);
 							});
 						} else {
 							var f = new UserInfo();
@@ -397,11 +390,11 @@
 									f.getLastWeibo().then(function(wb) {
 										$scope.$apply();
 									}, function(reason) {
-										console.log(reason);
+										debug.error(reason);
 									});
 								};
 							}, function(reason) {
-								console.log(reason);
+								debug.error(reason);
 							});
 						};
 					};
@@ -435,7 +428,7 @@
 	//get weibo list and display them nicely
 	.controller("weiboController", ["$state", "$stateParams", "$scope",
 	                                function($state, $stateParams, $scope) {
-		console.log("in weibo controller")
+		debug.log("in weibo controller")
 		var q = angular.injector(['ng']).get('$q');
 		
 		$scope.pageChanged = function() {
@@ -463,7 +456,7 @@
 		// if original is true, get only the original ones.
 		//try to read all the weibos from the last 5 days
 		var getAllPosts = function(currentDay, original) {
-			//console.log("in getAllPosts(), page num=" +$scope.global.currentPage+" current date="+currentDay+ " wbLen="+wbListLen);
+			//debug.log("in getAllPosts(), page num=" +$scope.global.currentPage+" current date="+currentDay+ " wbLen="+wbListLen);
 			$scope.totalItems = wbListLen + $scope.global.itemsPerPage;
 			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 
@@ -478,7 +471,7 @@
 
 				if (wbDay-currentDay > 30) {	//look for weibo in the past month
 					wbDay = currentDay-1;	//remember the last day from which post is read
-					console.log("get out of loop, " + currentDay)
+					debug.log("get out of loop, " + currentDay)
 					return;
 				} else {
 					currentDay--;
@@ -498,7 +491,7 @@
 				//the friend's UserInfo is not ready, get it
 				var ui = new UserInfo();
 				$scope.myUserInfo.friends[bid] = ui;
-				//console.log(ui)
+				//debug.log(ui)
 				ui.get(bid).then(function(readOK) {
 					if (readOK) {							
 						$scope.myUserInfo.friends[bid] = ui;
@@ -519,7 +512,7 @@
 					};
 				};
 			}, function(name, err) {
-				console.log(err);
+				debug.error(err);
 			});
 		};
 		
@@ -542,15 +535,15 @@
 		var getWeiboOfDay = function(bid, days, i, original) {
 			if (i >= days.length) return;
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, days[i], function(keys) {
-				console.log("in getWeiboOfDay(), pagenum=" +$scope.global.currentPage+" iDay="+days[i]);
-				//console.log(keys[1]);
+				debug.log("in getWeiboOfDay(), pagenum=" +$scope.global.currentPage+" iDay="+days[i]);
+				//debug.log(keys[1]);
 				for (var j=0; j<keys[1].length; j++) {
 					getWeibo(bid, keys[1][j], original);
 				};
 				wbListLen += keys[1].length;
 				if (wbListLen > $scope.global.currentPage*$scope.global.itemsPerPage) {
 					iDay = i+1;
-					console.log("iDay="+iDay)
+					debug.log("iDay="+iDay)
 					return;
 				} else {
 					getWeiboOfDay(bid, days, i+1, original);
@@ -560,23 +553,23 @@
 		
 		//read all the post of a certain friend
 		var getPosts = function(bid, iDay, original) {
-			console.log("in getPosts(), pagenum=" +$scope.global.currentPage+" iDay="+iDay);
+			debug.log("in getPosts(), pagenum=" +$scope.global.currentPage+" iDay="+iDay);
 			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 			$scope.totalItems = $scope.currUserInfo.weiboCount;
 			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.Posts, function(days) {
 				//get list of date on which there are posts
 				days.sort(function(a,b) {return b-a});
-				//console.log(days);
+				//debug.log(days);
 				if (iDay < days.length)
 					getWeiboOfDay(bid, days, iDay, original);
 			}, function(name, err) {
-				console.log(err);
+				debug.error(err);
 			});
 		};
 
 		//show all my favorites. key=G_VARS.Favorites, field=authorID, value=[wbIDs,....]
 		var showFavorites = function(bid) {
-			console.log("in showFavorites");
+			debug.log("in showFavorites");
 			$scope.totalItems = 0;
 			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 			G_VARS.httpClient.hgetall(G_VARS.sid, bid, G_VARS.Favorites, function(data) {
@@ -589,12 +582,12 @@
 					//count the total number of favorites to be displayed
 					$scope.totalItems += data[i].value.length;
 					for (var j=0; j<data[i].value.length; j++) {
-						//console.log(data[i].field + " " +data[i].value[j]);
+						//debug.log(data[i].field + " " +data[i].value[j]);
 						getWeibo(data[i].field, data[i].value[j], false);
 					};
 				};
 			}, function(name, err) {
-				console.log("showFavorite err=" +err);
+				debug.error("showFavorite err=" +err);
 			});
 		};
 
@@ -613,27 +606,27 @@
 				
 		if ($state.is("root.main.allPosts")) {
 			//everytime the controller is loaded, refresh all the weibo list
-			console.log("state is main.allPosts");
+			debug.log("state is main.allPosts");
 			getAllPosts(wbDay, false);
 		}
 		else if ($state.is("root.main.original")) {
-			console.log("state is main.original");
+			debug.log("state is main.original");
 			getAllPosts(wbDay, true);
 		}
 		else if ($state.is("root.main.favorite")) {
-			console.log("state is favorite");
+			debug.log("state is favorite");
 			showFavorites(G_VARS.bid);
 		}
 		else if ($state.is("root.personal.allPosts")) {
-			console.log("state is personal.allposts");
+			debug.log("state is personal.allposts");
 			getPosts($stateParams.bid, iDay, false);
 		}
 		else if ($state.is("root.personal.original")) {
-			console.log("state is personal.original");
+			debug.log("state is personal.original");
 			getPosts($stateParams.bid, iDay, true);
 		}
 		else if ($state.is("root.personal.favorite")) {
-			console.log("state is favorite");
+			debug.log("state is favorite");
 			showFavorites($stateParams.bid);
 		};
 	}])

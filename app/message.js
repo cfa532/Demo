@@ -6,7 +6,7 @@
 	.service("msgService", ["$q", "$rootScope", "reviewService", "SMSService",
 	                        function($q, $rootScope, reviewService, SMSService) {
 		//var q = angular.injector(['ng']).get('$q');
-		console.log("in msgService");
+		debug.log("in msgService");
 		
 		//send a review message to the author of a post being reviewed
 		this.sendReview = function(review, destID) {
@@ -21,9 +21,9 @@
 			msg.data = r;
 			
 			G_VARS.httpClient.sendmsg(G_VARS.sid, msg, function() {
-				console.log("In sendReview, msg sent OK");
+				debug.log("In sendReview, msg sent OK", msg);
 			}, function(name, err) {
-				console.log("In sendReview, err=" + err);
+				debug.error("In sendReview, err=" + err);
 			});
 		};
 
@@ -40,10 +40,9 @@
 			msg.data = r;
 			
 			G_VARS.httpClient.sendmsg(G_VARS.sid, msg, function() {
-				console.log(msg);
-				console.log("In sendRelay, msg sent OK");
+				debug.log("In sendRelay, msg sent OK", msg);
 			}, function(name, err) {
-				console.log("In sendRelay, err=" + err);
+				debug.error("In sendRelay, err=" + err);
 			});
 		};
 
@@ -60,10 +59,9 @@
 			msg.data = r;
 			
 			G_VARS.httpClient.sendmsg(G_VARS.sid, msg, function() {
-				console.log("In send request, msg sent OK");
-				console.log(msg);
+				debug.log("In send request, msg sent OK", msg);
 			}, function(name, err) {
-				console.log("In send request, err=" + err);
+				debug.error("In send request, err=" + err);
 			});
 		};
 		
@@ -74,18 +72,17 @@
 			msg.data = data;
 
 			G_VARS.httpClient.sendmsg(G_VARS.sid, msg, function() {
-				console.log(msg);
-				console.log("In send request, msg sent OK");
+				debug.log("In sendSMS, msg sent OK", msg);
 			}, function(name, err) {
-				console.log("In send request, err=" + err);
+				debug.error("In send request, err=" + err);
 			});
 		};
 		
 		//read inbound message and process them accordingly
 		//take 2 call back functions as param to process reviews and SMS
-		this.readMsg = function(processReviews, processSMS) {
+		this.readMsg = function() {
 			G_VARS.httpClient.readmsg(G_VARS.sid, function(msgs) {
-				console.log("readMsg: number of msg=" +msgs.length);
+				debug.log("readMsg: number of msg=" +msgs.length);
 				
 				//iterate through msg list and combine msgs to the same Weibo into an array
 				//then store the msg array in a hash table, indexed by wbID
@@ -93,7 +90,7 @@
 				var htSMS = {};			//hashtable to hold sms
 				for (var i=0; i<msgs.length; i++) {
 					var msg = msgs[i][0].Data;			//App defined WeiboMessage type
-					console.log(msg);
+					debug.log(msg);
 					switch (msg.type) {
 					case 0:
 						//request to become friends. 
@@ -103,7 +100,7 @@
 						angular.copy(msg, m);
 						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Request, fromID, m, function() {
 							// only the newest request is saved
-							console.log("saved request from "+fromID)
+							debug.log("saved request from "+fromID)
 							
 							//approve it for now
 							var f = new Friend();
@@ -113,7 +110,7 @@
 							$rootScope.myUserInfo.friends[f.bid] = f;
 							$rootScope.myUserInfo.set();
 						}, function(name, err) {
-							console.log(err);
+							debug.error(err);
 						});
 						break;
 					case 1:
@@ -125,7 +122,7 @@
 						} else {
 							htSMS[m.bid].unshift(m);
 						};
-						console.log(m);
+						debug.log(m);
 						break;
 					case 2:
 						var wbID = msg.content.parentID;		//wb to be reviewed
@@ -150,7 +147,7 @@
 				reviewService.processMsg(htReview);
 				SMSService.processMsg(htSMS);
 			}, function(name, err) {
-				console.log("read msg failed = " +err);
+				debug.error("read msg failed = " +err);
 			});
 		};
 	}])

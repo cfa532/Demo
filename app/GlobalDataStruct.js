@@ -65,12 +65,12 @@ function UserInfo() {
 				angular.copy(self.b.friends[i], f);
 				t.friends.push(f);
 			};
-			console.log(t)
+			debug.error(t)
 			G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.UserInfo, G_VARS.bid, t, function() {
-				console.log("UserInfo set ok");
+				debug.log("UserInfo set ok");
 				resolve();
 			}, function(name, err) {
-				console.log(err);
+				debug.error(err);
 				reject(err);
 			});
 		});			
@@ -82,7 +82,7 @@ function UserInfo() {
 		return q(function(resolve, reject) {
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.UserInfo, bid, function(data) {
 				if (data[1]) {
-					console.log(data[1]);
+					debug.info(data[1]);
 					angular.copy(data[1], self.b);
 					self.nickName = self.b.nickName;
 					self.intro = self.b.intro;
@@ -104,7 +104,7 @@ function UserInfo() {
 								this.set();
 							};
 						}, function(err) {
-							console.log(err);
+							debug.error(err);
 						});
 						self.getWeiboCount().then(function(count) {
 							self.weiboCount = count;
@@ -112,10 +112,10 @@ function UserInfo() {
 								this.set();
 							};
 						}, function(err) {
-							console.log(err);
+							debug.error(err);
 						});
-						//get deep copy of each friend
-						//self.getFriends();
+						//get deep copy of each friend, asynchronously
+						self.getFriends();
 					} else {
 						//reading someone else's UI, read a shallow copy
 						//self.friends = self.b.friends;
@@ -140,7 +140,7 @@ function UserInfo() {
 							};
 							r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
 						}, function(name, err) {
-							console.log(err);
+							debug.error(err);
 							reject(err);
 						});
 					};
@@ -149,8 +149,7 @@ function UserInfo() {
 					resolve(false);
 				};
 			}, function(name, err) {
-				console.log("data block not found for bid="+bid);
-				console.log(err);
+				debug.error(err, bid);
 				//reject(err);
 				resolve(false);
 			});
@@ -188,11 +187,11 @@ function UserInfo() {
 		ht[bid] = f;	//get a full copy of UI obj of the friend
 		f.get(bid).then(function(readOK) {
 			if (readOK) {
-				console.log(f);
+				debug.log(f);
 				if (scope) scope.$apply();
 			};
 		}, function(reason) {
-			console.log(reason);
+			debug.error(reason);
 		});
 	};
 	
@@ -215,9 +214,9 @@ function UserInfo() {
 		self.b.friends.push(f);
 		self.friendCount = self.b.friends.length;
 		this.set().then(function() {
-			console.log("friend added, bid=" +bid);
+			debug.info("friend added", f);
 		}, function(reason) {
-			console.log(reason);
+			debug.error(reason);
 		});
 	};
 	
@@ -232,9 +231,9 @@ function UserInfo() {
 			};
 		};
 		this.set().then(function() {
-			console.log("friend deleted, bid=" +bid);
+			debug.info("friend deleted", bid);
 		}, function(reason) {
-			console.log(reason);
+			debug.error(reason);
 		});
 	};
 	
@@ -253,7 +252,7 @@ function UserInfo() {
 			self.weiboCount = count;
 			df.resolve(count);
 		}, function(name, err) {
-			console.log("count weibo err=" +err);
+			debug.error(err);
 			df.reject(err);
 		});
 		return df.promise;
@@ -274,7 +273,7 @@ function UserInfo() {
 			self.favoriteCount = count;
 			df.resolve(count);
 		}, function(name, err) {
-			console.log("count favorite err=" +err);
+			debug.error(err);
 			df.reject(err);
 		});
 		return df.promise;
@@ -290,13 +289,13 @@ function UserInfo() {
 					//remove this wbID from favorite list
 					keys[1].splice(keys[1].indexOf(wb.wbID), 1);
 					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, wb.authorID, keys[1], function() {
-						console.log("favorite removed");
+						debug.info("favorite removed", wb);
 					}, function(name, err) {
-						console.log("Remove favorite err=" +err);
+						debug.error("Remove favorite err=" +err);
 					});
 				};
 			}, function(name, err) {
-				console.log("Remove favorite err=" +err);
+				debug.error("Remove favorite err=" +err);
 			});
 		} else {
 			//add favorite
@@ -310,12 +309,12 @@ function UserInfo() {
 					keys[1] = [wb.wbID];
 				};
 				G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, wb.authorID, keys[1], function() {
-					console.log("favorite added");
+					debug.info("favorite added", wb);
 				}, function(name, err) {
-					console.log("Add favorite err=" +err);
+					debug.error("Add favorite err=" +err);
 				});
 			}, function(name, err) {
-				console.log("Add favorite err=" +err);
+				debug.error("Add favorite err=" +err);
 			});
 		};
 		this.set();
@@ -330,10 +329,10 @@ function UserInfo() {
 			} else {
 				self.lastPost = new WeiboPost();
 			};
-			console.log(self.lastPost);
+			debug.info(self.lastPost);
 			df.resolve(self.lastPost);
 		}, function(name, err) {
-			console.log(err);
+			debug.error(err);
 			df.reject(err);
 		});
 		return df.promise;
@@ -424,10 +423,10 @@ function WeiboPost(scope)
 			wb.videos = self.videos;			//key list of videos
 			
 			G_VARS.httpClient.set(G_VARS.sid, G_VARS.bid, self.wbID, wb, function() {
-				console.log("update weibo ok");
+				debug.info("update weibo ok");
 				resolve();
 			}, function(name, err) {
-				console.log(err);
+				debug.error(err);
 				reject();
 			});
 		});
@@ -437,7 +436,7 @@ function WeiboPost(scope)
 		return q(function(resolve, reject) {
 			G_VARS.httpClient.get(G_VARS.sid, authorID, key, function(data) {
 				if (!data[1]) {
-					console.log("no weibo data, bid="+authorID+" wbID="+key);
+					debug.warn("no weibo data, bid="+authorID+" wbID="+key);
 					resolve(false);
 					return;
 				};
@@ -457,8 +456,8 @@ function WeiboPost(scope)
 				self.picUrls = [];
 				self.isFavorite = false;
 				
-				if (authorID==='n1VYjWmCIYM0tmRsshgKZZ3ECzTZuJQ_4enJptTJRjU')
-					console.log("wb.body=" + self.body);
+				//if (authorID==='n1VYjWmCIYM0tmRsshgKZZ3ECzTZuJQ_4enJptTJRjU')
+				//	debug.info("wb.body=" + self.body);
 				//load attached pictures async
 				var imgholder = "data:image/png;base64,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";
 				for (var i=0; i<self.pictures.length; i++) {
@@ -486,8 +485,7 @@ function WeiboPost(scope)
 						};
 					};
 				}, function(name, err) {
-					console.log("get Favorite =" + self.body);
-					console.log("get Favorite err="+err);
+					debug.error(err);
 				});
 
 				if (self.parentID !== null) {
@@ -510,8 +508,7 @@ function WeiboPost(scope)
 				};
 				resolve(true);
 			}, function(name, err) {
-				console.log(self);
-				console.log(err);
+				debug.error(err, self);
 				reject(err);
 			});
 		});
@@ -547,15 +544,15 @@ function WeiboPost(scope)
 					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, keylist[1], function() {
 						resolve();
 					}, function(name, err) {
-						console.log(err);
+						debug.error(err);
 						reject(err);
 					});
 				}, function(name, err) {
-					console.log(err);
+					debug.error(err);
 					reject(err);
 				});
 			}, function(name, err) {
-				console.log(err);
+				debug.error(err);
 				reject(err);
 			});
 		});

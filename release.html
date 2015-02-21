@@ -31,20 +31,21 @@ var G_VARS = {
 			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
 			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
 			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
-			GlobalDataStruct : 'O4x6PZuxDqYxwhZCI1E0S7Q1f0PISSBjx0OoytMxtQE',
+			GlobalDataStruct : 'O2UQ0UB67YDs9KcVI0_lGngz0HypzzMYd3rq-PtvN78',
 			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
 			uiBootstrapTpls : 'Q787mpszKswRAkLWSIqNbXL428EpCpXrUdTFe6gePZc',
 			main : '5w3k5ZTrhKnO2QPEJsfl_F1NkhhO7_j64uD0D4LcHwc'
 		},
 		js : {		//js code that can be loaded with a script tag, has to load after app declaration
 			account : 'DPVN3z5gIMRjO30WD30EdndkxWLCzimMKdSElH8CW-4',
-			message : 'Gcyod1PvoK-IW4SuAGott3puV1zRpSfRRYRMiRQyMzM',
-			sms : '1mVY0FVrFpOTyrMJcK3HFBmwEZMAJ9zITEbxkKvVyvw',
-			state : '7lyLY6K0Z_52cPVPXJAQdtxaxGb-l20Vvm9bgkVgqp8',
+			message : 'Yr7kLBGlIVPF1ZOdt9MkK8iU6AlvkPvQU9g4iFzmqjE',
+			sms : 'ZxpwCnUwKT21hnv0JgRU01XxYe4i8KC5G7DH4JiozpU',
+			state : 'YRF1yYoovQyne5aM4Z3xH5v6DGMsUQgQWySPqlQgrpg',
 			root : '7AthPOY1yIXRN91NNAuwiTgH-eikrnXrpnby7zdG4_w',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'Gs09kv-eoprBmm4atHDOGkcmJCQcgSZ-zjLN2wWSf_g'
 		},
+		log : null,
 		httpClient : null,
 		weiboApp : null,				//["ui.bootstrap", "ui.router"]
 		MaxWeiboLength	: 40,
@@ -78,6 +79,27 @@ var G_VARS = {
 		},
 	};
 
+	//customize log function. Disable it by setting isDebug to false
+	function setDebug(isDebug) {
+		if (isDebug) {
+			window.debug = {
+				log: window.console.log.bind(window.console),
+				error: window.console.error.bind(window.console),
+				info: window.console.info.bind(window.console),
+				warn: window.console.warn.bind(window.console)
+			};
+		} else {
+			var __no_op = function() {};
+			window.debug = {
+				log: __no_op,
+				error: __no_op,
+				warn: __no_op,
+				info: __no_op
+			}
+		}
+	};
+	setDebug(true);
+
 	//Both check server availability and load hprose
 	function loadHprose(ip, callback) {
 		var script = document.createElement("script");
@@ -97,18 +119,18 @@ var G_VARS = {
 		};
 		script.addEventListener("error", function() {
 			//try next server IP in a predefined list
-			console.log("check next server=" + G_VARS.IPList[G_VARS.IPNum])
+			debug.log("check next server=" + G_VARS.IPList[G_VARS.IPNum])
 			checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		});
 		//here is a problem with illegitimate sid
-		script.src = 'http://'+ip+'/getres?type=application/x-javascript&sid='+G_VARS.sid+'&bid='+G_VARS.dataBid+'&key='+G_VARS.hprose;
-		console.log(script);
+		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G_VARS.sid+'&bid='+G_VARS.dataBid+'&key='+G_VARS.hprose;
+		debug.info(script);
 		document.getElementsByTagName("head")[0].appendChild(script);
 	};
 
 	function checkServer(ip) {
 		if (ip===null || typeof(ip)==='undefined') {
-			console.log("no server available");
+			debug.log("no server available");
 			return;
 		};
 		//try to load hprose from potential server
@@ -118,7 +140,7 @@ var G_VARS = {
 					["register","login","getvar","begin","set","commit","rollback","get","setdata",
 					 "sendmsg","readmsg","lpush","lrange","hset","hget","hgetall","hlen","hdel","hkeys"]);
 			G_VARS.httpClient.login(null, G_VARS.ppt, function(sid) {
-				console.log("login with ppt, sid=" + sid);
+				debug.info("login with ppt, sid=" + sid);
 				G_VARS.sid = sid;
 				G_VARS.httpClient.getvar(sid, 'self', function(usr) {
 					G_VARS.bid = usr.id;
@@ -127,24 +149,24 @@ var G_VARS = {
 							var r = new FileReader();
 							r.onload = function(e) {
 								localStorage[G_VARS.bidPath+'angular'] = e.target.result;
-								console.log("angular saved in local");
+								debug.log("angular saved in local");
 								eval(localStorage[G_VARS.bidPath+"angular"]);	//it works because angular is defined as window.angular
 								loadExternalJS();
 							};
 							r.readAsText(new Blob([data[1]]));
 						}, function(name, err) {
-							console.log(err);
+							debug.log(err);
 						});
 					} else {
 						eval(localStorage[G_VARS.bidPath+"angular"]);
-						console.log("angular loaded")
+						debug.log("angular loaded")
 						loadExternalJS();
 					};
 				}, function(name, err) {
-					console.log("getSysUser err=" + err);
+					debug.log("getSysUser err=" + err);
 				});
 			}, function(name, err) {
-				console.log(err);
+				debug.log(err);
 			});
 		});
 	};
@@ -153,17 +175,17 @@ var G_VARS = {
 	function checkVersion() {
 		var reloadScript = function(path, key) {
 			G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, key, function(data) {
-				console.log(key);
+				debug.log(key);
 				if (data[1]) {
 					var r = new FileReader();
 					r.onload = function(e) {
-						console.log(e.target.result)
+						debug.log(e.target.result)
 						localStorage[path] = e.target.result;
 					};
 					r.readAsText(new Blob([data[1]]));
 				};
 			}, function(name, err) {
-				console.log(err);
+				debug.log(err);
 			});
 		};
 		
@@ -171,7 +193,7 @@ var G_VARS = {
 		G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.Version, function(appVersion) {
 			//get app version number
 			G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, G_VARS.Version, function(myVersion) {
-				console.log(appVersion[1] + " " +myVersion[1]);
+				debug.log(appVersion[1] + " " +myVersion[1]);
 				if (appVersion[1] !== myVersion[1]) {
 					//reload all the resource files
 					for (var k in G_VARS.dep) {
@@ -187,22 +209,22 @@ var G_VARS = {
 					
 					//update my version number
 					G_VARS.httpClient.set(G_VARS.sid, G_VARS.bid, G_VARS.Version, appVersion[1], function() {
-						console.log("version number update = " +appVersion[1]);
+						debug.log("version number update = " +appVersion[1]);
 					}, function(name, err) {
-						console.log(err);
+						debug.log(err);
 					});
 				};
 			}, function(name, err) {
-				console.log(err);
+				debug.log(err);
 			});
 		}, function(name, err) {
-			console.log(err);
+			debug.log(err);
 		});
 	};
 	
 	function loadExternalJS() {
 		var q = angular.injector(['ng']).get('$q');
-		//console.log(angular)
+		//debug.log(angular)
 		var ds = [];
 		for (var k in G_VARS.dep) {
 			//dependency need to be loaded with a script tag and executed
@@ -213,10 +235,10 @@ var G_VARS = {
 			ds.push(loadScript(k, G_VARS.js[k]));
 		};
 		q.all(ds).then(function() {
-			console.log("loaded all js code")
+			debug.log("loaded all js code")
 			loadModules();
 		}, function(reason) {
-			console.log(reason);
+			debug.log(reason);
 		});
 	};
 	
@@ -238,7 +260,7 @@ var G_VARS = {
 					if (data[1]) {
 						var r = new FileReader();
 						r.onload = function(e) {
-							console.log(e.target.result)
+							debug.log(e.target.result)
 							localStorage[G_VARS.bidPath+'js/'+k] = e.target.result;
 							if (dep) {
 								//this script is dependency of others, load it right away
@@ -254,11 +276,11 @@ var G_VARS = {
 						reject("source code data not found, key="+k);
 					};
 				}, function(name, err) {
-					console.log(err);
+					debug.log(err);
 					reject(err);
 				});
 			} else {
-				//console.log(k);
+				//debug.log(k);
 				if (dep) {
 					var script = document.createElement("script")
 					script.type = "text/javascript";
@@ -272,11 +294,9 @@ var G_VARS = {
 
 	function loadModules() {
 		G_VARS.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"])
-		//after app defined, attach my controller, services to it
-		ExecMyJS();
-		checkVersion();
+		ExecMyJS();			//after app defined, attach controllers, services and filters to it
+		checkVersion();		//update all js files if version number is different
 		
-		//console.log(G_VARS.weiboApp);
 		G_VARS.weiboApp.controller("appController", function($scope, $rootScope, $window) {
 			console.log("In app controller");
 			$scope.dataBid = G_VARS.dataBid;	//app publisher's bid
@@ -295,9 +315,11 @@ var G_VARS = {
 				itemsPerPage : 10,
 			};
 		})
-		
+		.controller("modalController", function($scope, $modal) {
+			
+		})
 		angular.bootstrap(document, ['appModule']);
-		console.log("app started");
+		debug.log("app started");
 	};
 
 checkServer(G_VARS.IPList[G_VARS.IPNum++]);
@@ -467,6 +489,16 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		</div>
 	</div>
 </div>
+
+<script type="text/ng-template" id="alert.html">
+<div width="320" height="200">
+	<div class="top c_tx5">
+		<span class="left">
+			<span class="number cNote">{{alertText}}</span>
+		</span>
+	</div>			
+</div>
+</script>
 
 <script type="text/ng-template" id="chatdetail.html">
 		<div class="border_all p10 mb15">
