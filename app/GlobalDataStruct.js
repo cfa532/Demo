@@ -65,7 +65,7 @@ function UserInfo() {
 				angular.copy(self.b.friends[i], f);
 				t.friends.push(f);
 			};
-			debug.error(t)
+			debug.info(t)
 			G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.UserInfo, G_VARS.bid, t, function() {
 				debug.log("UserInfo set ok");
 				resolve();

@@ -9,11 +9,11 @@
 	    }];
 	    
 	    var bidPath = window.location.pathname+"/appID/userID";
-	    //console.log("userid path="+userid);
+	    //debug.log("userid path="+userid);
 	    function logon($q) {
 			//retrieve user information
 			this.getSysUser = function() {
-				//console.log(userid);
+				//debug.log(userid);
 				var deferredUser = $q.defer();
 				var deferredVer = $q.defer();
 //				var dePage = $q.defer();
@@ -27,25 +27,25 @@
 					G_VARS.httpClient.getvar(sid, 'self', function(usr) {
 						deferredUser.resolve(usr);
 					}, function(name, err) {
-						console.log("getSysUser err=" + err);
+						debug.log("getSysUser err=" + err);
 						deferredUser.reject("Failed to obtain system User object");
 					});
 					
 					G_VARS.httpClient.getvar(sid, 'ver', function(ver) {
 						deferredVer.resolve(ver);
 					}, function(name, err) {
-						console.log("getSysUser err2=" +err);
+						debug.log("getSysUser err2=" +err);
 						deferredVer.reject("Failed to obtain version #");
 					});
 					
 					G_VARS.httpClient.getvar(sid, 'ppt', function(ppt) {
-						console.log('ppt=' +ppt);
+						debug.log('ppt=' +ppt);
 					}, function(name, err) {
-						console.log(err);
+						debug.error(err);
 					});
 				}, function(reason) {
 					// handle error
-					console.log("getSysUser err3=" +reason);
+					debug.error("getSysUser err3=" +reason);
 					$q.reject(reason);
 				});
 				return $q.all([deferredUser.promise, deferredVer.promise]);
@@ -59,17 +59,17 @@
 					//invalid userid, need to create a new userid
 					//userid is same as bid (block ID)
 					G_VARS.httpClient.register(function(id) {
-						console.log("New User created, id=" + id);
+						debug.log("New User created, id=" + id);
 						localStorage[bidPath] = id;
 						login().then(function(data) {
 							sid.resolve(data);
 					});
 					}, function(name, err) {
-						console.log("Failed to register, err=" + err);
+						debug.error("Failed to register, err=" + err);
 						sid.reject(err);
 					});
 				} else {
-					console.log("userID is valid " + localStorage[bidPath]);
+					debug.log("userID is valid " + localStorage[bidPath]);
 					login().then(function(data) {
 						sid.resolve(data);
 					});
@@ -83,25 +83,25 @@
 					//userid = "jE1gwQDVCfvtYgaqRAamx3em9JFP7ViL1yBapJxGyVc"
 					//G_VARS.httpClient.login(localStorage[bidPath], "ppt", function(sid) {
 					G_VARS.httpClient.login(null, G_VARS.ppt, function(sid) {
-						console.log("login with ppt")
+						debug.log("login with ppt")
 						resolve(sid);
 					}, function(name, err) {
-						console.log("Login err=" +err);
+						debug.log("Login err=" +err);
 						//delete old userid and try to login again
 						localStorage.removeItem(bidPath);
 						G_VARS.httpClient.register(function(newid) {
-							console.log("Re-create Userid=" + newid);
+							debug.warn("Re-create Userid=" + newid);
 							localStorage[bidPath] = newid;
 							
 							//try again to get a sid
 							//test user cases
 							//data = "jLZLO7LwRS0I_aiFcnP8uZ5AJ14vUY_DIApwmDU4JZA"
 							G_VARS.httpClient.login(newid, "ppt", function(sid2) {
-								console.log("in getSid2="+sid2+" new userid="+localStorage[bidPath]);
+								debug.warn("in getSid2="+sid2+" new userid="+localStorage[bidPath]);
 								resolve(sid2);
 							});
 						}, function(name, err) {
-							console.log("Failed to register, err=" + err);
+							debug.error("Failed to register, err=" + err);
 						});
 					});
 				});
@@ -120,8 +120,11 @@
 	}])
 	.controller("accountController", ["$state", "$scope", "$window", "$rootScope",
 	                                  function($state, $scope, $window, $rootScope) {
-		console.log("in account controller");
-		
+		debug.log("in account controller");
+		$scope.alerts = [];
+		                 //,
+		                 //{ type: 'success', msg: 'Account updated OK without picture', show: false},
+		                 //{ type: 'danger', msg: 'Account NOT updated', show: false}
 		$scope.saveAccount = function() {
 			//should check validity of input here
 			
@@ -141,37 +144,48 @@
 									$scope.weiboList[i].headPicUrl = e.target.result;
 								};
 							};
+							headpic = null;
+							$scope.alerts[0] = {type: 'success', msg: 'Account updated OK with picture'};
 							$scope.$apply();
-							alert("Account updated OK with picture");
-							easyDialog.close();
+							//alert("Account updated OK with picture");
+							//easyDialog.close();
 						};
 						f.readAsDataURL(headpic);
 					}, function(reason) {
-						console.log("set myUserInfo err="+reason);
+						$scope.alerts[0] = {type: 'danger', msg: 'Account NOT updated'};
+						debug.error("set myUserInfo err="+reason);
 					});
 				}, function(name, err) {
-					console.log("saveAccount err2=" +err);
+					$scope.alerts[2].show = true;
+					debug.error("saveAccount err2=" +err);
 				});
 			};
 			if (angular.isUndefined(headpic) || headpic===null) {
 				$scope.myUserInfo.set().then(function() {
-					alert("Account updated OK without pic");
-					easyDialog.close();
+					$scope.alerts[0] = {type: 'success', msg: 'Account updated OK without picture'};
+					$scope.$apply();
+					//alert("Account updated OK without pic");
+					//easyDialog.close();
 				});
 			} else {
 				r.readAsArrayBuffer(headpic);
 			};
 		};
 		
+		$scope.closeAlert = function(index) {
+			$scope.alerts.length = 0;
+		};
+		
 		$window.uploadMyIcon = function() {
-			//console.log("insiders");
 			var img = document.getElementById("myUserIcon");
 			var file = document.getElementById("myUploadIcon").files[0];
-			var r = new FileReader();
-			r.onloadend = function(e) {
-				img.setAttribute("src", e.target.result);
+			if (file) {
+				var r = new FileReader();
+				r.onloadend = function(e) {
+					img.setAttribute("src", e.target.result);
+				};
+				r.readAsDataURL(file);
 			};
-			r.readAsDataURL(file);
 		};
 
 		//jQuery for showing account manager box

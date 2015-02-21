@@ -31,13 +31,13 @@ var G_VARS = {
 			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
 			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
 			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
-			GlobalDataStruct : 'O2UQ0UB67YDs9KcVI0_lGngz0HypzzMYd3rq-PtvN78',
+			GlobalDataStruct : 'r4FfSEpSPL8YMtBECmcA4HMPJnOhC8kUnnNfFFv3roM',
 			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
 			uiBootstrapTpls : 'Q787mpszKswRAkLWSIqNbXL428EpCpXrUdTFe6gePZc',
 			main : '5w3k5ZTrhKnO2QPEJsfl_F1NkhhO7_j64uD0D4LcHwc'
 		},
 		js : {		//js code that can be loaded with a script tag, has to load after app declaration
-			account : 'DPVN3z5gIMRjO30WD30EdndkxWLCzimMKdSElH8CW-4',
+			account : 'yCUPNXWKgGjNamQHUM4hGtKZILyZEplDEOxDoABHKEU',
 			message : 'Yr7kLBGlIVPF1ZOdt9MkK8iU6AlvkPvQU9g4iFzmqjE',
 			sms : 'ZxpwCnUwKT21hnv0JgRU01XxYe4i8KC5G7DH4JiozpU',
 			state : 'YRF1yYoovQyne5aM4Z3xH5v6DGMsUQgQWySPqlQgrpg',
@@ -1042,7 +1042,12 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 							</div>
 						</td>
 					</tr>
-					
+					<tr>
+						<td align="right"></td>
+						<td>
+							<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+						</td>
+					</tr>
 				</table>
 			</div>
 			<div class="clearfix"></div>
