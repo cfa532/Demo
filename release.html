@@ -40,7 +40,7 @@ var G_VARS = {
 			account : 'yCUPNXWKgGjNamQHUM4hGtKZILyZEplDEOxDoABHKEU',
 			message : 'Yr7kLBGlIVPF1ZOdt9MkK8iU6AlvkPvQU9g4iFzmqjE',
 			sms : 'ZxpwCnUwKT21hnv0JgRU01XxYe4i8KC5G7DH4JiozpU',
-			state : 'YRF1yYoovQyne5aM4Z3xH5v6DGMsUQgQWySPqlQgrpg',
+			state : 'M4B4RBEKDGxrK1s_2CB3yczvwPXSIhQ2H8kLvjbznaE',
 			root : '7AthPOY1yIXRN91NNAuwiTgH-eikrnXrpnby7zdG4_w',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'Gs09kv-eoprBmm4atHDOGkcmJCQcgSZ-zjLN2wWSf_g'
@@ -530,7 +530,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 				</div>
 				<div class="wbpmcontent">
 					<p class="mb10"><b>
-<a ui-sref="root.personal.allPost({bid:m.bid})" title="" class="f10a2c7">{{myUserInfo.friends[m.bid].nickName || myUserInfo.nickName}}</a></b></p>
+		<a ui-sref="root.personal.allPost({bid:m.bid})" title="" class="f10a2c7">{{myUserInfo.friends[m.bid].nickName || myUserInfo.nickName}}</a></b></p>
 					<div class="message">{{m.content}}</div>
 					<div class="pubtime">{{m.timeStamp | chatTime}}</div>
 				</div>
@@ -840,7 +840,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 						<div class="lotspic_list">
 							<ul>
 								<li ng-repeat="uri in wb.parentWeibo.picUrls track by $index">
-									<a href="javascript:void(0);" ng-click="showFullPic(uri)" target="_blank">
+									<a href="javascript:void(0);" ng-click="showPicSlider(wb.parentWeibo)">
 										<img ng-src="{{uri}}" alt=""/></a>
 								</li>
 								<div class="clearfix"></div>
@@ -858,7 +858,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 					<div class="lotspic_list">
 						<ul>
 							<li ng-repeat="uri in wb.picUrls track by $index">
-								<a href="javascript:void(0);" ng-click="showFullPic(uri)">
+								<a href="javascript:void(0);" ng-click="showPicSlider(wb)">
 									<img ng-src="{{uri}}"></img></a>
 							</li>
 							<div class="clearfix"></div>
@@ -898,6 +898,29 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		</ul>
 		<pager total-items="totalItems" items-per-page="global.itemsPerPage" ng-model="global.currentPage" ng-change="pageChanged()"></pager>
 	</div>
+
+<div class="from_wrapper" id="pic_slider" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
+	<div class="account_set">
+		<div class="member_info">
+			<table border="0" cellspacing="0" cellpadding="0" width="600" height="400">
+				<tr><td align="right">
+  <div>
+    <carousel interval="2000">
+      <slide ng-repeat="slide in slides" active="slide.active">
+        <img ng-src="{{slide.image}}" style="margin:auto;">
+        <div class="carousel-caption">
+          <p>{{slide.text}}</p>
+        </div>
+      </slide>
+    </carousel>
+  </div>
+				</td></tr>
+			</table>
+		</div>
+	<div class="clearfix"></div>
+	</div>
+</div>
 </script>
 
 <script type="text/ng-template" id="upperSidebar.html">

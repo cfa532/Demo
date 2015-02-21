@@ -430,6 +430,23 @@
 	                                function($state, $stateParams, $scope) {
 		debug.log("in weibo controller")
 		var q = angular.injector(['ng']).get('$q');
+
+		$scope.showPicSlider = function(wb) {
+			if (wb.pictures.length === 0) return;
+			$scope.slides = [];
+			for (var i=0; i<wb.pictures.length; i++) {
+				$scope.slides.push({
+					image : wb.picUrls[i],
+					text : i
+				});
+			};
+			easyDialog.open({
+				container : 'pic_slider',
+				fixed : false,
+				drag : true,
+				overlay : true
+				});
+		};
 		
 		$scope.pageChanged = function() {
 			if ($state.is("root.main.allPosts")) {

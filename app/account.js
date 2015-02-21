@@ -122,9 +122,6 @@
 	                                  function($state, $scope, $window, $rootScope) {
 		debug.log("in account controller");
 		$scope.alerts = [];
-		                 //,
-		                 //{ type: 'success', msg: 'Account updated OK without picture', show: false},
-		                 //{ type: 'danger', msg: 'Account NOT updated', show: false}
 		$scope.saveAccount = function() {
 			//should check validity of input here
 			
