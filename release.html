@@ -25,7 +25,7 @@ var G_VARS = {
 			base : 'Fci4FS6sRzZ1BqJVfY-nKGr3D0J11hLKXWQaw01o8BM',
 			master : 'NybE1ul4p2UuP1_74CS4M7I7zAtLY81yPBLnvZiNrkM',
 			addition : 'e4BCO-kL50Ds2iTlB2C3f7DeGHmsL7f3YcfVGeiEffo',
-			bootstrap : '5YSSC_6cYcvIUw3W7yVQ7eYClAY9XHRc4-hlbyZ-HhM'
+			bootstrap : 'U4iU6sEVl8UFaVerzryrKS_Wci7yRTXYvM563VILVSg',
 		},
 		dep : {		//dependency of app module that has to be loaded before module declaration
 			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
@@ -33,7 +33,7 @@ var G_VARS = {
 			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
 			GlobalDataStruct : 'r4FfSEpSPL8YMtBECmcA4HMPJnOhC8kUnnNfFFv3roM',
 			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
-			uiBootstrapTpls : 'Q787mpszKswRAkLWSIqNbXL428EpCpXrUdTFe6gePZc',
+			uiBootstrapTpls : 'yY70GzFiSHca2X1jmc6bw6jMkW4WqyUX1NFXWjHsjJc',
 			main : '5w3k5ZTrhKnO2QPEJsfl_F1NkhhO7_j64uD0D4LcHwc'
 		},
 		js : {		//js code that can be loaded with a script tag, has to load after app declaration
@@ -185,7 +185,7 @@ var G_VARS = {
 					r.readAsText(new Blob([data[1]]));
 				};
 			}, function(name, err) {
-				debug.log(err);
+				debug.error(err);
 			});
 		};
 		
@@ -209,16 +209,16 @@ var G_VARS = {
 					
 					//update my version number
 					G_VARS.httpClient.set(G_VARS.sid, G_VARS.bid, G_VARS.Version, appVersion[1], function() {
-						debug.log("version number update = " +appVersion[1]);
+						debug.info("version number update = " +appVersion[1]);
 					}, function(name, err) {
-						debug.log(err);
+						debug.error(err);
 					});
 				};
 			}, function(name, err) {
-				debug.log(err);
+				debug.error(err);
 			});
 		}, function(name, err) {
-			debug.log(err);
+			debug.error(err);
 		});
 	};
 	
@@ -238,7 +238,7 @@ var G_VARS = {
 			debug.log("loaded all js code")
 			loadModules();
 		}, function(reason) {
-			debug.log(reason);
+			debug.error(reason);
 		});
 	};
 	
@@ -276,7 +276,7 @@ var G_VARS = {
 						reject("source code data not found, key="+k);
 					};
 				}, function(name, err) {
-					debug.log(err);
+					debug.error(err);
 					reject(err);
 				});
 			} else {
@@ -634,7 +634,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 			</ul>
 		</div>
 	</div>
-	<div ui-view><h1>welcome page</h1></div>
+	<div ui-view><h1>weibo list</h1></div>
 	<ng-include src="'floating.html'"></ng-include>
 </div>
 <ng-include src="'upperSidebar.html'"></ng-include>
@@ -904,18 +904,19 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 	<div class="account_set">
 		<div class="member_info">
 			<table border="0" cellspacing="0" cellpadding="0" width="600" height="400">
-				<tr><td align="right">
-  <div>
-    <carousel interval="2000">
-      <slide ng-repeat="slide in slides" active="slide.active">
-        <img ng-src="{{slide.image}}" style="margin:auto;">
-        <div class="carousel-caption">
-          <p>{{slide.text}}</p>
-        </div>
-      </slide>
-    </carousel>
-  </div>
-				</td></tr>
+				<tr><td>
+	<div style="height: 385px; width: 580px">
+		<carousel interval="2000">
+			<slide ng-repeat="slide in slides" active="slide.active">
+				<img ng-src="{{slide.image}}" style="margin:auto;"/>
+				<div class="carousel-caption">
+					<h4>Slide {{$index}}</h4>
+					<p>{{slide.text}}</p>
+				</div>
+			</slide>
+		</carousel>
+	</div>
+ 				</td></tr>
 			</table>
 		</div>
 	<div class="clearfix"></div>
@@ -1066,8 +1067,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 						</td>
 					</tr>
 					<tr>
-						<td align="right"></td>
-						<td>
+						<td colspan='2'>
 							<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 						</td>
 					</tr>
