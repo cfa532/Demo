@@ -141,9 +141,9 @@
 		
 		var getUI = function(ht, bid) {
 			var ui = new UserInfo();
-			ht[bid] = ui;
 			ui.get(bid).then(function(readOK) {
 				if (readOK) {
+					ht[bid] = ui;
 					debug.log(ui);
 					$scope.$apply();
 				};
