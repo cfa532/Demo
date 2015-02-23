@@ -85,81 +85,31 @@
 				debug.log("in chat history controller");
 				$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
 
-				var getLastSMS = function(bid) {
-					if ($scope.myUserInfo.friends[bid]) {
-						G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(data) {
-							if (data.length > 0) {
-								data.sort(function(a, b) {return b-a});
-								debug.log(data[0] + " " +bid);
-								G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
-									$scope.myUserInfo.friends[bid].lastSMS = m[1];
-									$scope.$apply();
-								}, function(name, err) {
-									debug.error(err);
-								});
-							};
-						}, function(name, err) {
-							debug.error(err);
-						});
-					} else {
-						var f = new UserInfo();
-						$scope.myUserInfo.friends[bid] = f;
-						f.get(bid).then(function(readOK) {
-							if (readOK) {
-								debug.info(f);
-								G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(data) {
-									if (data.length > 0) {
-										data.sort(function(a, b) {return b-a});
-										G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
-											$scope.myUserInfo.friends[bid].lastSMS = m[1];
-											$scope.$apply();
-											debug.log(m);
-										}, function(name, err) {
-											debug.error(err);
-										});
-									};
-								}, function(name, err) {
-									debug.error(err);
-								});
-							};
-						}, function(reason) {
-							debug.error(reason);
-						});
-					};
-				};
-				
-				for (var i=0; i<$scope.myUserInfo.b.friends.length; i++) {
-					getLastSMS($scope.myUserInfo.b.friends[i].bid);
-				};
-			}
+				angular.forEach($scope.myUserInfo.friends, function(ui, bid) {
+					G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(data) {
+						if (data.length > 0) {
+							data.sort(function(a, b) {return b-a});
+							G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
+								ui.lastSMS = m[1];
+								debug.log(m[1], ui);
+								$scope.$apply();
+							}, function(name, err) {
+								debug.error(err);
+							});
+						};
+					}, function(name, err) {
+						debug.error(err);
+					});
+				});
+			},
 		})
 		.state("root.chat.detail", {
 			url : "/detail/{bid}",
 			templateUrl : "chatdetail.html",
-			resolve : {
-				initUI : function(logon, $q, $stateParams, $rootScope) {
-					var df = $q.defer();
-					if ($rootScope.myUserInfo.friends[$stateParams.bid]) {
-						df.resolve($rootScope.myUserInfo.friends[$stateParams.bid]);
-					} else {
-						var ui = new UserInfo();
-						$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
-						ui.get($stateParams.bid).then(function(readOK) {
-							if (readOK) {
-								debug.info(ui);
-								df.resolve(ui);
-							};
-						}, function(reason) {
-							df.reject(reason);
-						});
-					};
-					return df.promise;
-				},
-			},
-			controller : function(initUI, $scope, $rootScope, $stateParams, msgService, SMSService) {
+			controller : function($scope, $rootScope, $stateParams, msgService, SMSService) {
 				//set current UI to the user I am chatting to
-				$rootScope.currUserInfo = initUI;
-				debug.log(initUI);
+				$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
+				debug.log($rootScope.myUserInfo.friends[$stateParams.bid]);
 				$scope.inPageBid = $stateParams.bid;	//bid of user I am talking to
 				$scope.inPageMsgs = [];
 				$scope.C = {
@@ -236,21 +186,9 @@
 						//assume that is when the user read any old msgs
 						var cs = new ChatSession();
 						cs.bid = bid;
-						if ($scope.myUserInfo.friends[bid])
-							cs.friend = $scope.myUserInfo.friends[bid];
-						else {
-							var f = new UserInfo();
-							$scope.myUserInfo.friends[bid] = f;
-							f.get(bid).then(function(readOK) {
-								if (readOK) {
-									debug.info(f);
-									cs.friend = f;
-								};
-							}, function(reason) {
-								debug.error(reason);
-							});
-						};
+						cs.friend = $scope.myUserInfo.friends[bid];
 						$scope.chatSessions[bid] = cs;
+
 						//first check if there are unread msgs in SMSUnread db
 						G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, function(data) {
 							if (data[1]) {
@@ -332,39 +270,15 @@
 			abstract : true,
 			url : "/personal/{bid}",
 			templateUrl : "personal.html",
-			resolve : {
-				initUI : function(logon, $q, $stateParams, $rootScope) {
-					var df = $q.defer();
-					if (!$stateParams.bid || $stateParams.bid===G_VARS.bid) {
-						//debug.log("look at me")
-						$rootScope.currUserInfo = $rootScope.myUserInfo;
-						df.resolve();
-					}
-					else {
-						if ($rootScope.myUserInfo.friends[$stateParams.bid]) {
-							$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
-							df.resolve();
-						} else {
-							var ui = new UserInfo();
-							$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
-							ui.get($stateParams.bid).then(function(readOK) {
-								if (readOK) {
-									debug.info(ui);
-									$rootScope.currUserInfo = ui;
-									$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
-									df.resolve();
-								};
-							}, function(reason) {
-								df.reject(reason);
-							});
-						};
-					};
-					return df.promise;
-				},
-			},
-			controller : function(initUI, $scope, $stateParams) {
+			controller : function($scope, $rootScope, $stateParams) {
 				debug.log("in personal state ctrl, bid="+$stateParams.bid);
 				//get a list of pics by this user
+				if (!$stateParams.bid || $stateParams.bid===G_VARS.bid) {
+					$rootScope.currUserInfo = $rootScope.myUserInfo;
+				}
+				else {
+					$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
+				}
 				$scope.currUserInfo.getPictures($scope).then(function(pics) {
 					$scope.myPicKeys = pics;
 				}, function(reason) {
@@ -375,8 +289,7 @@
 		.state("root.personal.friends", {
 			url : "/friends",
 			templateUrl : "friends.html",
-			controller : function(logon, $scope) {				
-				debug.log("in personal.friends ctrl, logon=" + logon);			
+			controller : function($scope) {				
 				for (var i=0; i<$scope.currUserInfo.b.friends.length; i++) {
 					(function(bid) {
 						if ($scope.currUserInfo.friends[bid]) {
@@ -556,7 +469,7 @@
 		
 		//read all the post of a certain friend
 		var getPosts = function(bid, iDay, original) {
-			debug.log("in getPosts(), pagenum=" +$scope.global.currentPage+" iDay="+iDay);
+			//debug.log("in getPosts(), pagenum=" +$scope.global.currentPage+" iDay="+iDay);
 			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 			$scope.totalItems = $scope.currUserInfo.weiboCount;
 			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.Posts, function(days) {
