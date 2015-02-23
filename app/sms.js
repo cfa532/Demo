@@ -133,20 +133,21 @@
 				$scope.usrList = {};
 				angular.forEach(data, function(bid) {
 					if (bid!==G_VARS.bid && bid!==null && !$scope.myUserInfo.isFriend(bid)) {
-						getUI($scope.usrList, bid);
+						(function(ht, bid) {
+							var ui = new UserInfo();
+							ui.get(bid).then(function(readOK) {
+								//console.log("check non-friend bid="+bid);
+								if (readOK) {
+									ht[bid] = ui;
+									debug.info(ui);
+									$scope.$apply();
+								};
+							}, function(reason) {
+								debug.error(reason, bid);
+							});
+						}($scope.usrList, bid));
 					};
 				});
-			});
-		};
-		
-		var getUI = function(ht, bid) {
-			var ui = new UserInfo();
-			ui.get(bid).then(function(readOK) {
-				if (readOK) {
-					ht[bid] = ui;
-					debug.log(ui);
-					$scope.$apply();
-				};
 			});
 		};
 		
@@ -214,7 +215,7 @@
 				if (data[1]) {
 					//most unlikely, but 2 msgs happened at the same time
 					msg.timeStamp++;	//try a different timestamp by adding 1 millisecond
-					this.saveSMS(msg);
+					this.saveSMS(bid, msg);
 				} else {
 					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, bid, msg.timeStamp, msg, function() {
 						debug.log("msg saved in db", msg);

@@ -53,6 +53,8 @@
 						}, function(reason) {
 							debug.error(reason);
 						});
+					}, function(reason) {
+						debug.error(reason);
 					});
 					return deferredStart.promise;
 				}
@@ -104,6 +106,7 @@
 						$scope.myUserInfo.friends[bid] = f;
 						f.get(bid).then(function(readOK) {
 							if (readOK) {
+								debug.info(f);
 								G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(data) {
 									if (data.length > 0) {
 										data.sort(function(a, b) {return b-a});
@@ -143,6 +146,7 @@
 						$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
 						ui.get($stateParams.bid).then(function(readOK) {
 							if (readOK) {
+								debug.info(ui);
 								df.resolve(ui);
 							};
 						}, function(reason) {
@@ -239,6 +243,7 @@
 							$scope.myUserInfo.friends[bid] = f;
 							f.get(bid).then(function(readOK) {
 								if (readOK) {
+									debug.info(f);
 									cs.friend = f;
 								};
 							}, function(reason) {
@@ -344,13 +349,12 @@
 							$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
 							ui.get($stateParams.bid).then(function(readOK) {
 								if (readOK) {
-									debug.log(ui);
+									debug.info(ui);
 									$rootScope.currUserInfo = ui;
 									$rootScope.myUserInfo.friends[$stateParams.bid] = ui;
 									df.resolve();
 								};
 							}, function(reason) {
-								debug.error(reason);
 								df.reject(reason);
 							});
 						};
@@ -374,7 +378,7 @@
 			controller : function(logon, $scope) {				
 				debug.log("in personal.friends ctrl, logon=" + logon);			
 				for (var i=0; i<$scope.currUserInfo.b.friends.length; i++) {
-					var getLast = function(bid) {
+					(function(bid) {
 						if ($scope.currUserInfo.friends[bid]) {
 							$scope.currUserInfo.friends[bid].getLastWeibo().then(function(wb) {
 								$scope.$apply();
@@ -386,7 +390,7 @@
 							$scope.currUserInfo.friends[bid] = f;
 							f.get(bid).then(function(readOK) {
 								if (readOK) {
-									//$scope.myUserInfo.friends[bid] = f;
+									debug.info(f);
 									f.getLastWeibo().then(function(wb) {
 										$scope.$apply();
 									}, function(reason) {
@@ -397,8 +401,7 @@
 								debug.error(reason);
 							});
 						};
-					};
-					getLast($scope.currUserInfo.b.friends[i].bid);
+					}($scope.currUserInfo.b.friends[i].bid));
 				};
 			},
 		})
@@ -480,10 +483,9 @@
 			if (wbListLen < $scope.global.currentPage * $scope.global.itemsPerPage) {
 				//read my own weibo
 				getPostPerDay(G_VARS.bid, currentDay, original);
-				
-				//read my friend's weibo
 				for (var i=0; i<$scope.myUserInfo.b.friends.length; i++) {
-					getPostOfFriend($scope.myUserInfo.b.friends[i].bid, currentDay, original);
+					//read weibo of a certain friend on a given day		
+					getPostPerDay($scope.myUserInfo.b.friends[i].bid, currentDay, original);
 				};
 
 				if (wbDay-currentDay > 30) {	//look for weibo in the past month
@@ -493,29 +495,11 @@
 				} else {
 					currentDay--;
 					getAllPosts(currentDay, original);
-					//setTimeout(function() {
-					//}, 1000);		//if no enough items, read more for me every 1 second
 				};
 			} else {
 				//remember the last date of weibo read and exit
 				wbDay = currentDay;
 			};
-		};
-		
-		//read weibo of a certain person on a given day
-		var getPostOfFriend = function(bid, day, original) {
-			if (angular.isUndefined($scope.myUserInfo.friends[bid]) && bid!==G_VARS.bid) {
-				//the friend's UserInfo is not ready, get it
-				var ui = new UserInfo();
-				$scope.myUserInfo.friends[bid] = ui;
-				//debug.log(ui)
-				ui.get(bid).then(function(readOK) {
-					if (readOK) {							
-						$scope.myUserInfo.friends[bid] = ui;
-					};
-				});
-			};
-			getPostPerDay(bid, day, original);
 		};
 		
 		var getPostPerDay = function(bid, day, original) {
@@ -545,6 +529,8 @@
 					G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 					$scope.$apply();
 				};
+			}, function(reason) {
+				debug.error(reason);
 			});
 		};
 		
