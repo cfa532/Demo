@@ -199,14 +199,11 @@
 								};
 								$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
 							} else {
-								//no unread msgs, load msgs from last day
-								//get all of them for now
-								//debug.log($("#myChatBox")[0]);
+								//no unread msgs, load most recent 50 msgs
 								G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(ts) {
-									if (ts!==null && ts.length>0) {
-										//debug.log(ts);
-										//debug.log(bid);
-										for (var i=0; i<ts.length; i++) {
+									if (ts.length>0) {
+										ts.sort(function(a,b) {return b-a});
+										for (var i=0; i<ts.length && i<50; i++) {
 											G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, ts[i], function(msg) {
 												if (msg[1]) {
 													//debug.log(msg[1]);
@@ -404,6 +401,7 @@
 				if (wbDay-currentDay > 30) {	//look for weibo in the past month
 					wbDay = currentDay-1;	//remember the last day from which post is read
 					debug.log("get out of loop, " + currentDay)
+					$(".loader").fadeOut("slow");
 					return;
 				} else {
 					currentDay--;
@@ -412,6 +410,7 @@
 			} else {
 				//remember the last date of weibo read and exit
 				wbDay = currentDay;
+				$(".loader").fadeOut("slow");
 			};
 		};
 		

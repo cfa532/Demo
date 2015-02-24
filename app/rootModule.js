@@ -2,11 +2,11 @@
 	"use strict";
 
 	G_VARS.weiboApp
-	.controller("sidebarController", ["$stateParams", "$scope", "$rootScope", "$location", function($stateParams, $scope, $rootScope, $location) {
-		console.log("in sidebar controller");
+	.controller("sidebarController", ["$stateParams", "$scope", "$location", function($stateParams, $scope, $location) {
+		debug.log("in sidebar controller");
 	}])
 	.controller("pictureController", ["$state", "$stateParams", "$scope", function($state, $stateParams, $scope) {
-		console.log("in picture controller");
+		debug.log("in picture controller");
 		
 		//pic keys are saved in G_VARS.PostPics, indexed by weibo date
 		//for now, read all pics into the following list without pagination.
@@ -19,7 +19,7 @@
 		var getPicsOfDay = function(day, bid) {
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.PostPics, day, function(keys) {
 				if (keys[1]) {
-					//console.log(keys[1]);
+					//debug.log(keys[1]);
 					for (var i=0; i<keys[1].length; i++) {
 						G_VARS.httpClient.get(G_VARS.sid, bid, keys[1][i], function(data) {
 							if (data[1]) {
@@ -27,32 +27,31 @@
 								r.onloadend = function(e) {
 									$scope.myPicUrls.push(e.target.result);
 									$scope.$apply();
-									//console.log(e.target.result)
 								};
 								r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
 							};
 						}, function(name, err) {
-							console.log(err);
+							debug.error(err);
 						});
 					};
 				};
 			}, function(name, err) {
-				console.log(err);
+				debug.error(err);
 			});
 		};
 		
 		//get all the pics of a user. Pic keys are saved in a global list
 		function getUserPics(bid) {
 			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.PostPics, function(wbDays) {
-				//console.log(wbDays);
+				//debug.log(wbDays);
 				if (wbDays.length>0) {
 					wbDays.sort(function(a,b) {return b-a;});
-					for (var i=0; i<wbDays.length; i++) {
+					for (var i=0; i<wbDays.length && i<7; i++) {
 						getPicsOfDay(wbDays[i], bid);
 					};
 				};
 			}, function(name, err) {
-				console.log("pic controller err= " + err);
+				debug.error("pic controller err= " + err);
 			});
 		};
 		
@@ -69,19 +68,18 @@
 		};
 		
 		if ($state.is("root.main.pictureGrid")) {
-			console.log("in main picture state");
+			debug.log("in main picture state");
 			getAllPics();
 		} else if ($state.is("root.personal.pictureGrid")) {
-			console.log("in personal picture state");
+			debug.log("in personal picture state");
 			getUserPics($stateParams.bid);
 		};
 	}])
 	.controller("postController", ["$scope", "$rootScope", "$state", function($scope, $rootScope, $state) {
 		//publish new post
-		console.log("In Post controller")
+		debug.log("In Post controller")
 		var q = angular.injector(['ng']).get('$q');
 		$scope.P = {
-				sentOK			: false,
 				txtInvalid		: true,
 				chCounter		: G_VARS.MaxWeiboLength,
 				submitStyle		: "send_btn W_btn_v_disable",
@@ -118,7 +116,7 @@
 			//upload attached pictures
 			addPictures(wb).then(function(pickeys) {
 				//pic files uploaded ok, clear tmp files
-				console.log("number of pics =" + wb.pictures.length);
+				debug.log("number of pics =" + wb.pictures.length);
 				tmpPicFiles.length = 0;
 				$scope.tmpPicUrls.length = 0;
 				$scope.P.showPicUpload = false;
@@ -126,8 +124,7 @@
 				//add a new post to DB and the new postKey to a list
 				wb.pictures = pickeys;
 				wb.set().then(function() {
-					console.log("addNewPost: key=" + wb.wbID);
-					console.log(wb);
+					debug.log("addNewPost:", wb);
 					//successfully added a new weibo key. Now clear up
 					$scope.global.weiboCount++;
 					$scope.wbText = '';
@@ -139,8 +136,7 @@
 					$scope.myUserInfo.setLastWeibo(wb);
 					
 					//display the sent OK label for 5000 milliseconds
-					setTimeout( function() {$scope.P.sentOK=false; $scope.$apply()}, 3000 );
-					$scope.P.sentOK = true;
+					$("#wbSubmitOK").fadeIn('slow').delay(3000).fadeOut('slow');
 					$scope.weiboList.unshift(wb);
 					G_VARS.slice($scope.weiboList, $scope.currentList, 0, $scope.global.itemsPerPage);
 					$scope.global.currentPage = 1;
@@ -155,16 +151,16 @@
 							else
 								keys[1] = wb.pictures;
 							G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, keys[1], function() {
-								console.log("pic keys added to global list =" + keys[1]);
+								debug.log("pic keys added to global list =" + keys[1]);
 							}, function(name, err) {
-								console.log(err);
+								debug.error(err);
 							});
 						}, function(name, err) {
-							console.log(err);
+							debug.error(err);
 						});
 					};
 				}, function(reason) {
-					console.log(reason);
+					debug.error(reason);
 				});
 			});
 		};
@@ -175,7 +171,6 @@
 			for (var i=0; i<tmpPicFiles.length; i++) {
 				var f = new FileReader();
 				f.onloadend = function(e) {
-					//console.log(e.target.result);
 					wb.picUrls.push(e.target.result);
 				};
 				f.readAsDataURL(tmpPicFiles[i], {type: 'image/png'});
@@ -184,10 +179,10 @@
 					var r = new FileReader();
 					r.onloadend = function(e) {
 						G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
-							console.log("result =" +picKey);
+							debug.log("result =" +picKey);
 							resolve(picKey);
 						}, function(name, err) {
-							console.log("err = " +err);
+							debug.log("err = " +err);
 							reject(err);
 						});
 					};
@@ -221,11 +216,8 @@
 
 		//display thumb nails of selected image files in the pic selection box
 		$scope.fileSelected = function(files) {
-			//console.log("file selected called")
 			for (var i=0; i<files.length; i++) {
-				//remember all the files selected
-				tmpPicFiles.push(files[i]);
-				
+				tmpPicFiles.push(files[i]);			//remember all the files selected
 				var r = new FileReader();
 				r.onloadend = function(e) {
 					//draw a thumbnail of the original picture
@@ -244,6 +236,7 @@
 			};
 		};
 
+		//jQuery code to show the picture file selector
 		document.getElementById('btnMonth').onclick = function(){
 			easyDialog.open({
 				container : 'dlgSend',

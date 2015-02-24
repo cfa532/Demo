@@ -65,12 +65,10 @@ function UserInfo() {
 				angular.copy(self.b.friends[i], f);
 				t.friends.push(f);
 			};
-			debug.info(t)
 			G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.UserInfo, G_VARS.bid, t, function() {
 				debug.log("UserInfo set ok");
 				resolve();
 			}, function(name, err) {
-				debug.error(err);
 				reject(err);
 			});
 		});			
@@ -114,6 +112,7 @@ function UserInfo() {
 							debug.error(reason);
 						});
 						//get deep copy of each friend, asynchronously
+						//!!!VERY important to be called here. Init the loading of all friends UserInfo
 						self.getFriends();
 					} else {
 						//reading someone else's UI, read a shallow copy
@@ -328,7 +327,6 @@ function UserInfo() {
 			debug.info(self.lastPost);
 			df.resolve(self.lastPost);
 		}, function(name, err) {
-			debug.error(err);
 			df.reject(err);
 		});
 		return df.promise;
