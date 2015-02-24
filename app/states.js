@@ -399,7 +399,7 @@
 				};
 
 				if (wbDay-currentDay > 30) {	//look for weibo in the past month
-					wbDay = currentDay-1;	//remember the last day from which post is read
+					wbDay = currentDay-1;		//remember the last day from which post is read
 					debug.log("get out of loop, " + currentDay)
 					$(".loader").fadeOut("slow");
 					return;
