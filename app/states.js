@@ -106,7 +106,7 @@
 		.state("root.chat.detail", {
 			url : "/detail/{bid}",
 			templateUrl : "chatdetail.html",
-			controller : function($scope, $rootScope, $stateParams, msgService, SMSService) {
+			controller : function($scope, $rootScope, $stateParams, msgService, SMSService, $timeout) {
 				//set current UI to the user I am chatting to
 				$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
 				debug.log($rootScope.myUserInfo.friends[$stateParams.bid]);
@@ -134,27 +134,136 @@
 
 				//take the chatting friend's bid as parameter
 				$scope.sendSMS = function(bid) {
-					if ($scope.txtChat.toString().replace(/\s+/g,"") === '' )
-						return;
-					var m = new WeiboMessage();
-					m.bid = G_VARS.bid;
-					m.type = 1;				//SMS
-					m.contentType = 0;		//text
-					m.content = $scope.txtChat;
-					m.viewed = 0;
-					m.timeStamp = new Date().getTime();
-					msgService.sendSMS(bid, m);
-					
-					debug.log($scope.chatSessions[bid]);
-					$scope.chatSessions[bid].messages.unshift(m);
-					$scope.chatSessions[bid].timeStamp = m.timeStamp;
-					$scope.txtChat = '';
-					$scope.txtChanged();
-					
-					//save it in db as conversation
-					SMSService.saveSMS(bid, m);
+					if ($scope.txtChat && $scope.txtChat.toString().replace(/\s+/g,"") !== '') {
+						var m = new WeiboMessage();
+						m.bid = G_VARS.bid;
+						m.type = 1;				//SMS
+						m.contentType = 0;		//text
+						m.content = $scope.txtChat;
+						m.timeStamp = new Date().getTime();
+						msgService.sendSMS(bid, m);
+						
+						debug.log($scope.chatSessions[bid]);
+						$scope.chatSessions[bid].messages.push(m);
+						$scope.chatSessions[bid].timeStamp = m.timeStamp;
+						$scope.txtChat = '';
+						
+						//save it in db as conversation
+						SMSService.saveSMS(bid, m);
+					};
+					if ($scope.picUrl) {
+						var r = new FileReader();
+						r.onloadend = function(e) {
+							G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
+								var m = new WeiboMessage();
+								m.bid = G_VARS.bid;
+								m.type = 1;				//SMS
+								m.contentType = 1;		//picture
+								m.content = picKey;
+								m.timeStamp = new Date().getTime();
+								msgService.sendSMS(bid, m);
+								
+								debug.log($scope.chatSessions[bid]);
+								$scope.chatSessions[bid].messages.push(m);
+								$scope.chatSessions[bid].timeStamp = m.timeStamp;
+								$scope.picUrl = null;
+								
+								//save it in db as conversation
+								SMSService.saveSMS(bid, m);
+							}, function(name, err) {
+								debug.error(err);
+							});
+						};
+						r.readAsArrayBuffer(fileName);
+					};
+					if ($scope.fileSent) {
+						var r = new FileReader();
+						r.onloadend = function(e) {
+							G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(fileKey) {
+								var m = new WeiboMessage();
+								m.bid = G_VARS.bid;
+								m.type = 1;				//SMS
+								m.contentType = 2;		//file
+								console.log($scope.fileSent)
+								m.content = $scope.fileSent.name + "\t" + $scope.fileSent.type + "\t" + fileKey;
+								m.timeStamp = new Date().getTime();
+								msgService.sendSMS(bid, m);
+								
+								debug.log($scope.chatSessions[bid]);
+								$scope.chatSessions[bid].messages.push(m);
+								$scope.chatSessions[bid].timeStamp = m.timeStamp;
+								$scope.fileSent = null;
+								
+								//save it in db as conversation
+								SMSService.saveSMS(bid, m);
+							}, function(name, err) {
+								debug.error(err);
+							});
+						};
+						r.readAsArrayBuffer($scope.fileSent);
+					};
 				};
 				
+				$scope.showBigPic = function(m) {
+					$scope.bigPicUrl = null;
+					$timeout(function() {$scope.$apply()});
+					G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, m.content, function(data) {
+						var r = new FileReader();
+						r.onloadend = function(e) {
+							$scope.bigPicUrl = e.target.result;
+						};
+						r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+					}, function(name, err) {
+						debug.error(err);
+					});
+					
+					easyDialog.open({
+						container : 'big_picture2',
+						fixed : false,
+						drag : true,
+						overlay : true
+						});
+				};
+				
+				//upload a picture to be sent
+				$scope.sendFile = function(id) {
+					//simulate file selection event
+		            document.getElementById(id).dispatchEvent(new Event('click'));
+				};
+				
+				var picFile;
+				$scope.picSelected = function(files) {
+					$scope.picUrl = null;
+					if (files!==null && files.length>0) {
+						//display pic in send box
+						var r = new FileReader();
+						r.onloadend = function(e) {
+							$scope.picUrl = e.target.result;
+						};
+						picFile = files[0];
+						r.readAsDataURL(files[0], {type: 'image/png'});
+					};
+				};
+								
+				$scope.fileSelected = function(files) {
+					$scope.fileSent = null;
+					if (files!==null && files.length>0) {
+						$scope.fileSent = files[0];
+					};
+				};
+				
+				//download received file
+				$scope.saveFile = function(m) {
+					var arr = m.content.toString().split("\t");
+					G_VARS.httpClient.get(G_VARS.sid, m.bid, arr[2], function(data) {
+						if (data[1]) {
+							saveAs(new Blob([data[1]], {type: arr[1]}), arr[0]);
+						};
+					}, function(name, err) {
+						debug.error(err);
+					});
+				};
+								
 				//message input in the textarea
 				$scope.txtChanged = function() {
 					//debug.log($scope.txtChat)
@@ -232,6 +341,13 @@
 					};
 				};
 				getChatHistory($stateParams.bid);
+
+				$("#myChatArea2").keyup(function(e) {	//use keyup to avoid misfire in chinese input
+					if (e.keyCode === 13) {
+						$scope.sendSMS($stateParams.bid);
+						return false;
+					};
+				});
 			},
 		})
 		.state("root.main", {
@@ -339,16 +455,16 @@
 		$urlRouterProvider.otherwise("/root/main/allposts");
 	}])
 	//get weibo list and display them nicely
-	.controller("weiboController", ["$state", "$stateParams", "$scope",
-	                                function($state, $stateParams, $scope) {
+	.controller("weiboController", ["$state", "$stateParams", "$scope", "$rootScope",
+	                                function($state, $stateParams, $scope, $rootScope) {
 		debug.log("in weibo controller")
 		var q = angular.injector(['ng']).get('$q');
 
 		$scope.showPicSlider = function(wb) {
 			if (wb.pictures.length === 0) return;
-			$scope.slides = [];
+			$rootScope.slides = [];
 			for (var i=0; i<wb.pictures.length; i++) {
-				$scope.slides.push({
+				$rootScope.slides.push({
 					image : wb.picUrls[i],
 					text : i
 				});
@@ -568,7 +684,7 @@
 			else {
 				return y+"年"+(mo+1)+"月"+day+"日"+h+ "点" +min+"分";
 			};
-		}
+		};
 	})
 	.filter("timePassed", function() {
 		return function(t) {
@@ -581,8 +697,8 @@
 				return parseInt(t/60)+"小时前";
 			} else {
 				return parseInt(t/1440) +"天前";
-			}
-		}
+			};
+		};
 	})
 	.filter("bracket", function() {
 		return function(n) {
@@ -592,8 +708,16 @@
 				return "("+n+")";
 			} else {
 				return "(999+)";
-			}
-		}
+			};
+		};
+	})
+	.filter("fileName", function() {
+		return function(m) {				//m is WeiboMessage type
+			if (m.contentType === 2) {
+				var arr = m.content.split("\t");
+				return arr[0];
+			};
+		};
 	})
 })();
 

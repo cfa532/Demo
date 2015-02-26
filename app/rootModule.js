@@ -92,11 +92,9 @@
 			if ($scope.P.showPicUpload === false) {
 				//open the pic selected area and open file selection dialog
 				$scope.P.showPicUpload = true;
-				var form = document.getElementById("fileName");
 				//simulate a click event to open the picture selection dialog
-				var ev = document.createEvent('HTMLEvents'); 
-                ev.initEvent('click', false, true); 
-                form.dispatchEvent(ev);
+				//var ev = document.createEvent('HTMLEvents').initEvent('click', false, true); 
+                document.getElementById("wbPicUpload").dispatchEvent(new Event('click'));
 			} else {
 				$scope.P.showPicUpload = false;
 			};
@@ -182,7 +180,6 @@
 							debug.log("result =" +picKey);
 							resolve(picKey);
 						}, function(name, err) {
-							debug.log("err = " +err);
 							reject(err);
 						});
 					};

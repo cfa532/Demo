@@ -401,8 +401,8 @@
 			},
 			link : function(scope, element, attrs) {
 				scope.$watchGroup(['authorid', 'leSrc'], function(newVal, oldVal) {
-					//if (newVal[0]!==oldVal[0] || newVal[1]!==oldVal[1])
-					loadImg(newVal[0], newVal[1]);
+					if (newVal[0] && newVal[1])
+						loadImg(newVal[0], newVal[1]);
 				});
 
 				var loadImg = function(bid, src) {
@@ -423,6 +423,7 @@
 						console.log("le-src err="+err);
 					});					
 				};
+				//loadImg(scope.authorid, scope.leSrc);
 			}
 		};
 	})
