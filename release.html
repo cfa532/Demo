@@ -51,7 +51,7 @@ var G_VARS = {
 			account : 'yCUPNXWKgGjNamQHUM4hGtKZILyZEplDEOxDoABHKEU',
 			message : '7y2MOIntE8te1FpAEnfNd9uOSjHCPlSJtkhv0RYLafM',
 			sms : 'q2ilT6GGTT_CeUdAnyMB3J4aYj7--1Ybguf8QE-vRtQ',
-			state : 'LS420Lte-nGmg0N7cSzqLpXOHRqmvZIFl2BKwU5CZU0',
+			state : 'fO-c5QfNnTfPkQ9UvhRG0JQJG46cfR_AZmAZI0I_fqw',
 			root : 'f_5n78R6iW6hSclXGSV849sCaVpTiW7G_xo-1AdwaUM',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'yxGkpUX6wBssReQ00T_XBchju3ZHgXWHNvTqOFr70oQ',
@@ -136,8 +136,8 @@ var G_VARS = {
 		});
 		//here is a problem with illegitimate sid
 		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G_VARS.sid+'&bid='+G_VARS.dataBid+'&key='+G_VARS.hprose;
-		debug.info(script);
-		document.getElementsByTagName("head")[0].appendChild(script);
+		debug.log(script);
+		document.getElementsByTagName("head")[0].appendChild(script);		//load hprose first
 	};
 
 	function checkServer(ip) {
@@ -344,7 +344,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 	<div class="wrap_min">
 		<div class="head_box">
 			
-			<a id="logo" href="#"></a>
+			<a id="logo" href="javascript:void(0);"></a>
 			<div id="menu_bar">	
 				<div class="nav">
 					<a class="nav-link" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');"><i class="nav-icon"></i><span>导航</span></a>
@@ -364,7 +364,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 				<div class="right-part">
 					<form method="get" action="" class="searching-unit">
 						<input type="text" size="27" name="" value="" class="default_value"/>						
-						<a href="#" class="go"></a>
+						<a href="javascript:void(0);" class="go"></a>
 					</form>
 				</div>
 			</div>
@@ -389,9 +389,9 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 				<div class="sub-title f16">　　要这众生，都明白我的意，要那诸佛，都烟硝云散</div>
 				<div class="floating-login">
 					<span class="words">天天畅想</span>
-					<a href="#" class="comment_icon01"></a>
-					<a href="#" class="user_icon01"></a>
-					<a href="#" class="set_icon01"></a>
+					<a href="javascript:void(0);" class="comment_icon01"></a>
+					<a href="javascript:void(0);" class="user_icon01"></a>
+					<a href="javascript:void(0);" class="set_icon01"></a>
 				</div>
 			</div>
 			<div class="smooth-notification"><a ui-sref="root.main.allPosts" class="notification">我雷个趣</a></div>
@@ -896,7 +896,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		<div ng-show="P.showPicUpload" class="layer_send_pic content pb10" style="border-bottom:1px solid #e3e3e1;margin: 0 -10px;padding-left: 10px;">								
 			<ul class="drag_pic_list">
 				<li ng-repeat="url in tmpPicUrls track by $index">
-					<a href="javascript:void(0);" target="_blank"><img ng-src="{{url}}" width="72" alt=""/></a>
+					<a href="javascript:void(0);"><img ng-src="{{url}}" width="72" alt=""/></a>
 				</li>
 				<li>
 					<div class="drag_pic_more">
@@ -1084,14 +1084,14 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		<ul class="person_list">
 			<li>
 				<div class="pic">
-					<a href="#" target="_blank"><img src="data:image/jpeg;base64,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" class="W_face_radius"></a>
+					<a href="javascript:void(0);"><img src="data:image/jpeg;base64,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" class="W_face_radius"></a>
 				</div>
 				<div class="con">
 					<p class="name">
-						<a href="#" target="_blank" class="S_txt1">夏滟or大刀...</a>
+						<a href="javascript:void(0);" class="S_txt1">夏滟or大刀...</a>
 					</p>
 					<span>
-						<a class="w_btn_b" href="#"><span class="btn_30px">关注</span></a>
+						<a class="w_btn_b" href="javascript:void(0);"><span class="btn_30px">关注</span></a>
 					</span>
 					<div class="change">
 						<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
@@ -1116,7 +1116,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 			<li>
 				<p>
 					<span class="total S_txt2" title="阅读量">784万</span>
-					<a target="_blank" class="S_txt1" href="#" title="#马路吊瓶#">#马路吊瓶#</a>
+					<a class="S_txt1" href="javascript:void(0);" title="#马路吊瓶#">#马路吊瓶#</a>
 				</p>
 			</li>
 		</ul>

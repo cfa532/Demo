@@ -713,7 +713,7 @@
 	})
 	.filter("fileName", function() {
 		return function(m) {				//m is WeiboMessage type
-			if (m.contentType === 2) {
+			if (m && m.contentType === 2) {
 				var arr = m.content.split("\t");
 				return arr[0];
 			};
