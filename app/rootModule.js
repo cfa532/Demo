@@ -7,6 +7,7 @@
 	}])
 	.controller("pictureController", ["$state", "$stateParams", "$scope", function($state, $stateParams, $scope) {
 		debug.log("in picture controller");
+		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 		
 		//pic keys are saved in G_VARS.PostPics, indexed by weibo date
 		//for now, read all pics into the following list without pagination.
@@ -25,6 +26,7 @@
 							if (data[1]) {
 								var r = new FileReader();
 								r.onloadend = function(e) {
+									G_VARS.spinner.stop();
 									$scope.myPicUrls.push(e.target.result);
 									$scope.$apply();
 								};
@@ -34,6 +36,8 @@
 							debug.error(err);
 						});
 					};
+				} else {
+					G_VARS.spinner.stop();
 				};
 			}, function(name, err) {
 				debug.error(err);
@@ -104,6 +108,7 @@
 		$scope.addNewPost = function() {
 			//prevent duplicated submission
 			$scope.P.txtInvalid = true;
+			G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 			
 			var wb = new WeiboPost($scope);
 			wb.body = $scope.wbText;
@@ -139,6 +144,7 @@
 					G_VARS.slice($scope.weiboList, $scope.currentList, 0, $scope.global.itemsPerPage);
 					$scope.global.currentPage = 1;
 					$scope.$apply();
+					G_VARS.spinner.stop();
 					
 					//save pictures key in a global list. The same pic will generate the saem Key
 					if (wb.pictures.length > 0) {
@@ -156,6 +162,7 @@
 						}, function(name, err) {
 							debug.error(err);
 						});
+					} else {
 					};
 				}, function(reason) {
 					debug.error(reason);

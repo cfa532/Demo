@@ -82,7 +82,7 @@
 		//take 2 call back functions as param to process reviews and SMS
 		this.readMsg = function() {
 			G_VARS.httpClient.readmsg(G_VARS.sid, function(msgs) {
-				//debug.log("readMsg: number of msg=" +msgs.length);
+				//debug.log("readMsg: ", msgs);
 				
 				//iterate through msg list and combine msgs to the same Weibo into an array
 				//then store the msg array in a hash table, indexed by wbID

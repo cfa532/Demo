@@ -16,14 +16,15 @@
 			delete $scope.usrList[ui.bid];
 		};
 		
-		//called by processMsg when a new msg is received
-		var sort = function(bid) {
-			$scope.chatSessions[bid].messages.sort(function(a,b) {return a.timeStamp - b.timeStamp})
-			$scope.$apply();
-			chatbox1.scrollTop(100000);
-		};
-		//register this scope with SMS service
-		SMSService.regScope(sort);
+		//register a callback function to sort messages in chatbox
+		SMSService.addCallback(function(bid) {
+			//called by processMsg when a new msg is received
+			if ($scope.chatSessions[bid]) {
+				$scope.chatSessions[bid].messages.sort(function(a,b) {return a.timeStamp - b.timeStamp})
+				$scope.$apply();
+				chatbox1.scrollTop(100000);
+			}
+		});
 		
 		//start to chat with a friend. Take a UserInfo as input.
 		$scope.startChat = function(friend)
@@ -279,9 +280,9 @@
 		debug.log("in SMS Service");
 		
 		//refresh chatbox content to show new messages
-		var chatScopes = [];
-		this.regScope = function(sort) {
-			chatScopes.push(sort);
+		var sortFunctions = [];
+		this.addCallback = function(sort) {
+			sortFunctions.push(sort);
 		};
 		
 		this.processMsg = function(htSMS) {
@@ -292,9 +293,9 @@
 					$rootScope.chatSessions[bid].messages = $rootScope.chatSessions[bid].messages.concat(htSMS[bid]);
 					
 					//make the new messages shown in chat box
-					for (var i=0; i<chatScopes.length; i++) {
+					for (var i=0; i<sortFunctions.length; i++) {
 						//sort msgs differently inPage and floating window
-						chatScopes[i](bid);
+						sortFunctions[i](bid);
 					};
 				};
 				
@@ -339,9 +340,9 @@
 						debug.log("msg saved in db", msg);
 
 						//make the new messages shown in chat box
-						for (var i=0; i<chatScopes.length; i++) {
+						for (var i=0; i<sortFunctions.length; i++) {
 							//sort msgs differently inPage and floating window
-							chatScopes[i](bid);
+							sortFunctions[i](bid);
 						};
 					}, function(name, err) {
 						debug.error(err);

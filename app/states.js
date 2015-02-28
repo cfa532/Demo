@@ -61,8 +61,8 @@
 			},
 			controller : function(logon, $scope, msgService, $interval) {
 				debug.log("in root state controller = " +logon);
-				debug.log($scope.myUserInfo)
-				
+				debug.log($scope.myUserInfo);
+
 				//check for new message every 5 seconds
 				$interval(function() {msgService.readMsg();}, 5000);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
@@ -82,6 +82,7 @@
 			url : "/history",
 			templateUrl : "chathistory.html",
 			controller : function($scope, $rootScope) {
+				G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 				debug.log("in chat history controller");
 				$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
 
@@ -90,12 +91,15 @@
 						if (data.length > 0) {
 							data.sort(function(a, b) {return b-a});
 							G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
+								G_VARS.spinner.stop();
 								ui.lastSMS = m[1];
 								debug.log(m[1], ui);
 								$scope.$apply();
 							}, function(name, err) {
 								debug.error(err);
 							});
+						} else {
+							G_VARS.spinner.stop();
 						};
 					}, function(name, err) {
 						debug.error(err);
@@ -108,6 +112,8 @@
 			templateUrl : "chatdetail.html",
 			controller : function($scope, $rootScope, $stateParams, msgService, SMSService, $timeout) {
 				//set current UI to the user I am chatting to
+				G_VARS.spinner.spin(document.getElementById('myAppRoot'));
+				
 				$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
 				debug.log($rootScope.myUserInfo.friends[$stateParams.bid]);
 				$scope.inPageBid = $stateParams.bid;	//bid of user I am talking to
@@ -119,8 +125,9 @@
 				};
 				
 				//called by processMsg when a new msg is received
-				var sort = function(bid) {
-					if (bid !== $stateParams.bid) return;	//a new msg other bid come in, ingore it
+				//register this function with SMS service to sort inPage message display
+				SMSService.addCallback(function(bid) {
+					if (bid !== $stateParams.bid) return;	//a new msg other than current bid come in, ignore it
 					
 					$scope.inPageMsgs.length = 0;
 					for (var i=0; i<$scope.chatSessions[bid].messages.length; i++) {
@@ -128,9 +135,7 @@
 					};
 					$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp})
 					$scope.$apply();
-				};
-				//register this function with SMS service
-				SMSService.regScope(sort);
+				});
 
 				//take the chatting friend's bid as parameter
 				$scope.sendSMS = function(bid) {
@@ -289,6 +294,7 @@
 							$scope.inPageMsgs.push($scope.chatSessions[bid].messages[i]);
 						};
 						$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp})
+						G_VARS.spinner.stop();
 						//$scope.$apply();
 					} else {
 						//no existing chat session, open one. Clean unread msgs only when user opened a new chat session
@@ -307,6 +313,7 @@
 									$scope.$apply();
 								};
 								$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
+								G_VARS.spinner.stop();
 							} else {
 								//no unread msgs, load most recent 50 msgs
 								G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(ts) {
@@ -319,6 +326,7 @@
 													$scope.chatSessions[bid].messages.push(msg[1]);
 													$scope.inPageMsgs.push(msg[1]);
 													$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
+													G_VARS.spinner.stop();
 													$scope.$apply();
 												}
 											}, function(name, err) {
@@ -392,6 +400,7 @@
 				else {
 					$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
 				}
+				G_VARS.spinner.stop();
 				$scope.currUserInfo.getPictures($scope).then(function(pics) {
 					$scope.myPicKeys = pics;
 				}, function(reason) {
@@ -458,6 +467,7 @@
 	.controller("weiboController", ["$state", "$stateParams", "$scope", "$rootScope",
 	                                function($state, $stateParams, $scope, $rootScope) {
 		debug.log("in weibo controller")
+		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 		var q = angular.injector(['ng']).get('$q');
 
 		$scope.showPicSlider = function(wb) {
@@ -517,7 +527,6 @@
 				if (wbDay-currentDay > 30) {	//look for weibo in the past month
 					wbDay = currentDay-1;		//remember the last day from which post is read
 					debug.log("get out of loop, " + currentDay)
-					$(".loader").fadeOut("slow");
 					return;
 				} else {
 					currentDay--;
@@ -526,7 +535,6 @@
 			} else {
 				//remember the last date of weibo read and exit
 				wbDay = currentDay;
-				$(".loader").fadeOut("slow");
 			};
 		};
 		
@@ -549,8 +557,8 @@
 		var getWeibo = function(bid, key, original) {
 			var wb = new WeiboPost($scope);
 			wb.get(bid, key, original).then(function(readOK) {
-				//if (readOK && G_VARS.search($scope.weiboList, wb) === -1) {
 				if (readOK) {
+					$scope.myUserInfo.checkFavorite(wb);
 					$scope.weiboList.push(wb);
 					//sort array in descending order, worked like a charm
 					$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
@@ -602,7 +610,7 @@
 		var showFavorites = function(bid) {
 			debug.log("in showFavorites");
 			$scope.totalItems = 0;
-			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+			//G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 			G_VARS.httpClient.hgetall(G_VARS.sid, bid, G_VARS.Favorites, function(data) {
 				if (data === null) {
 					return;

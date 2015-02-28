@@ -4,7 +4,7 @@
 (function() {	
 	G_VARS.weiboApp
 	.directive("leRelay", ["msgService", function(msgService) {
-		console.log("in le-relay constructor");
+		debug.log("in le-relay constructor");
 		return {
 			restrict : "E",
 			//transclude : true,
@@ -59,7 +59,7 @@
 				add : "&"
 			},
 			link : function(scope, elem, attrs) {
-				//console.log("in relay's link, size=" + scope.pageSize);
+				//debug.log("in relay's link, size=" + scope.pageSize);
 				scope.R = {
 					sentOK			: false,
 					txtInvalid		: true,
@@ -72,7 +72,7 @@
 				scope.$watch(function() { return scope.showRelay }, 
 						function(newValue, oldValue) {
 					if (newValue!==oldValue && newValue==='true') {
-						//console.log(scope.weibo);
+						//debug.log(scope.weibo);
 						scope.show = true;
 						getPage()
 					} else {
@@ -84,25 +84,25 @@
 					scope.relayList.length = 0;
 					if (nr) scope.relayList = [nr];		//put new review in front of the list
 					
-					//console.log("number of relays = " + scope.weibo.relays.length);
-					//console.log(scope.weibo);
+					//debug.log("number of relays = " + scope.weibo.relays.length);
+					//debug.log(scope.weibo);
 					for(var j=(scope.currentPage-1)*scope.pageSize; j<scope.weibo.relays.length && j<scope.currentPage*scope.pageSize; j++) {
 						//iterate every review ID
 						G_VARS.httpClient.get(G_VARS.sid, scope.weibo.authorID, scope.weibo.relays[j], function(data) {
 							if (data[1] !== null) {
 								scope.relayList.push(data[1]);
-								//console.log(data[1])
+								//debug.log(data[1])
 								scope.relayList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
 								scope.$apply();
 							};
 						}, function(name, err) {
-							console.log("In showRelay err=" +err);
+							debug.error("In showRelay err=", err);
 						});
 					};
 				};
 				
 				scope.pageChanged = function() {
-					console.log("current page="+scope.currentPage);
+					debug.log("current page="+scope.currentPage);
 					getPage();
 				};
 
@@ -142,7 +142,7 @@
 							//send a message to the author of the Post reviewed
 							r.key = relayKey;
 							msgService.sendRelay(r, scope.weibo.authorID);
-							console.log(scope.weibo);
+							debug.log(scope.weibo);
 							scope.relay = '';
 							scope.currentPage = 1;
 							getPage(r);
@@ -159,9 +159,10 @@
 								scope.weibo.relays = [relayKey];
 							else
 								scope.weibo.relays.unshift(relayKey);
-							console.log(scope.weibo);
+							
+							//debug.log(scope.weibo);
 							scope.weibo.update().then(function() {
-								console.log("addRelay OK, key="+relayKey);
+								debug.log("addRelay OK, key="+relayKey);
 								scope.relay = '';
 								scope.currentPage = 1;
 								getPage();
@@ -174,12 +175,12 @@
 								//update a global key list for all reviews by me
 								updateMyReviewList(relayKey);
 							}, function(name, err) {
-								console.log("addRelay err1="+err);
+								debug.error("addRelay err1=", err);
 								scope.R.txtInvalid = false;
 							});
 						}
 					}, function(name,err) {
-						console.log("add relay err2= "+err);
+						debug.error("add relay err2=", err);
 						scope.R.txtInvalid = false;
 					})
 				};
@@ -193,19 +194,19 @@
 						else
 							data[1] = [reviewKey];
 						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Reviews, currentDay, data[1], function() {
-							console.log("setRelayData: update review keys OK. " +reviewKey);
+							debug.log("setRelayData: update review keys OK. " +reviewKey);
 						}, function(name, err) {
-							console.log("setRelayData: update review keys failed, " +err);
+							debug.error("setRelayData: update review keys failed, ", err);
 						});
 					}, function(name, err) {
-						console.log("setRelayData: get review keys failed, " +err);
+						debug.error("setRelayData: get review keys failed, ", err);
 					});
 				};
 			}
 		}
 	}])
 	.directive("leReview", ["msgService", function(msgService) {
-		console.log("in le-review constructor");
+		debug.log("in le-review constructor");
 		return {
 			restrict : "E",
 			transclude : true,
@@ -261,7 +262,7 @@
 				author : "@",
 			},
 			link : function(scope, elem, attrs) {
-				//console.log("in page link, size=" + scope.pageSize);
+				//debug.log("in page link, size=" + scope.pageSize);
 				scope.R = {
 					sentOK			: false,
 					txtInvalid		: true,
@@ -269,13 +270,13 @@
 				};
 				scope.reviewList = [];
 				scope.currentPage = 1;
-				//console.log(attrs.weibo);
+				//debug.log(attrs.weibo);
 				
 				//watch if review block of current weibo is shown or hidden
 				scope.$watch(function() {return scope.display}, 
 						function(newValue, oldValue) {
 					if (newValue!==oldValue && newValue==='true') {
-						console.log("number of reviews = " + scope.weibo.reviews.length);
+						//debug.log("number of reviews = " + scope.weibo.reviews.length);
 						scope.show = true;
 						getPage()
 					} else {
@@ -287,25 +288,25 @@
 					scope.reviewList.length = 0;
 					//if there is a new review just submitted by me, put it in front of the list
 					if (nr) scope.reviewList = [nr];
-					console.log(scope.weibo);
+					//debug.log(scope.weibo);
 					
 					for(var j=(scope.currentPage-1)*scope.pageSize; j<scope.weibo.reviews.length && j<scope.currentPage*scope.pageSize; j++) {
 						//iterate every review ID
 						G_VARS.httpClient.get(G_VARS.sid, scope.weibo.authorID, scope.weibo.reviews[j], function(data) {
 							if (data[1] !== null) {
 								scope.reviewList.push(data[1]);
-								//console.log(data[1]);
+								//debug.log(data[1]);
 								scope.reviewList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
 								scope.$apply();
 							};
 						}, function(name, err) {
-							console.log("In showReview err=" +err);
+							debug.error("In showReview err=", err);
 						});
 					};
 				};
 				
 				scope.pageChanged = function() {
-					console.log("current page="+scope.currentPage);
+					debug.log("current page="+scope.currentPage);
 					getPage();
 				};
 
@@ -345,7 +346,7 @@
 							r.key = reviewKey;
 							msgService.sendReview(r, scope.weibo.authorID);
 							
-							//console.log("review message sent, key="+reviewKey);
+							//debug.log("review message sent, key="+reviewKey);
 							scope.weibo.reviews.unshift(reviewKey);
 							scope.retext = '';
 							scope.currentPage = 1;
@@ -356,7 +357,7 @@
 							//call this only when reviewing my own post
 							scope.weibo.reviews.unshift(reviewKey);
 							scope.weibo.update().then(function() {
-								console.log("Review added. key="+ reviewKey);
+								debug.log("Review added. key="+ reviewKey);
 								scope.retext = '';
 								scope.currentPage = 1;
 								getPage();
@@ -365,7 +366,7 @@
 							});
 						}
 					}, function(name, err) {
-						console.log("add review err2="+err);
+						debug.error("add review err2=", err);
 						scope.R.txtInvalid = false;
 					});
 				};
@@ -379,19 +380,19 @@
 						else
 							data[1].unshift(reviewKey);
 						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Reviews, currentDay, data[1], function() {
-							console.log("setReviewData: update review keys OK. "+reviewKey);
+							debug.log("setReviewData: update review keys OK. "+reviewKey);
 						}, function(name, err) {
-							console.log("setReviewData: update review keys failed, " +err);
+							debug.error("setReviewData: update review keys failed ", err);
 						});
 					}, function(name, err) {
-						console.log("setReviewData: get review keys failed, "+err);
+						debug.error("setReviewData: get review keys failed ", err);
 					});
 				};
 			}
 		}
 	}])
 	.directive("leSrc", function() {
-		console.log("In directive le-src")
+		debug.log("In directive le-src")
 		//Do not use this directive in ng-repeat, might cause problem in race condition.
 		return {
 			restrict : "A",
@@ -412,15 +413,12 @@
 						//data[1] is of Uint8Array typed array
 						var r = new FileReader();
 						r.onloadend = function(e) {
-							//console.log("in le-src="+attrs.leSrc+ " authorid="+attrs.authorid);
-							//console.log(e.target.result);
 							element[0].src = e.target.result;
-							//scope.uri = e.target.result;
 							scope.$apply();
 						};
 						r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
 					}, function(name, err) {
-						console.log("le-src err="+err);
+						debug.error("le-src err=", err);
 					});					
 				};
 				//loadImg(scope.authorid, scope.leSrc);
@@ -442,10 +440,10 @@
 				//js.async = "async";
 				js.type = scope.type;
 				js.textContent = localStorage[G_VARS.bidPath+'js/'+scope.src];
-				console.log(js);
+				debug.log(js);
 				js.addEventListener("onload", function() {
 					//it seems without "src", there is no onload event
-					console.log("js loaded")
+					debug.log("js loaded")
 				});
 				document.getElementsByTagName("body")[0].appendChild(js);
 			}
@@ -458,7 +456,7 @@
 			cs.rel = scope.rel;
 			cs.type = scope.type;
 			cs.textContent = localStorage[G_VARS.bidPath+"css/"+scope.href];
-			console.log(cs);
+			debug.log(cs);
 			document.getElementsByTagName("head")[0].appendChild(cs);
 		};
 		return {
@@ -471,10 +469,10 @@
 				type : "@"
 			},
 			link : function(scope, element, attrs) {
-				//console.log(G_VARS.css[scope.href]);
+				//debug.log(G_VARS.css[scope.href]);
 				if (localStorage[G_VARS.bidPath+'css/'+scope.href]===null || typeof(localStorage[G_VARS.bidPath+'css/'+scope.href])==='undefined') {
 					G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.css[scope.href], function(data) {
-						//console.log(data[1])
+						//debug.log(data[1])
 						var r = new FileReader();
 						r.onload = function(e) {
 							localStorage[G_VARS.bidPath+'css/'+scope.href] = e.target.result;
@@ -482,10 +480,10 @@
 						};
 						r.readAsText(new Blob([data[1]]));
 					}, function(name, err) {
-						console.log(err);
+						debug.error(err);
 					});
 				} else {
-					//console.log(localStorage[G_VARS.bidPath+"css."+scope.href]);
+					//debug.log(localStorage[G_VARS.bidPath+"css."+scope.href]);
 					loadCSS(scope);
 				};
 			}
