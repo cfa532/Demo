@@ -38,7 +38,7 @@ var G_VARS = {
 			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
 			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
 			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
-			GlobalDataStruct : '6NWAGg5DdAK2SWVppbI9hrQsjDKXWAFmzlx9wxkFuGY',
+			GlobalDataStruct : 'g6RmkUgX3eqFGLbQtamU9SygMjbMN-71DeW4DeEPqjo',
 			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
 			uiBootstrapTpls : 'yY70GzFiSHca2X1jmc6bw6jMkW4WqyUX1NFXWjHsjJc',
 			main : '5w3k5ZTrhKnO2QPEJsfl_F1NkhhO7_j64uD0D4LcHwc',
@@ -48,7 +48,7 @@ var G_VARS = {
 			account : 'yCUPNXWKgGjNamQHUM4hGtKZILyZEplDEOxDoABHKEU',
 			message : 'C_er922j2JBDhysET82SZc1QQ5fWjz2_rZVzdeeCcfg',
 			sms : '-nCzVZIENRpjO937YJyApWvWOSv4-JQVUtdIytYisG8',
-			state : 'DRj7p3Kh3m_gjGqr6QMN_02Lw4EF34QQ_XCjwmnoqLw',
+			state : 'VQ_cthDDfjISxc_BohydZxGio68tl_y4DmHzfPZUv6A',
 			root : 'zNY1UiQAPPr0B7ep3W8GGNpNb5GuoqzP1MaHIFG5Gzw',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'IwvOlJPfvyIswgosn-gddloL-yVMmyTRVheDJ5AedLU',
@@ -338,25 +338,25 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 
 <body id="myAppRoot" ng-controller="appController">
 <script  type="text/javascript">
-	G_VARS.spinner = new Spinner(
-			{
-				lines: 15, // The number of lines to draw
-				length: 20, // The length of each line
-				width: 12, // The line thickness
-				radius: 32, // The radius of the inner circle
-				corners: 1, // Corner roundness (0..1)
-				rotate: 30, // The rotation offset
-				direction: 1, // 1: clockwise, -1: counterclockwise
-				color: '#999', // #rgb or #rrggbb or array of colors
-				speed: 1, // Rounds per second
-				trail: 76, // Afterglow percentage
-				shadow: true, // Whether to render a shadow
-				hwaccel: false, // Whether to use hardware acceleration
-				className: 'spinner', // The CSS class to assign to the spinner
-				zIndex: 2e9, // The z-index (defaults to 2000000000)
-				top: '50%', // Top position relative to parent
-				left: '50%' // Left position relative to parent
-			}).spin(document.getElementById('myAppRoot'));
+G_VARS.spinner = new Spinner(	// show the onload spinner
+	{
+		lines: 15,				// The number of lines to draw
+		length: 20,				// The length of each line
+		width: 12,				// The line thickness
+		radius: 32,				// The radius of the inner circle
+		corners: 1,				// Corner roundness (0..1)
+		rotate: 30,				// The rotation offset
+		direction: 1,			// 1: clockwise, -1: counterclockwise
+		color: '#999',			// #rgb or #rrggbb or array of colors
+		speed: 1,				// Rounds per second
+		trail: 76,				// Afterglow percentage
+		shadow: true,			// Whether to render a shadow
+		hwaccel: false,			// Whether to use hardware acceleration
+		className: 'spinner',	// The CSS class to assign to the spinner
+		zIndex: 2e9,			// The z-index (defaults to 2000000000)
+		top: '50%',				// Top position relative to parent
+		left: '50%'				// Left position relative to parent
+	}).spin(document.getElementById('myAppRoot'));
 </script>
 <div class="wrap_max">
 	<div class="wrap_min">
@@ -748,7 +748,7 @@ checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 						<p class="mb10"><b><a ui-sref="root.personal.allPosts({bid:bid})" title="">{{ui.nickName}}</a></b></p>
 						<p class="mb10 wb_newest_time">最新微博：{{ui.lastPost.timeStamp | chatTime}}</p>
 						<p class="mb10 wb_newest_info">{{ui.lastPost.body}}</p>
-						<p class="user_nums"><span>好友<em class="f2ea0cd">{{ui.friendCount}}</em>人</span></p>
+						<p class="user_nums"><span>好友<em class="f2ea0cd">{{ui.friendCount}}</em>人</p>
 					</div>
 					<div class="wb_att_box">
 						<div class="foStatus">

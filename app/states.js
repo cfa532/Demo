@@ -464,8 +464,8 @@
 		$urlRouterProvider.otherwise("/root/main/allposts");
 	}])
 	//get weibo list and display them nicely
-	.controller("weiboController", ["$state", "$stateParams", "$scope", "$rootScope",
-	                                function($state, $stateParams, $scope, $rootScope) {
+	.controller("weiboController", ["$state", "$stateParams", "$scope", "$rootScope", "$timeout",
+	                                function($state, $stateParams, $scope, $rootScope, $timeout) {
 		debug.log("in weibo controller")
 		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 		var q = angular.injector(['ng']).get('$q');
@@ -527,13 +527,16 @@
 				if (wbDay-currentDay > 30) {	//look for weibo in the past month
 					wbDay = currentDay-1;		//remember the last day from which post is read
 					debug.log("get out of loop, " + currentDay)
+					G_VARS.spinner.stop();
 					return;
 				} else {
 					currentDay--;
-					getAllPosts(currentDay, original);
+					$timeout(function() {return getAllPosts(currentDay, original)}, 100);
 				};
 			} else {
 				//remember the last date of weibo read and exit
+				G_VARS.spinner.stop();
+				debug.info("current day="+wbDay);
 				wbDay = currentDay;
 			};
 		};
@@ -581,6 +584,7 @@
 				};
 				wbListLen += keys[1].length;
 				if (wbListLen > $scope.global.currentPage*$scope.global.itemsPerPage) {
+					G_VARS.spinner.stop();
 					iDay = i+1;
 					debug.log("iDay="+iDay)
 					return;

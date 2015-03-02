@@ -303,6 +303,7 @@ function UserInfo() {
 		return df.promise;
 	};
 	
+	//check if this weibo is a favorite of this user
 	this.checkFavorite = function(wb) {
 		if (self.favorites[wb.authorID] && self.favorites[wb.authorID].indexOf(wb.wbID) !== -1) {
 			wb.isFavorite = true;
@@ -323,6 +324,14 @@ function UserInfo() {
 					}, function(name, err) {
 						debug.error("Remove favorite err=" +err);
 					});
+					
+					//update in memory hashtable
+					if (self.favorites[wb.authorID].length > 1) {
+						// more than one favorites from this author
+						self.favorites[wb.authorID].splice(self.favorites[wb.authorID].indexOf(wb.wbID), 1);
+					} else {
+						delete self.favorites[wb.authorID];
+					};
 				};
 			}, function(name, err) {
 				debug.error("Remove favorite err=" +err);
@@ -343,6 +352,12 @@ function UserInfo() {
 				}, function(name, err) {
 					debug.error("Add favorite err=" +err);
 				});
+				
+				if (!self.favorites[wb.authorID]) {
+					self.favorites[wb.authorID] = [wb.wbID];
+				} else {
+					self.favorites[wb.authorID].push(wb.wbID);
+				};
 			}, function(name, err) {
 				debug.error("Add favorite err=" +err);
 			});
@@ -536,7 +551,6 @@ function WeiboPost(scope)
 						debug.error(reason);
 					});
 				};
-				G_VARS.spinner.stop();		//stop the onloading image
 				resolve(true);
 			}, function(name, err) {
 				debug.error(err, self);
