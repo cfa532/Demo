@@ -1,4 +1,4 @@
-// functions for Post operations
+//state.js
 "use strict";
 
 (function() {	

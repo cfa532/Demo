@@ -455,7 +455,7 @@
 			cs.id = "css."+scope.href
 			cs.rel = scope.rel;
 			cs.type = scope.type;
-			cs.textContent = localStorage[G_VARS.bidPath+"css/"+scope.href];
+			cs.textContent = localStorage[G_VARS.css[scope.href]];
 			debug.log(cs);
 			document.getElementsByTagName("head")[0].appendChild(cs);
 		};
@@ -470,12 +470,12 @@
 			},
 			link : function(scope, element, attrs) {
 				//debug.log(G_VARS.css[scope.href]);
-				if (localStorage[G_VARS.bidPath+'css/'+scope.href]===null || typeof(localStorage[G_VARS.bidPath+'css/'+scope.href])==='undefined') {
+				if (localStorage[G_VARS.css[scope.href]]===null || typeof(localStorage[G_VARS.css[scope.href]])==='undefined') {
 					G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.css[scope.href], function(data) {
 						//debug.log(data[1])
 						var r = new FileReader();
 						r.onload = function(e) {
-							localStorage[G_VARS.bidPath+'css/'+scope.href] = e.target.result;
+							localStorage[G_VARS.css[scope.href]] = e.target.result;
 							loadCSS(scope);
 						};
 						r.readAsText(new Blob([data[1]]));
