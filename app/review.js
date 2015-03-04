@@ -1,3 +1,4 @@
+//review.js
 "use strict";
 
 //handle review, relay and favorite

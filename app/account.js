@@ -1,5 +1,5 @@
+//account.js
 "use strict";
-
 (function() {
 	//angular.module("accountModule", [])
 	G_VARS.weiboApp
@@ -54,6 +54,8 @@
 			//retrieve SessionID, sid, that will be used through out the app
 			var getSid = function() {
 				var sid = $q.defer();
+				sid.resolve(G_VARS.sid);
+				return sid.promise;
 				
 				if (angular.isUndefined(localStorage[bidPath]) || localStorage[bidPath]===null) {
 					//invalid userid, need to create a new userid
@@ -80,8 +82,6 @@
 			var login = function() {
 				return $q(function(resolve, reject) {
 					//get session id that will be used thorough out the app
-					//userid = "jE1gwQDVCfvtYgaqRAamx3em9JFP7ViL1yBapJxGyVc"
-					//G_VARS.httpClient.login(localStorage[bidPath], "ppt", function(sid) {
 					G_VARS.httpClient.login(null, G_VARS.ppt, function(sid) {
 						debug.log("login with ppt")
 						resolve(sid);

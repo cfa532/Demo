@@ -1,4 +1,4 @@
-/**
+/** GlobalDataStruct.js
  *  definition of global data structures, constructors
  */
 "use strict";

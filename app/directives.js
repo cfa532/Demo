@@ -1,4 +1,4 @@
-// functions for Post operations
+//directive.js
 "use strict";
 
 (function() {	

@@ -1,3 +1,5 @@
+//main.js
+//jQuery codes
 $(function(){
  $(".acc h3 a").each(function(index, element) {
     $(this).bind("click",function(){

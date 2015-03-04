@@ -1,6 +1,6 @@
+//rootModule.js
+"use strict";
 (function() {
-	"use strict";
-
 	G_VARS.weiboApp
 	.controller("sidebarController", ["$stateParams", "$scope", "$location", function($stateParams, $scope, $location) {
 		debug.log("in sidebar controller");
