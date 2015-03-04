@@ -99,6 +99,28 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
     $scope.resid = ""
     Login($scope);
    
+    $scope.uploadNewVersion = function() {
+        var x = document.getElementById("fileName").files[0];
+        $scope.appstatus = '';
+        $scope.imgtext = '';
+        var r = new FileReader();
+        r.onloadend = function (e) {           
+            console.log(e.target.result.byteLength);           
+            client.set($scope.sid, $scope.bid, "upgrade-file-location", e.target.result, function () {
+                $scope.appstatus = "upload ok;";
+                $scope.imgtext = "upgrade-file-location";
+                $scope.$apply()
+                console.log($scope.appstatus);
+            }, function (name, err) {
+                console.log(err);
+                $scope.appstatus = "upload error"
+                $scope.$apply()
+            })           
+        }
+        r.readAsArrayBuffer(x);
+        console.log("good");
+    };
+    
     $scope.newUser = function() {
 		client.register(function(id) {
 			console.log("New User created, id=" + id);
@@ -173,8 +195,9 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
         //        $scope.appstatus = "begin error"
         //        $scope.$apply()
        // })
-    }
-        $scope.get = function () {            
+    };
+    
+    $scope.get = function () {            
         client.get($scope.sid, $scope.bid, "key", function (data) {            
             $scope.bid = data[0]
             $scope.appstatus = "get ok.value=[" + data[1] +"]"
@@ -242,7 +265,8 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
             $scope.$apply()
         })
     }
-        $scope.hmset = function () {
+    
+    $scope.hmset = function () {
         fv1 = new FVPair
         fv2 = new FVPair
         fv1.field = "field1"

@@ -400,8 +400,8 @@
 				else {
 					$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
 				}
-				G_VARS.spinner.stop();
 				$scope.currUserInfo.getPictures($scope).then(function(pics) {
+					G_VARS.spinner.stop();
 					$scope.myPicKeys = pics;
 				}, function(reason) {
 					debug.error(reason);
@@ -527,7 +527,6 @@
 				if (wbDay-currentDay > 30) {	//look for weibo in the past month
 					wbDay = currentDay-1;		//remember the last day from which post is read
 					debug.log("get out of loop, " + currentDay)
-					G_VARS.spinner.stop();
 					return;
 				} else {
 					currentDay--;
@@ -535,7 +534,6 @@
 				};
 			} else {
 				//remember the last date of weibo read and exit
-				G_VARS.spinner.stop();
 				debug.info("current day="+wbDay);
 				wbDay = currentDay;
 			};
@@ -561,6 +559,7 @@
 			var wb = new WeiboPost($scope);
 			wb.get(bid, key, original).then(function(readOK) {
 				if (readOK) {
+					G_VARS.spinner.stop();
 					$scope.myUserInfo.checkFavorite(wb);
 					$scope.weiboList.push(wb);
 					//sort array in descending order, worked like a charm
@@ -584,7 +583,6 @@
 				};
 				wbListLen += keys[1].length;
 				if (wbListLen > $scope.global.currentPage*$scope.global.itemsPerPage) {
-					G_VARS.spinner.stop();
 					iDay = i+1;
 					debug.log("iDay="+iDay)
 					return;

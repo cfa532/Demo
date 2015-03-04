@@ -21,11 +21,11 @@ var G_VARS = {
 		IPNum : 0,
 		sid : '0f24d8d2956508cc571e67da23ee75ae47c1879c',
 //sibao
-//		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK24xVllqV21DSVlNMHRtUnNzaGdLWlozRUN6VFp1SlFfNGVuSnB0VEpSalUA",
+		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK24xVllqV21DSVlNMHRtUnNzaGdLWlozRUN6VFp1SlFfNGVuSnB0VEpSalUA",
 //Valar
 //		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK0IzTDEtbGw1b2s5dW85UlRpRHQ1aEpjU28za0JaRlItX3ZUUEs4MUptVVEA",
 //appowner
-		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
+//		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
 		dataBid : 'gVQXZWd0RgNuB-5R5tX1gxhOb200TdwEVs-LHbLXpLo',	//from which JS data are read
 		hprose : '-l1PnT32Vi5FEf-tGRQTStUPe1bNXZZN9H26ib0q50o',
 		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',
@@ -49,7 +49,7 @@ var G_VARS = {
 			account : 'yCUPNXWKgGjNamQHUM4hGtKZILyZEplDEOxDoABHKEU',
 			message : 'C_er922j2JBDhysET82SZc1QQ5fWjz2_rZVzdeeCcfg',
 			sms : '-nCzVZIENRpjO937YJyApWvWOSv4-JQVUtdIytYisG8',
-			state : 'Sa37PUGX6h59w-n8xGiNzfnNVupdO079wasr5YlW4Qc',
+			state : 'M-AfnKOPWiHKsJLwVGyLIPK9-ze1RlUBIIyBuRjdxss',
 			root : 'zNY1UiQAPPr0B7ep3W8GGNpNb5GuoqzP1MaHIFG5Gzw',
 			review : 'P7NkXqNbRZkHqa__gLicX38Q8B__hliRhhlE7iloTmI',
 			directive : 'AnMDXlklnSN3sCvWz5pcqnbNAfVfjm24CVCAq73gGu8',
@@ -71,7 +71,7 @@ var G_VARS = {
 		Friends		: "friends-in-weibo",
 		UnreadSMS	: "unread-sms-message",
 		Version		: "database-version",	//where database version number is stored
-		myVersion	: "1.0.0",					//current html version
+		myVersion	: "1.0.5",					//current html version
 		Upgrade		: "upgrade-file-location",
 
 		slice : function(src, target, start, end) {
@@ -255,7 +255,7 @@ var G_VARS = {
 		
 		G_VARS.weiboApp.controller("appController", function($scope, $rootScope, $window) {
 			console.log("In app controller");
-			$scope.dataBid = G_VARS.dataBid;	//app publisher's bid
+			$scope.appBid = G_VARS.dataBid;	//app publisher's bid
 			
 			//update all js files if version number is different
 			G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.Version, function(appVersion) {
@@ -287,7 +287,10 @@ var G_VARS = {
 			//download a upgrade file from db
 			$scope.getUpgradeFile = function() {
 				G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.Upgrade, function(file) {
-					fileSaver();
+					if (file[1]) {
+						saveAs(new Blob([file[1]], {type: "text/html"}), "release.html");
+						alert("New version saved, overwrite current file to upgrade");
+					}
 				}, function(name, err) {
 					debug.error(err);
 				});
@@ -353,7 +356,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 						<input type="text" size="27" name="" value="" class="default_value"/>						
 						<a href="javascript:void(0);" class="go"></a>
 					</form>
-					<img wideth="40" height="40" ng-click="getUpgradeFile();" ng-show="newVersionAvailable" le-src="Rj2NPSJJVjyLSMlNB0rfF1QrZnbxPHYFevK-_JMKq0w" authorid="{{myUserInfo.bid}}" alt="更新"></img>
+					<a href="javascript:void(0);" ng-click="getUpgradeFile();" ng-show="newVersionAvailable">
+					<img wideth="40" height="40" le-src="Rj2NPSJJVjyLSMlNB0rfF1QrZnbxPHYFevK-_JMKq0w" authorid="{{appBid}}" alt="更新"></img>
+					</a>
 				</div>
 			</div>
 		</div>
