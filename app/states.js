@@ -470,6 +470,34 @@
 		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 		var q = angular.injector(['ng']).get('$q');
 
+		$scope.R = {
+				reviewedWeibo	: null,
+				relayedWeibo	: null,
+				favoriteWeibo	: null
+		};
+
+		$scope.showRelay = function(wb) {
+			$scope.R.reviewedWeibo = null;
+			$scope.R.favoriteWeibo = null;
+			if ($scope.R.relayedWeibo === wb.wbID) {
+				//this reviews are being shown. Close it
+				$scope.R.relayedWeibo = null;
+			} else {
+				$scope.R.relayedWeibo = wb.wbID;		//reviews of this weibo will be loaded.
+			}
+		};
+		
+		$scope.showReview = function(wb) {
+			$scope.R.relayedWeibo = null;
+			$scope.R.favoriteWeibo = null;
+			if ($scope.R.reviewedWeibo === wb.wbID) {
+				//this reviews are being shown. Close it
+				$scope.R.reviewedWeibo = null;
+			} else {
+				$scope.R.reviewedWeibo = wb.wbID;		//reviews of this weibo will be loaded.
+			}
+		};
+
 		$scope.showPicSlider = function(wb) {
 			if (wb.pictures.length === 0) return;
 			$rootScope.slides = [];

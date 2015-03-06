@@ -8,12 +8,6 @@
 	.controller("reviewController", ['$rootScope','$scope', '$http',
 	                                 function($rootScope, $scope, $http) {
 		//console.log("Here in review module")
-		$scope.R = {
-				reviewedWeibo	: null,
-				relayedWeibo	: null,
-				favoriteWeibo	: null
-		};
-
 		//publish a new Post with a ParentID
 		$scope.relayPost = function(relayText, parentWB) {
 			console.log("in relayPost()");
@@ -47,27 +41,6 @@
 			});
 		};
 
-		$scope.showRelay = function(wb) {
-			$scope.R.reviewedWeibo = null;
-			$scope.R.favoriteWeibo = null;
-			if ($scope.R.relayedWeibo === wb.wbID) {
-				//this reviews are being shown. Close it
-				$scope.R.relayedWeibo = null;
-			} else {
-				$scope.R.relayedWeibo = wb.wbID;		//reviews of this weibo will be loaded.
-			}
-		};
-		
-		$scope.showReview = function(wb) {
-			$scope.R.relayedWeibo = null;
-			$scope.R.favoriteWeibo = null;
-			if ($scope.R.reviewedWeibo === wb.wbID) {
-				//this reviews are being shown. Close it
-				$scope.R.reviewedWeibo = null;
-			} else {
-				$scope.R.reviewedWeibo = wb.wbID;		//reviews of this weibo will be loaded.
-			}
-		};
 	}])
 	.service("reviewService", ["$q", "$rootScope", function($q, $rootScope) {
 		this.processMsg = function(htReview) {

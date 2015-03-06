@@ -7,14 +7,13 @@
 		debug.log("in le-relay constructor");
 		return {
 			restrict : "E",
-			//transclude : true,
+			transclude : true,
 			template : function(elem, attrs) {
 				return "<div class='zfWrap comt-box' ng-show='show'> \
 				<div class='top c_tx5'> \
 					<span class='left'> \
-						<span class='number cNote'>转播本条微博</span> \
+						<ng-transclude></ng-transclude>\
 					</span> \
-					<a href='javascript:void(0);' class='W_close fr' title='关闭'></a> \
 				</div> \
 				<div class='cont'> \
 					<textarea ng-model='relay' ng-change='txtChanged()' class='inputTxt' style='overflow-y: hidden; height: 37px;'></textarea> \
@@ -218,7 +217,6 @@
 					<span class='left'> \
 						<ng-transclude></ng-transclude>\
 					</span> \
-					<a href='javascript:void(0);' class='W_close fr' title='关闭'></a> \
 				</div> \
 				<div class='cont'> \
 					<textarea ng-model='retext' ng-change='txtChanged()' class='inputTxt' style='overflow-y: hidden; height: 37px;'></textarea> \
@@ -300,7 +298,7 @@
 								scope.$apply();
 							};
 						}, function(name, err) {
-							debug.error("In showReview err=", err);
+							debug.error(err);
 						});
 					};
 				};

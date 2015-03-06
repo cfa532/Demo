@@ -49,10 +49,10 @@ var G_VARS = {
 			account : '1WE3NK9a-5hdWJ8axiP-Hv5JtQfwyaQuXf1_STv6xwE',
 			message : 'BpUEw4t65qXjAtTPxlbkuNqvD3L_K6Kttx9_oEK5c3k',
 			sms : '9HcopwTR5QPhRcLGx2xQ8yes8U6pxQ3jG5Lt2adxX2U',
-			state : 'M-AfnKOPWiHKsJLwVGyLIPK9-ze1RlUBIIyBuRjdxss',
+			state : 'cHbXUP2UtBN8Nh8t0VKX9DIe8fJKiGnUB0sP5E_f_EM',
 			root : 'jbK2AHK_2-9NfiZ6hTnvXPEL46cHqsLVKTNGWtjyQ80',
-			review : 'rXeLkUYEHMz6haygvFmFM5qsNjIhJ7Jf1zSYTIb-vhc',
-			directive : 'JjMkjRel578YSc3TihU7Vs4gDRjaIvFLxjaHKQaRTEo',
+			review : '46hzNnZx56LqAdx3SZscnZXAM2H8ABBAHumsnWTcz5c',
+			directive : '8y-29ghzFTnUEdibNuUAGPrxMzQzRM8SvnvrV4h1DE0',
 			fileSaver : '8PbjFja6h9DFE3CgnRTTR3U33JXI1UjJ7D00KiCy4F8',
 		},
 		log : null,
@@ -1017,10 +1017,13 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					</span>
 					<div class="clearfix"></div>					
 					<le-relay add="relayPost" author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" show-relay="{{wb.wbID===R.relayedWeibo}}">
+						<span class='number cNote'>转播本条微博</span>
+						<a href='javascript:void(0);' ng-click='showRelay(wb)' class='W_close fr' title='关闭'></a>
 					</le-relay>
 
 					<le-review author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" display="{{wb.wbID===R.reviewedWeibo}}">
 						<span class='number cNote'>评论本条微博</span>
+						<a href='javascript:void(0);' ng-click="showReview(wb)" class='W_close fr' title='关闭'></a>
 					</le-review>
 					<div class="clearfix"></div>
 					
