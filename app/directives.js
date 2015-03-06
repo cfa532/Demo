@@ -9,7 +9,7 @@
 			restrict : "E",
 			transclude : true,
 			template : function(elem, attrs) {
-				return "<div class='zfWrap comt-box' ng-show='show'> \
+				return "<div class='zfWrap comt-box' style='background:#fff;' ng-show='show'> \
 				<div class='top c_tx5'> \
 					<span class='left'> \
 						<ng-transclude></ng-transclude>\

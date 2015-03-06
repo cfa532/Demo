@@ -1,3 +1,4 @@
+/*base.css*/
 @charset "utf-8";
 html,body{height:100%;}
 body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fiedldset,input,textarea,botton,select,p,span,i,em,b,blockquote,th,td{margin:0;padding:0;border:0;}
@@ -20,7 +21,7 @@ button,input,select,textarea{
 body{
 	background:#efeeec;
 	color:#666;
-	font-family:tahoma, arial,"å¾®è½¯é›…é»‘","Microsoft Yahei","å®‹ä½“";
+	font-family:tahoma, arial,"Î¢ÈíÑÅºÚ","Microsoft Yahei","ËÎÌå";
 	font-size:14px;
 	font-size-adjust: none;
 	font-stretch: normal;	

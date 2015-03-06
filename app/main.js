@@ -1,5 +1,14 @@
 //main.js
 //jQuery codes
+$(document).ready(function(){
+	$(".img-group").colorbox({rel:'img-group'});
+	$(".inline").colorbox({inline:true, width:"50%"});
+	$("#click").click(function(){ 
+		$('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
+		return false;
+	});
+})
+
 $(function(){
  $(".acc h3 a").each(function(index, element) {
     $(this).bind("click",function(){

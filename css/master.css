@@ -1,7 +1,10 @@
+/*master.css*/
 @charset "utf-8";
 .profile_top{background:#f2f2f2; padding:20px 0 10px 10px;}
 .pf_head{ width:150px; float:left; margin-right:40px;}
 .pf_head img,.userPic img{
+	width:78px;
+	height:78px;
 	webkit-border-radius: 100%;
 	-moz-border-radius: 100%;
 	-ms-border-radius: 100%;
@@ -88,7 +91,7 @@
 	top:-9px;
 	left:20px;
 } 
-/*Êõ¥Â§öÂõæÁâá*/
+/*∏¸∂‡Õº∆¨*/
 #container{position:relative;width:630px; zoom:1;}
 .grid{
 	width:200px;
@@ -117,7 +120,7 @@
 .member_info{ width:370px; float:left;}
 .member_info table td{line-height:36px;}
 .namebox{line-height:24px;float: left;width: 108px; padding-top:20px;}
-/*ÂèëÂ∏ÉÂæÆÂçö*/
+/*∑¢≤ºŒ¢≤©*/
 .send_weibo{ background:#f2f2f2; padding:10px; }
 .send_weibo .title_area{ margin-bottom:5px;}
 .send_weibo .title_area .title{color:#b3ccd4;}
@@ -257,14 +260,14 @@
 .input_text_tit {width: 475px;}
 .wb_chang_info table td,.wbpmcompose table td{ padding:6px 3px;}
 
-/*ÂàÜ‰∫´*/
+/*∑÷œÌ*/
 .fav_info{background:#fff; width:242px;}
 .fav_info_main{padding:10px 0;}
 .fav_info_main i,.fav_info_main span{vertical-align: middle;}
 .fav_info_main i{background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAQCAYAAAB3AH1ZAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjQyMEY5MkM1NUI0QzExRTRBOUEwRDVERTAxMERBNkVDIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjQyMEY5MkM2NUI0QzExRTRBOUEwRDVERTAxMERBNkVDIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NDIwRjkyQzM1QjRDMTFFNEE5QTBENURFMDEwREE2RUMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NDIwRjkyQzQ1QjRDMTFFNEE5QTBENURFMDEwREE2RUMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6TBERKAAABc0lEQVR42qxVMW6DQBBcEEKiczokFwniA3kCKeiTFyR+QZwn+AU4L4h/EKemMD+I8wCkNEjQ0UBBgXMb7Smn054D8o00uuO4ZfaW3T2n7/tTXdcwjiPMgeu6EIYhBEHgwAXwUHy5XILv+7MMh2GAqqogiiIoy1J/fSOYCF7T85fgXt8UxzF4ePK54gi0YaK2EMwEnxiTVnAjuBV8o7WVB/aApz7QKAWPNE8U555pT/H7Ky068E4fRuEXwSvBOyLOd4qjfzlgSRxDfkvzB3k6Lfx8Mlty4JHGHSOOWBvygo9AnudGpTRNueWExg+D2U7JB4lvowMowjlhEJ8S6tYQGfMv0MX+EW+5BJvU0M69lKITTl5ouWDHgYniiFclF9Zn9mVKtVitgkKp84x6gip0L/hJzh2oKVntA0DNZ0Fikhw2arK6eKvhxTIXaIO2WiJiE1rJEtOwp664VRedrutOTdNcdB0zt6GsCFkVR65E8Tb8EWAAkUNl3gRkAhAAAAAASUVORK5CYII=) no-repeat; width:25px; height:25px; display:inline-block;  margin-right:5px;}
 .fav_info_main i.fav_box_yes{background-position:0 0;}
 .fav_info_main i.fav_box_no{background-position:0 -25px;}
-/*ËØÑËÆ∫*/
+/*∆¿¬€*/
 .zfWrap {
 	position: relative;
 	z-index: 10;
@@ -283,7 +286,7 @@
 	overflow: hidden;
 	font-size:12px;
 }
-.ffsong{font-family:"ÂÆã‰Ωì";}
+.ffsong{font-family:"ÀŒÃÂ";}
 .zfWrap .inputTxt {
 	width: 97.8%;
 	padding: 5px 1%;
@@ -377,16 +380,16 @@
 }
 .pages a.pageBtn:hover{background:none;color: #666;}
 
-/*Â•ΩÂèãÊé®Ëçê*/
+/*∫√”—Õ∆ºˆ*/
 .side{width:230px;float:right;}
 .WB_right_module{border:1px solid #e6e5e3; background:#fff;}
 .WB_cardtitle_b{
 	position: relative;
 	height: 38px;
-	padding: 0 16px;
-	line-height: 38px;
+	padding: 0 16px;	
 	overflow: hidden;border-bottom:1px solid #f2f2f5;
 }
+.WB_cardtitle_b h4{line-height: 38px;}
 .main_title{color:#333;font-size:14px;font-weight:700;}
 .WB_innerwrap{padding:10px 16px 16px;font-size:12px;}
 .WB_right_module .hot_topic {
@@ -404,7 +407,7 @@
 }
 .WB_right_module .hot_topic li p a.S_txt1{color:#333;}
 .WB_right_module .hot_topic li p a.S_txt1:hover{color:#eb7350;}
-/*Êé®ËçêÂ•ΩÂèã*/
+/*Õ∆ºˆ∫√”—*/
 .WB_right_module .person_list li {
 	padding: 10px 0;
 }
@@ -505,7 +508,7 @@
 .medal_for_apollo li .ico_badge03{ background-position:0 -58px;}
 .WB_cardtitle_a{border-top:1px #f1f1f1 solid;}
 .WB_cardtitle_a a{line-height:19px; display:inline-block;}
-/*ÂÖ≥Ê≥®*/
+/*πÿ◊¢*/
 .wb_att_box{
 	position:absolute;
 	right:15px;
@@ -519,7 +522,7 @@
 .btn-Attention{color:#999; background:#f2f2f2; border:1px #ddd solid; padding:0 20px; line-height:26px; display:inline-block;}
 .foStatus .followEach{color:#999; margin-right:8px;}
 .user_nums span{ margin-right:30px;}
-/*ÊêúÁ¥¢*/
+/*À—À˜*/
 .soso{padding:30px 0 40px;}
 .soso .category {
 	padding:0 0 0 130px;
@@ -553,7 +556,7 @@
 	float:left;
 }
 .sosoTextBox .text input{ border:0; display:block; float:left; line-height:37px; height:37px; padding:0 5px; width:321px;color:#999;}
-/*ÁßÅ‰ø°*/
+/*ÀΩ–≈*/
 .tab_radious .btn-Attention{ position:absolute; right:10px; top:8px;}
 .wbpmunit{padding: 25px 15px;}
 .pubtime,.message{color:#666;}

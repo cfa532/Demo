@@ -515,22 +515,7 @@ function WeiboPost(scope)
 						r.readAsDataURL(new Blob([imgData[1]], {type: 'image/png'}));
 					});
 				};
-/*
-				//check if it is favorite
-				G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, self.authorID, function(keys) {
-					if (keys[1]) {
-						for (var i=0; i<keys[1].length; i++) {
-							if (keys[1][i] === self.wbID) {
-								self.isFavorite = true;
-								if (scope) scope.$apply();
-								break;
-							};
-						};
-					};
-				}, function(name, err) {
-					debug.error(err);
-				});
-*/
+
 				if (self.parentID !== null) {
 					if (original === true) {
 						//only look for original post, return a false
@@ -557,19 +542,6 @@ function WeiboPost(scope)
 				reject(err);
 			});
 		});
-	};
-	
-	this.checkFavorite = function(ui) {
-		if (!ui.favoriteReady) {
-			setTimeout(function() {self.checkFavorite(ui);}, 100);
-		} else {
-			for (var i=0; i<ui.favorites[self.authorID].length; i++) {
-				if (ui.favorites[self.authorID][i] === self.wbID) {
-					self.isFavorite = true;
-					return;
-				};
-			};
-		};
 	};
 	
 	this.set = function() {
