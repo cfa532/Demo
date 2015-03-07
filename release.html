@@ -19,16 +19,15 @@
 
 var G_VARS = {
 		bidPath : window.location.pathname+"/appID/userID/",
-//		IPList :["218.74.25.10:8100"],
-		IPList :["112.124.113.235:30003"],		//api for IP lists
+		IPList :["112.124.113.235:30003","218.74.25.10:8100"],		//api for IP lists
 		IPNum : 0,
 		sid : '0f24d8d2956508cc571e67da23ee75ae47c1879c',
 //sibao
 //		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK24xVllqV21DSVlNMHRtUnNzaGdLWlozRUN6VFp1SlFfNGVuSnB0VEpSalUA",
 //Valar
-//		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK0IzTDEtbGw1b2s5dW85UlRpRHQ1aEpjU28za0JaRlItX3ZUUEs4MUptVVEA",
+		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK0IzTDEtbGw1b2s5dW85UlRpRHQ1aEpjU28za0JaRlItX3ZUUEs4MUptVVEA",
 //appowner
-		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
+//		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
 		dataBid : 'gVQXZWd0RgNuB-5R5tX1gxhOb200TdwEVs-LHbLXpLo',	//from which JS data are read
 		hprose : '-l1PnT32Vi5FEf-tGRQTStUPe1bNXZZN9H26ib0q50o',
 		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',
@@ -399,7 +398,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 	<div ui-view></div>
 </div>
 
-<div id="myChatBox" ng-controller="chatController" class="pr">
+<div id="myChatBox" ng-controller="chatController">
 	<div class="online_info" id="online_info" style="display:none;">
 		<div class="online_head">
 			<a href="javascript:void(0)" class="online_close" onclick="slideToggle()"></a>			
@@ -461,7 +460,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 			<div class="wbim_tit2_lf">
 				<p class="tit2_lf_con">
 					<a class="webim_list_head" ui-sref="root.chat.detail({bid:chatFriend.bid})">
-						<span class="head_pic"><img alt="" ng-src="{{chatFriend.headPicUrl}}"/></span>
+						<span class="head_pic"><img alt="avatar" ng-src="{{chatFriend.headPicUrl}}"/></span>
 					</a>
 					<span class="chat_name"><a ui-sref="root.chat.detail({bid:chatFriend.bid})" class="f0a8cd2">{{chatFriend.nickName}}</a></span>
 				</p>
@@ -488,6 +487,12 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 		</div>
 			
 		<form name="chatForm" ng-submit="sendSMS(chatFriend.bid)" novalidate>
+			<div class="pr">
+				<div class="private_file_mod wbim_tit4">
+					<a class="links" href="javascript:void(0);">删除</a>
+					<span class="mes_acc_icon acc_icon_photo"></span>150301_navbg01.png
+				</div>
+			</div>
 			<div class="wbim_tit4">
 				<a ui-sref="root.chat.detail({bid:chatFriend.bid})" class="fr" style="line-height:30px; margin-right:20px;color:#808080;">聊天记录</a>
 				<div class="sendbox_menu">
@@ -709,8 +714,10 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 	<div ui-view>chat</div>
 	<ng-include src="'floating.html'"></ng-include>
 </div>
-<ng-include src="'upperSidebar.html'"></ng-include>
-<ng-include src="'lowerSidebar.html'"></ng-include>
+<div class="side">
+	<ng-include src="'upperSidebar.html'"></ng-include>
+	<ng-include src="'lowerSidebar.html'"></ng-include>
+</div>
 </script>
 
 <script type="text/ng-template" id="friends.html">
@@ -771,8 +778,8 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 	<ng-include src="'floating.html'"></ng-include>
 </div>
 <div class="side">
-<ng-include src="'upperSidebar.html'"></ng-include>
-<ng-include src="'lowerSidebar.html'"></ng-include>
+	<ng-include src="'upperSidebar.html'"></ng-include>
+	<ng-include src="'lowerSidebar.html'"></ng-include>
 </div>
 </script>
 
@@ -874,7 +881,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 	<div ui-view><h1>peresonal page</h1></div>
 	<ng-include src="'floating.html'"></ng-include>
 </div>
-<ng-include src="'lowerSidebar.html'"></ng-include>
+<div class="side">
+	<ng-include src="'lowerSidebar.html'"></ng-include>
+</div>
 </script>
 
 <script type="text/ng-template" id="post.html">
@@ -1040,7 +1049,6 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 </script>
 
 <script type="text/ng-template" id="upperSidebar.html">
-<div class="side">
 <div class="WB_right_module mb10">
 	<div class="p10">
 		<div class="userPic">
@@ -1068,12 +1076,10 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 		<div class="clearfix"></div>
 	</div>
 </div>
-</div>
 </script>
 
 <script type="text/ng-template" id="lowerSidebar.html">
 <!--used when displaying personal weibo, there is no personal infor on sidebar-->
-<div class="side">
 <div class="WB_right_module mb10">
 	<div class="WB_cardtitle_b">
 		<h4>
@@ -1124,7 +1130,6 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 	</div>
 </div>
 <div class="clearfix"></div>
-</div>
 </script>
 </body>
 </html>
