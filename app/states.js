@@ -10,9 +10,10 @@
 		$rootScope.$on("$stateChangeSuccess", function(evt, to, toP, from, fromP) { debug.log("Success: " + message(to, toP, from, fromP)); });
 		$rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) { debug.log(error); });
 	})
-	.config(["logonServiceProvider", "$stateProvider", "$logProvider", "$urlRouterProvider",
-	         function(logonServiceProvider, $stateProvider, $logProvider, $urlRouterProvider) {
-		$logProvider.debugEnabled(true);
+	.config(["logonServiceProvider", "$stateProvider", "$logProvider", "$urlRouterProvider", "$compileProvider",
+	         function(logonServiceProvider, $stateProvider, $logProvider, $urlRouterProvider, $compileProvider) {
+		
+		$compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|data:image)/);	//allow data:image to href
 		
 		$stateProvider
 		.state("root", {
@@ -179,7 +180,7 @@
 								debug.error(err);
 							});
 						};
-						r.readAsArrayBuffer(fileName);
+						r.readAsArrayBuffer($scope.picFile);
 					};
 					if ($scope.fileSent) {
 						var r = new FileReader();
@@ -236,25 +237,31 @@
 		            document.getElementById(id).dispatchEvent(new Event('click'));
 				};
 				
-				var picFile;
 				$scope.picSelected = function(files) {
 					$scope.picUrl = null;
+					$scope.fileSent = null;
 					if (files!==null && files.length>0) {
 						//display pic in send box
 						var r = new FileReader();
 						r.onloadend = function(e) {
 							$scope.picUrl = e.target.result;
 						};
-						picFile = files[0];
+						$scope.picFile = files[0];
 						r.readAsDataURL(files[0], {type: 'image/png'});
 					};
 				};
 								
 				$scope.fileSelected = function(files) {
 					$scope.fileSent = null;
+					$scope.picFile = null;
 					if (files!==null && files.length>0) {
 						$scope.fileSent = files[0];
 					};
+				};
+				
+				$scope.unselectFile = function() {
+					$scope.fileSent = null;
+					$scope.picFile = null;
 				};
 				
 				//download received file

@@ -511,6 +511,13 @@ function WeiboPost(scope)
 							self.picUrls.unshift(e.target.result);
 							self.picUrls.pop();
 							if (scope) scope.$apply();
+							
+							$(".img-group").colorbox({rel:'img-group'});
+							$(".inline").colorbox({inline:true, width:"50%"});
+							$("#click").click(function(){ 
+								$('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
+								return false;
+							});
 						};
 						r.readAsDataURL(new Blob([imgData[1]], {type: 'image/png'}));
 					});

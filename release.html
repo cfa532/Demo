@@ -25,9 +25,9 @@ var G_VARS = {
 //sibao
 //		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK24xVllqV21DSVlNMHRtUnNzaGdLWlozRUN6VFp1SlFfNGVuSnB0VEpSalUA",
 //Valar
-		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK0IzTDEtbGw1b2s5dW85UlRpRHQ1aEpjU28za0JaRlItX3ZUUEs4MUptVVEA",
+//		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK0IzTDEtbGw1b2s5dW85UlRpRHQ1aEpjU28za0JaRlItX3ZUUEs4MUptVVEA",
 //appowner
-//		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
+		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
 		dataBid : 'gVQXZWd0RgNuB-5R5tX1gxhOb200TdwEVs-LHbLXpLo',	//from which JS data are read
 		hprose : '-l1PnT32Vi5FEf-tGRQTStUPe1bNXZZN9H26ib0q50o',
 		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',
@@ -41,7 +41,7 @@ var G_VARS = {
 			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
 			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
 			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
-			GlobalDataStruct : 'E7QG2X_UO2M2VbVlTtffzRZINOlMY2TXa42SLdXHyMQ',
+			GlobalDataStruct : '-Cd_hMZ73ngCHJOE6qRdGNQaBZ5wcgvJ0F5dpCoz_1k',
 			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
 			uiBootstrapTpls : 'yY70GzFiSHca2X1jmc6bw6jMkW4WqyUX1NFXWjHsjJc',
 			main : 'wZVc3FaV_KcGi35Sg72GyO0XrAropSJZIKiSr3V7YL4',
@@ -50,8 +50,8 @@ var G_VARS = {
 		js : {		//js code that can be loaded with a script tag, has to load after app declaration
 			account : '1WE3NK9a-5hdWJ8axiP-Hv5JtQfwyaQuXf1_STv6xwE',
 			message : 'BpUEw4t65qXjAtTPxlbkuNqvD3L_K6Kttx9_oEK5c3k',
-			sms : '9HcopwTR5QPhRcLGx2xQ8yes8U6pxQ3jG5Lt2adxX2U',
-			state : 'cHbXUP2UtBN8Nh8t0VKX9DIe8fJKiGnUB0sP5E_f_EM',
+			sms : '5U3LK4jbTneGI5lr8XgZLef9bvxO3p7wJa8JGob29Y0',
+			state : 'nVergpzKEgx-6SCljf21SKFNAYJpOJE1qWuoyzJ0n-k',
 			root : 'jbK2AHK_2-9NfiZ6hTnvXPEL46cHqsLVKTNGWtjyQ80',
 			review : '46hzNnZx56LqAdx3SZscnZXAM2H8ABBAHumsnWTcz5c',
 			directive : 'eLeuABuDCP8j443SYtmzgrNLPrycDqlpHC1sGm7yo8k',
@@ -478,7 +478,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					</div>
 					<div class="bubble_main">
 						<div ng-show="m.contentType===0" class="cont_sms"><p class="page">{{m.content}}</p></div>
-						<img ng-show="m.contentType===1" ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="image loading"></img>
+						<img style="max-height:120px; max-width:120px;" ng-show="m.contentType===1" ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="image loading"></img>
 						<a href="javascript:void(0);" ng-show="m.contentType===2" ng-click="saveFile(m)">{{m | fileName}}</a>
 					</div>
 				</div>
@@ -487,10 +487,10 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 		</div>
 			
 		<form name="chatForm" ng-submit="sendSMS(chatFriend.bid)" novalidate>
-			<div class="pr">
+			<div ng-show="picFile || fileSent" class="pr">
 				<div class="private_file_mod wbim_tit4">
-					<a class="links" href="javascript:void(0);">删除</a>
-					<span class="mes_acc_icon acc_icon_photo"></span>150301_navbg01.png
+					<a class="links" href="javascript:void(0);" ng-click="unselectFile();">删除</a>
+					<span class="mes_acc_icon acc_icon_photo"></span> {{picFile.name || fileSent.name}}
 				</div>
 			</div>
 			<div class="wbim_tit4">
@@ -510,12 +510,6 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 			</div>
 			<div class="wbim_tit4 tr pr15 pt5 pb5">
 				<input ng-disabled="chatForm.$invalid" type="submit" value="发送" class="send_btn W_btn_v" style="margin-top:2px;border-color:#ff9b01;background:#ffa00a;"/>
-			</div>
-			<div ng-show="picUrl" class="layer_send_pic content pb10" style="border-bottom:1px solid #e3e3e1;margin: 0 -10px;padding-left: 10px;">								
-					<img ng-src="{{picUrl}}" width="72" alt=""/>
-			</div>
-			<div ng-show="fileSent">								
-				<h2>{{fileSent.name}}</h2>
 			</div>
 		</form>
 	</div>
@@ -639,8 +633,8 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 							<div class="clearfix"></div>
 						</ul>
 					</div>
-					<div ng-show="fileSent">								
-						<h2>{{fileSent.name}}</h2>
+					<div ng-show="picFile || fileSent">								
+						<h2>{{picFile.name || fileSent.name}}       <a href="javascript:void(0);" ng-click="unselectFile()">删除</a></h2>
 					</div>
 				</div>
 				<div class="fr" style="padding:10px 20px 20px 10px; width:205px;">		
@@ -694,11 +688,11 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 				<div class="wbpmcontent">
 					<p class="mb10"><b><a ui-sref="root.chat.detail({bid:bid})" title="" class="f10a2c7">{{ui.nickName}}</a></b></p>
 					<div class="message">
-						最后对话: <span ng-show="ui.lastSMS.contentType===0">{{ui.lastSMS.content}}</span>
-						<img ng-show="ui.lastSMS.contentType===1" le-src="{{ui.lastSMS.content}}" authorid="{{ui.lastSMS.bid}}" ></img>
+						<span ng-show="ui.lastSMS.contentType===0">{{ui.lastSMS.content}}</span>
+						<img style="max-height:120px; max-width:120px;" ng-show="ui.lastSMS.contentType===1" le-src="{{ui.lastSMS.content}}" authorid="{{ui.lastSMS.bid}}" ></img>
 						<a href="javascript:void(0);" ng-show="ui.lastSMS.contentType===2">{{ui.lastSMS | fileName}}</a>
 					</div>
-					<div class="pubtime">{{ui.lastSMS.timeStamp | chatTime}}</div>
+					<div class="pubtime">最后对话: {{ui.lastSMS.timeStamp | chatTime}}</div>
 				</div>
 				<div class="wbpmallreaddiv">
 					<a ui-sref="root.chat.detail({bid:bid})" class="btn_reply">回复</a>
@@ -1003,7 +997,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					<div class="lotspic_list">
 						<ul>
 							<li ng-repeat="uri in wb.picUrls track by $index">
-								<a ng-href="{{uri}}" type="image/png" class="img-group">
+								<a href="{{uri}}" class="img-group" target="_blank">
 									<img ng-src="{{uri}}"></img></a>
 							</li>
 							<div class="clearfix"></div>

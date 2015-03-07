@@ -115,25 +115,31 @@
             document.getElementById(id).dispatchEvent(new Event('click'));
 		};
 		
-		var picFile;
 		$scope.picSelected = function(files) {
 			$scope.picUrl = null;
+			$scope.fileSent = null;
 			if (files!==null && files.length>0) {
 				//display pic in send box
 				var r = new FileReader();
 				r.onloadend = function(e) {
 					$scope.picUrl = e.target.result;
 				};
-				picFile = files[0];
+				$scope.picFile = files[0];
 				r.readAsDataURL(files[0], {type: 'image/png'});
 			};
 		};
 		
 		$scope.fileSelected = function(files) {
 			$scope.fileSent = null;
+			$scope.picFile = null;
 			if (files!==null && files.length>0) {
 				$scope.fileSent = files[0];
 			};
+		};
+		
+		$scope.unselectFile = function() {
+			$scope.fileSent = null;
+			$scope.picFile = null;
 		};
 		
 		//download received file
@@ -184,6 +190,7 @@
 						$scope.chatSessions[bid].messages.push(m);
 						$scope.chatSessions[bid].timeStamp = m.timeStamp;
 						$scope.picUrl = null;
+						$scope.picFile = null;
 						$scope.$apply(); chatbox1.scrollTop(100000);
 						
 						//save it in db as conversation
@@ -192,7 +199,7 @@
 						debug.error(err);
 					});
 				};
-				r.readAsArrayBuffer(picFile);
+				r.readAsArrayBuffer($scope.picFile);
 			};
 			if ($scope.fileSent) {
 				var r = new FileReader();
