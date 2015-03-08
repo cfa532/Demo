@@ -157,7 +157,7 @@
 						//save it in db as conversation
 						SMSService.saveSMS(bid, m);
 					};
-					if ($scope.picUrl) {
+					if ($scope.picFile) {
 						var r = new FileReader();
 						r.onloadend = function(e) {
 							G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
@@ -173,7 +173,7 @@
 								$scope.chatSessions[bid].messages.push(m);
 								$scope.chatSessions[bid].timeStamp = m.timeStamp;
 								$scope.picUrl = null;
-								
+								$scope.picFile = null;
 								//save it in db as conversation
 								SMSService.saveSMS(bid, m);
 							}, function(name, err) {
@@ -247,6 +247,7 @@
 							$scope.picUrl = e.target.result;
 						};
 						$scope.picFile = files[0];
+						$scope.$apply();
 						r.readAsDataURL(files[0], {type: 'image/png'});
 					};
 				};

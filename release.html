@@ -51,7 +51,7 @@ var G_VARS = {
 			account : '1WE3NK9a-5hdWJ8axiP-Hv5JtQfwyaQuXf1_STv6xwE',
 			message : 'BpUEw4t65qXjAtTPxlbkuNqvD3L_K6Kttx9_oEK5c3k',
 			sms : '5U3LK4jbTneGI5lr8XgZLef9bvxO3p7wJa8JGob29Y0',
-			state : 'nVergpzKEgx-6SCljf21SKFNAYJpOJE1qWuoyzJ0n-k',
+			state : 'XwoO6YfnZJpMxepRr1gzrW9bJK25z6SwjFj1t-7ShVc',
 			root : 'jbK2AHK_2-9NfiZ6hTnvXPEL46cHqsLVKTNGWtjyQ80',
 			review : '46hzNnZx56LqAdx3SZscnZXAM2H8ABBAHumsnWTcz5c',
 			directive : 'eLeuABuDCP8j443SYtmzgrNLPrycDqlpHC1sGm7yo8k',
@@ -487,10 +487,16 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 		</div>
 			
 		<form name="chatForm" ng-submit="sendSMS(chatFriend.bid)" novalidate>
-			<div ng-show="picFile || fileSent" class="pr">
+			<div ng-show="picFile" class="pr">
 				<div class="private_file_mod wbim_tit4">
 					<a class="links" href="javascript:void(0);" ng-click="unselectFile();">删除</a>
-					<span class="mes_acc_icon acc_icon_photo"></span> {{picFile.name || fileSent.name}}
+					<span class="mes_acc_icon acc_icon_photo"></span> {{picFile.name}}
+				</div>
+			</div>
+			<div ng-show="fileSent" class="pr">
+				<div class="private_file_mod wbim_tit4">
+					<a class="links" href="javascript:void(0);" ng-click="unselectFile();">删除</a>
+					<span class="mes_acc_icon acc_icon_photo"></span> {{fileSent.name}}
 				</div>
 			</div>
 			<div class="wbim_tit4">
@@ -621,20 +627,23 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 				<div class="wbpm_left fl">
 					插入：
 					<span class="wbpmimgname">
-						<a href="javascript:void(0);" ng-click="sendFile('uploadChatPic')" class="ico_letterdel">图片</a>
-						<input type="file" onchange="angular.element(this).scope().fileSelected(this.files)" id="uploadChatPic2" accept="image/*" class="inputstyle"></input>
+						<a href="javascript:void(0);" ng-click="sendFile('uploadChatPic2')" class="ico_letterdel">图片</a>
+						<input type="file" onchange="angular.element(this).scope().picSelected(this.files)" id="uploadChatPic2" accept="image/*" class="inputstyle"></input>
 						<span>|</span>
 						<a href="javascript:void(0);" ng-click="sendFile('uploadChatFile2')" class="ico_letterdel">文件</a>
 						<input type="file" onchange="angular.element(this).scope().fileSelected(this.files)" id="uploadChatFile2" class="inputstyle"></input>
 					</span>
-					<div ng-show="picUrl" class="lotspic_list">
+					<div ng-show="picFile">
 						<ul>
-							<li><img ng-src="{{picUrl}}" alt=""/></li>
+							<li><img style="max-height:120px; max-width:120px" ng-src="{{picUrl}}" alt="loading"/></li>
 							<div class="clearfix"></div>
 						</ul>
 					</div>
-					<div ng-show="picFile || fileSent">								
-						<h2>{{picFile.name || fileSent.name}}       <a href="javascript:void(0);" ng-click="unselectFile()">删除</a></h2>
+					<div ng-show="picFile">								
+						<h2>{{picFile.name}}    <a href="javascript:void(0);" ng-click="unselectFile()">删除</a></h2>
+					</div>
+					<div ng-show="fileSent">								
+						<h2>{{fileSent.name}}    <a href="javascript:void(0);" ng-click="unselectFile()">删除</a></h2>
 					</div>
 				</div>
 				<div class="fr" style="padding:10px 20px 20px 10px; width:205px;">		
@@ -653,9 +662,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					<p class="mb10"><b>
 		<a ui-sref="root.personal.allPosts({bid:m.bid})" title="" class="f10a2c7">{{myUserInfo.friends[m.bid].nickName || myUserInfo.nickName}}</a></b></p>
 					<div ng-show="m.contentType===0" class="message">{{m.content}}</div>
-					<div ng-show="m.contentType===1" class="lotspic_list">
+					<div ng-show="m.contentType===1">
 						<ul>
-							<li><img ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="loading"/></li>
+							<li><img style="max-height:120px; max-width:120px" ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="loading"/></li>
 							<div class="clearfix"></div>
 						</ul>
 					</div>
