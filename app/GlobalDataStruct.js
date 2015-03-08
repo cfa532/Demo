@@ -183,27 +183,23 @@ function UserInfo() {
 	};
 	
 	//return all pictures each time this is called
-	var picList = [];
-	var picIndex = 1;
 	this.getPictures = function(scope) {
 		var df = q.defer();
-		if (picList.length > 0) {
-			df.resolve(picList);
-		} else {
-			G_VARS.httpClient.hgetall(G_VARS.sid, self.bid, G_VARS.PostPics, function(data) {
-				if (data) {
-					//data[i].field is date in which picture is posted
-					//data[i].value is array of wbID by at the day
-					data.sort(function(a,b) {b.field - a.field});
-					for(var i=0; i<data.length; i++) {
-						picList = picList.concat(data[i].value);
-					};
-					df.resolve(picList);
+		var picList = [];
+		G_VARS.httpClient.hgetall(G_VARS.sid, self.bid, G_VARS.PostPics, function(data) {
+			if (data) {
+				//data[i].field is date in which picture is posted
+				//data[i].value is array of wbID by at the day
+				data.sort(function(a,b) {return b.field-a.field});
+				for(var i=0; i<data.length; i++) {
+					picList = picList.concat(data[i].value);
 				};
-			}, function(name, err) {
-				df.reject(err);
-			});
-		};
+				if (picList.length > 6) picList.length=6;
+				df.resolve(picList);
+			};
+		}, function(name, err) {
+			df.reject(err);
+		});
 		return df.promise;
 	};
 	
@@ -512,7 +508,7 @@ function WeiboPost(scope)
 							self.picUrls.pop();
 							if (scope) scope.$apply();
 							
-							$(".img-group").colorbox({rel:'img-group'});
+							$(".img-group").colorbox({rel:'img-group'+self.wbID});
 							$(".inline").colorbox({inline:true, width:"50%"});
 							$("#click").click(function(){ 
 								$('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");

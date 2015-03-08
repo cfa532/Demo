@@ -41,11 +41,11 @@ var G_VARS = {
 			jQuery : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw',
 			jQueryTab : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o',
 			easydialog : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE',
-			GlobalDataStruct : '-Cd_hMZ73ngCHJOE6qRdGNQaBZ5wcgvJ0F5dpCoz_1k',
+			GlobalDataStruct : 'Ywi7hvZhcW6p374QJ13v31Xv86WWJ-jlyseGLo2hEKo',
 			angularUiRouter : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10',
 			uiBootstrapTpls : 'yY70GzFiSHca2X1jmc6bw6jMkW4WqyUX1NFXWjHsjJc',
 			main : 'wZVc3FaV_KcGi35Sg72GyO0XrAropSJZIKiSr3V7YL4',
-			colorbox : 'v_5qj9pqQHi9tbZ2hHb5a2Jz4PUHpupd-TA9iPH0A-A',
+			colorbox : '6UivCsGELp-1trH3sK6TQJSs_KnHjNlps5AjAc-m8Ok',
 		},
 		js : {		//js code that can be loaded with a script tag, has to load after app declaration
 			account : '1WE3NK9a-5hdWJ8axiP-Hv5JtQfwyaQuXf1_STv6xwE',
@@ -851,7 +851,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 			<div class="imgModList">
 				<ul>
 					<li ng-repeat="uri in myPicKeys track by $index">
-						<a href="#"><img width="80" height="80" le-src="{{uri}}" authorid="{{currUserInfo.bid}}" alt=""></a>
+						<a href="javascript:void(0);"><img width="80" height="80" le-src="{{uri}}" authorid="{{currUserInfo.bid}}" alt=""></a>
 					</li>
 					<div class="clearfix"></div>
 				</ul>
@@ -988,8 +988,8 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 						<div class="lotspic_list">
 							<ul>
 								<li ng-repeat="uri in wb.parentWeibo.picUrls track by $index">
-									<a href="javascript:void(0);" ng-click="showPicSlider(wb.parentWeibo)">
-										<img ng-src="{{uri}}" alt=""/></a>
+									<a href="{{uri}}" class="img-group">
+									<img ng-src="{{uri}}"></img></a>
 								</li>
 								<div class="clearfix"></div>
 							</ul>
@@ -1006,7 +1006,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					<div class="lotspic_list">
 						<ul>
 							<li ng-repeat="uri in wb.picUrls track by $index">
-								<a href="{{uri}}" class="img-group" target="_blank">
+								<a href="{{uri}}" class="img-group">
 									<img ng-src="{{uri}}"></img></a>
 							</li>
 							<div class="clearfix"></div>
