@@ -672,6 +672,39 @@
 			window.open(src, "_blank");
 		};
 		
+		//publish a new Post with a ParentID
+		$scope.relayPost = function(relayText, parentWB) {
+			console.log("in relayPost()");
+			console.log(parentWB)
+			var wb = new WeiboPost();
+			if (parentWB.parentID !== null) {
+				//we are relaying a weibo that has been relayed at least once.
+				//attach its text to the new review and update the parent
+				wb.body = relayText+"://@"+parentWB.author+":"+parentWB.body;		//these 2 fields have value only in a relayed post
+				wb.parentID = parentWB.parentID;
+				wb.parentAuthorID = parentWB.parentAuthorID;
+				wb.parentWeibo = parentWB.parentWeibo;
+			} else {
+				wb.body = relayText;				
+				wb.parentID = parentWB.wbID;
+				wb.parentAuthorID = parentWB.authorID;
+				wb.parentWeibo = parentWB;
+			}
+			wb.body = wb.body.toString().slice(0, G_VARS.MaxWeiboLength);
+			wb.timeStamp = new Date().getTime();
+			wb.authorID = G_VARS.bid;
+			wb.author = $scope.myUserInfo.nickName;
+			
+			wb.set().then(function() {
+				$scope.weiboList.unshift(wb);
+				G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+				console.log(wb);
+				$scope.$apply();
+				$scope.myUserInfo.weiboCount++;
+				$scope.myUserInfo.setLastWeibo(wb);
+			});
+		};
+
 		//state switch
 		var iDay = 0;			//index of the most recent day, used by getPosts() to read single user's posts
 		var wbListLen = 0;		//length of weibo list
