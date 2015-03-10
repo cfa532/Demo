@@ -20,35 +20,35 @@
 				</div>\
 				<div class='bot'>\
 					<div class='fr'>\
-						<span ng-show='R.chCounter<=30' class='countTxt'>还能输入<em>{{R.chCounter}}</em>字</span>\
-						<a ng-click='(!R.txtInvalid) && addRelay()' class='w_btn_a'><span class='btn_30px'>转发</span></a>\
-					</div>\
-					<div class='clearfix'></div>\
-				</div>\
-						<div class='relayList'>				\
-							<div class='tabStyle1'>			\
-								<b class='line'></b>		\
-							</div>							\
-							<div class=''>					\
-								<ul>						\
-									<li ng-repeat='r in relayList track by $index' class='nobor'>	\
-										<div class='msgCnt'>											\
-											<strong><a ui-sref='root.personal.allPosts({bid:r.authorID})' target='_blank' class='f10a2c7'>{{r.author}}</a>:</strong>	\
-											<span class='content'>{{r.body}}</span>			\
-										</div>												\
-										<div class='pubInfo'>								\
-											<span class='cNote'>{{r.timeStamp | timePassed}}</span>	\
-											<a href='#' class='alarm'>删除</a>						\
-											<a href='#' class='replyCite'>评论</a>					\
-										</div>		\
-									</li>			\
-								</ul>				\
-							</div>					\
+						<span ng-show='R.chCounter<=30' class='countTxt'>还能输入<em>{{R.chCounter}}</em>字</span>				\
+						<a ng-click='(!R.txtInvalid) && addRelay()' class='w_btn_a'><span class='btn_30px'>转发</span></a>	\
+					</div>								\
+					<div class='clearfix'></div>		\
+				</div>									\
+					<div class='relayList'>				\
+						<div class='tabStyle1'>			\
+							<b class='line'></b>		\
+						</div>							\
+						<div class=''>					\
+							<ul>						\
+								<li ng-repeat='r in relayList track by $index' class='nobor'>	\
+									<div class='msgCnt'>										\
+										<strong><a ui-sref='root.personal.allPosts({bid:r.authorID})' target='_blank' class='f10a2c7'>{{r.author}}</a>:</strong>	\
+										<span class='content'>{{r.body}}</span>					\
+									</div>														\
+									<div class='pubInfo'>										\
+										<span class='cNote'>{{r.timeStamp | timePassed}}</span>	\
+										<a href='#' class='alarm'>删除</a>						\
+										<a href='#' class='replyCite'>评论</a>					\
+									</div>		\
+								</li>			\
+							</ul>				\
+						</div>					\
 			<pagination direction-links='false' boundary-links='true' items-per-page='pageSize' total-items='weibo.relays.length' ng-change='pageChanged()' ng-model='currentPage'></pagination>\
-												<div class='pages'>		\
-							</div>										\
-						</div>	\
-					</div>"; 
+						<div class='pages'>		\
+						</div>					\
+					</div>						\
+				</div>"; 
 			},
 			scope : {
 				pageSize : "@",
