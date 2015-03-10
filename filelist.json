@@ -1,7 +1,4 @@
-[
-	{'jqurey' : 'qOl3RIQLz9jlljCkT9hzOPSaKj12miI9OqPu0DLsSmw'},
-	{'angualr-ui-router' : 'vbz6GwdVlF3SfgfEzIRBA5IS64D3uW4Htprdf_qP-10'},
-	{'ui-bootstrap-tpls' : 'Q787mpszKswRAkLWSIqNbXL428EpCpXrUdTFe6gePZc'},
-	{'easydialog' : 'EYzgducO7ylkYbVHrnWlJdpGjb3GiBWGkZIWluD7TgE'},
-	{'jquery-tab' : 'Apz-a9vTZf7FPZhc-TmveMEjs6c2PT8W2TaBoHn7Q4o'}
-]
+var appStoreEntries = 
+	[
+		{'Weibo' : 'q5XtaClJNnhe4idTXSC9oZ_lznTv3VXoWKbtTqRMap4'}
+	];

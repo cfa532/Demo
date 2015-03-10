@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>APP store</title>
+<script type="text/javascript">
+"use strict";
+
+var IPList = ["112.124.113.235:30003","218.74.25.10:8100"];		//api for IP lists
+var IPNum = 0;
+var sid = '0f24d8d2956508cc571e67da23ee75ae47c1879c';
+var dataBid = 'gVQXZWd0RgNuB-5R5tX1gxhOb200TdwEVs-LHbLXpLo';
+
+//Both check server availability and load hprose
+function loadHprose(ip, callback) {
+	var hproseKey = '-l1PnT32Vi5FEf-tGRQTStUPe1bNXZZN9H26ib0q50o';
+	var appsKey = 'appstore-datalist-json';
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	script.async = "async";
+	if (script.readyState) { //IE
+		script.onreadystatechange = function() {
+			if (script.readyState == "loaded" || script.readyState == "complete") {
+				script.onreadystatechange = null;
+				callback(ip);
+			};
+		};
+	} else { //Others
+		script.onload = function() {
+			console.log(appStoreEntries);
+			callback(ip);
+		};
+	};
+	script.addEventListener("error", function() {
+		//try next server IP in a predefined list
+		console.log("check next server=" + IPList[IPNum])
+		checkServer(IPList[IPNum++]);
+	});
+	//here is a problem with illegitimate sid
+	script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+sid+'&bid='+dataBid+'&key='+appsKey;
+	console.log(script);
+	document.getElementsByTagName("head")[0].appendChild(script);		//load hprose first
+};
+
+function checkServer(ip) {
+	if (ip===null || typeof(ip)==='undefined') {
+		console.log("no server available");
+		return;
+	};
+	//try to load hprose from potential server
+	loadHprose(ip, function(ip) {
+		//the server is live, hprose loaded from it	
+		var ul = document.getElementById("appList");
+		var li = document.createElement("li");
+		var a = document.createElement("a");
+		a.download = "release.html";
+		//a.target = "_blank";
+		a.textContent = "Weibo";
+		a.href = 'http://'+ip+'/getres?type=text/html&sid='+sid+'&bid='+dataBid+'&key='+appStoreEntries[0]["Weibo"];
+		li.appendChild(a);
+		ul.appendChild(li);
+	});
+};
+
+checkServer(IPList[IPNum++]);
+</script>
+</head>
+
+<body ng-controller="appController">
+	<ul id="appList"></ul>
+</body>
+</html>

@@ -106,7 +106,7 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
         var r = new FileReader();
         r.onloadend = function (e) {           
             console.log(e.target.result.byteLength);           
-            client.set($scope.sid, $scope.bid, "upgrade-file-location", e.target.result, function () {
+            client.set($scope.sid, $scope.bid, "appstore-datalist-json", e.target.result, function () {
                 $scope.appstatus = "upload ok;";
                 $scope.imgtext = "upgrade-file-location";
                 $scope.$apply()
