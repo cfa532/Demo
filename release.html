@@ -29,7 +29,7 @@ var G_VARS = {
 //appowner
 		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
 		dataBid : 'gVQXZWd0RgNuB-5R5tX1gxhOb200TdwEVs-LHbLXpLo',	//from which JS data are read
-		hprose : '-l1PnT32Vi5FEf-tGRQTStUPe1bNXZZN9H26ib0q50o',
+		leither : 'mZVMWSVvKl708Et4sUGubnr1Y7T34F12Ln-zutAQE-Q',
 		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',
 		css : {
 			base : 'VEue0NZ0Ln_03JVY61AF5jOLkaAFeZoHKpbWg0KW3ZM',
@@ -138,7 +138,7 @@ var G_VARS = {
 			checkServer(G_VARS.IPList[G_VARS.IPNum++]);
 		});
 		//here is a problem with illegitimate sid
-		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G_VARS.sid+'&bid='+G_VARS.dataBid+'&key='+G_VARS.hprose;
+		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G_VARS.sid+'&bid='+G_VARS.dataBid+'&key='+G_VARS.leither;
 		debug.log(script);
 		document.getElementsByTagName("head")[0].appendChild(script);		//load hprose first
 	};
@@ -151,9 +151,8 @@ var G_VARS = {
 		//try to load hprose from potential server
 		loadHprose(ip, function(ip) {
 			//the server is live, hprose loaded from it
-			G_VARS.httpClient = new hprose.HttpClient("http://"+ip+"/webapi/", 
-					["register","login","getvar","begin","set","commit","rollback","get","setdata",
-					 "sendmsg","readmsg","lpush","lrange","hset","hget","hgetall","hlen","hdel","hkeys"]);
+			G_VARS.httpClient = leither.client(ip);
+			console.log(G_VARS.httpClient);
 			G_VARS.httpClient.login(null, G_VARS.ppt, function(sid) {
 				debug.info("login with ppt, sid=" + sid);
 				G_VARS.sid = sid;

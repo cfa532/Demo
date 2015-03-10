@@ -477,7 +477,15 @@
 		debug.log("in weibo controller")
 		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 		var q = angular.injector(['ng']).get('$q');
-
+		//state switch
+		var iDay = 0;			//index of the most recent day, used by getPosts() to read single user's posts
+		var wbListLen = 0;		//length of weibo list
+		//starting from today, read each day's weibo backward. Until we have enough posts for on screen display
+		var wbDay = parseInt(new Date().getTime()/86400000);
+		$scope.weiboList.length = 0;
+		$scope.currentList.length = 0;
+		$scope.global.currentPage = 1;
+				
 		$scope.R = {
 				reviewedWeibo	: null,
 				relayedWeibo	: null,
@@ -705,15 +713,6 @@
 			});
 		};
 
-		//state switch
-		var iDay = 0;			//index of the most recent day, used by getPosts() to read single user's posts
-		var wbListLen = 0;		//length of weibo list
-		//starting from today, read each day's weibo backward. Until we have enough posts for on screen display
-		var wbDay = parseInt(new Date().getTime()/86400000);
-		$scope.weiboList.length = 0;
-		$scope.currentList.length = 0;
-		$scope.global.currentPage = 1;
-				
 		if ($state.is("root.main.allPosts")) {
 			//everytime the controller is loaded, refresh all the weibo list
 			debug.log("state is main.allPosts");
