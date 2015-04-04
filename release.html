@@ -29,8 +29,8 @@ var G_VARS = {
 //appowner
 		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A",
 		dataBid : 'gVQXZWd0RgNuB-5R5tX1gxhOb200TdwEVs-LHbLXpLo',	//from which JS data are read
-		leither : 'mZVMWSVvKl708Et4sUGubnr1Y7T34F12Ln-zutAQE-Q',
-		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',
+		leither : 'mZVMWSVvKl708Et4sUGubnr1Y7T34F12Ln-zutAQE-Q',	//leither-cloud.js
+		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',	//angular.js
 		css : {
 			base : 'VEue0NZ0Ln_03JVY61AF5jOLkaAFeZoHKpbWg0KW3ZM',
 			master : '7EozTiIe7ZbklS9lURGI9s5L5GjSOgflTekZv-MQwNs',
@@ -51,7 +51,7 @@ var G_VARS = {
 			account : '1WE3NK9a-5hdWJ8axiP-Hv5JtQfwyaQuXf1_STv6xwE',
 			message : 'BpUEw4t65qXjAtTPxlbkuNqvD3L_K6Kttx9_oEK5c3k',
 			sms : '5U3LK4jbTneGI5lr8XgZLef9bvxO3p7wJa8JGob29Y0',
-			state : 'yRr6PWMn08fNNGReHA0V8DdfFuUS1DB0_NPQRJimxYk',
+			state : 'jbCDr3N9Sr51NKQPKDY_dG4jaevy61kkJBDzaHb7Bug',
 			root : 'jbK2AHK_2-9NfiZ6hTnvXPEL46cHqsLVKTNGWtjyQ80',
 			review : 'ethOLpQTpQLdSF9b8i55GBrpe1NmfgdFsrOq5ZkNhD8',
 			directive : 'eLeuABuDCP8j443SYtmzgrNLPrycDqlpHC1sGm7yo8k',
@@ -115,8 +115,8 @@ var G_VARS = {
 	};
 	setDebug(true);
 
-	//Both check server availability and load hprose
-	function loadHprose(ip, callback) {
+	//Both check server availability and load Leither
+	function loadLeither(ip, callback) {
 		var script = document.createElement("script");
 		script.type = "text/javascript";
 		script.async = "async";
@@ -140,7 +140,7 @@ var G_VARS = {
 		//here is a problem with illegitimate sid
 		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G_VARS.sid+'&bid='+G_VARS.dataBid+'&key='+G_VARS.leither;
 		debug.log(script);
-		document.getElementsByTagName("head")[0].appendChild(script);		//load hprose first
+		document.getElementsByTagName("head")[0].appendChild(script);		//load Leither first
 	};
 
 	function checkServer(ip) {
@@ -148,9 +148,9 @@ var G_VARS = {
 			debug.log("no server available");
 			return;
 		};
-		//try to load hprose from potential server
-		loadHprose(ip, function(ip) {
-			//the server is live, hprose loaded from it
+		//try to load Leither from potential server
+		loadLeither(ip, function(ip) {
+			//the server is live, Leither loaded from it
 			G_VARS.httpClient = leither.client(ip);
 			console.log(G_VARS.httpClient);
 			G_VARS.httpClient.login(null, G_VARS.ppt, function(sid) {

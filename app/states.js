@@ -568,7 +568,7 @@
 					getPostPerDay($scope.myUserInfo.b.friends[i].bid, currentDay, original);
 				};
 
-				if (wbDay-currentDay > 30) {	//look for weibo in the past month
+				if (wbDay-currentDay > 60) {	//look for weibo in the past month
 					wbDay = currentDay-1;		//remember the last day from which post is read
 					debug.log("get out of loop, " + currentDay)
 					return;
