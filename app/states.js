@@ -125,8 +125,8 @@
 						chCounter		: G_VARS.MaxWeiboLength,
 				};
 				
-				//called by processMsg when a new msg is received
 				//register this function with SMS service to sort inPage message display
+				//called by processMsg when a new msg is received
 				SMSService.addCallback(function(bid) {
 					if (bid !== $stateParams.bid) return;	//a new msg other than current bid come in, ignore it
 					
@@ -137,6 +137,19 @@
 					$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp})
 					$scope.$apply();
 				});
+
+				//display chat time every hour
+				$scope.showTimeLine = function(mi) {
+					//console.log(mi);
+					// take a Message as param
+					// check if the time difference from this message to its previous message cross the hourly border
+					if (mi===0 || mi===$scope.chatSessions[$stateParams.bid].messages.length-1) return false;
+					var tt = parseInt($scope.chatSessions[$stateParams.bid].messages[mi].timeStamp/1000/3600);
+					var pt = parseInt($scope.chatSessions[$stateParams.bid].messages[mi-1].timeStamp/1000/3600);
+					//console.log(tt, pt);
+					if (tt !== pt) return true;
+					return false;
+				};
 
 				//take the chatting friend's bid as parameter
 				$scope.sendSMS = function(bid) {

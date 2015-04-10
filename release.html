@@ -34,7 +34,7 @@ var G_VARS = {
 		css : {
 			base : 'VEue0NZ0Ln_03JVY61AF5jOLkaAFeZoHKpbWg0KW3ZM',
 			master : '7EozTiIe7ZbklS9lURGI9s5L5GjSOgflTekZv-MQwNs',
-			addition : 'QK5f1IYlidbpla1WFSpmKYlM3Jzm_D3OdlbW5EoR_iY',
+			addition : 'OxbH7XzYXix8tJQLFjL9IW3K_l-hFgNDzyoXRpHLQMo',
 			bootstrap : 'U4iU6sEVl8UFaVerzryrKS_Wci7yRTXYvM563VILVSg',
 		},
 		dep : {		//dependency of app module that has to be loaded before module declaration
@@ -51,7 +51,7 @@ var G_VARS = {
 			account : '1WE3NK9a-5hdWJ8axiP-Hv5JtQfwyaQuXf1_STv6xwE',
 			message : 'BpUEw4t65qXjAtTPxlbkuNqvD3L_K6Kttx9_oEK5c3k',
 			sms : '5U3LK4jbTneGI5lr8XgZLef9bvxO3p7wJa8JGob29Y0',
-			state : 'jbCDr3N9Sr51NKQPKDY_dG4jaevy61kkJBDzaHb7Bug',
+			state : 'LOHzCQRiRsLRcNPLVMit9h5PHAU5UBK9xobVSK-BZWE',
 			root : 'jbK2AHK_2-9NfiZ6hTnvXPEL46cHqsLVKTNGWtjyQ80',
 			review : 'ethOLpQTpQLdSF9b8i55GBrpe1NmfgdFsrOq5ZkNhD8',
 			directive : 'eLeuABuDCP8j443SYtmzgrNLPrycDqlpHC1sGm7yo8k',
@@ -73,7 +73,7 @@ var G_VARS = {
 		Friends		: "friends-in-weibo",
 		UnreadSMS	: "unread-sms-message",
 		Version		: "database-version",	//where database version number is stored
-		myVersion	: "1.0.5",					//current html version
+		myVersion	: "1.0.6",					//current html version
 		Upgrade		: "upgrade-file-location",
 
 		slice : function(src, target, start, end) {
@@ -653,26 +653,26 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 			</div>
 		</div>
 		<div class="wbpmlist">
-			<div ng-repeat="m in inPageMsgs track by $index" class="wbpmunit border_all mb15 pr">
-				<div class="userPic">
-					<p><a ui-sref="root.personal.allPosts({bid:m.bid})" title=""><img ng-src="{{myUserInfo.friends[m.bid].headPicUrl || myUserInfo.headPicUrl}}" width="78"></a></p>
-				</div>
-				<div class="wbpmcontent">
-					<p class="mb10"><b>
-		<a ui-sref="root.personal.allPosts({bid:m.bid})" title="" class="f10a2c7">{{myUserInfo.friends[m.bid].nickName || myUserInfo.nickName}}</a></b></p>
-					<div ng-show="m.contentType===0" class="message">{{m.content}}</div>
-					<div ng-show="m.contentType===1">
-						<ul>
-							<li><img style="max-height:120px; max-width:120px" ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="loading"/></li>
-							<div class="clearfix"></div>
-						</ul>
+			<div class="talk-main border_all mb15 pr">
+				<div ng-repeat="m in inPageMsgs track by $index">
+					<div ng-show="showTimeLine($index)">
+					<div class="talk-line mt15"></div>
+					<div class="talk-time">{{m.timeStamp | chatTime}}</div>
 					</div>
-					<div ng-show="m.contentType===2"><a href="javascript:void(0)" ng-click="saveFile(m)">{{m | fileName}}</a></div>
-					<div class="pubtime">{{m.timeStamp | chatTime}}</div>
+					<div class="talk-left">
+					    <div ng-class="m.bid===myUserInfo.bid ? 'left-img fr' : 'left-img fl'">
+							<a ui-sref="root.personal.allPosts({bid:m.bid})" title=""><img ng-src="{{myUserInfo.friends[m.bid].headPicUrl || myUserInfo.headPicUrl}}"/></a>
+						</div>
+						<div ng-class="m.bid===myUserInfo.bid ? 'qipao qipao-right right-more fr' : 'qipao qipao-left left-more fl'"> 
+							<p ng-show="m.contentType===0" class="qipao-color">{{m.content}}</p>
+							<p ng-show="m.contentType===1" class="talk-pics">
+								<img ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="loading"/>
+							</p>
+							<p ng-show="m.contentType===2"><a href="javascript:void(0)" ng-click="saveFile(m)">{{m | fileName}}</a></p>
+						</div>
+					</div>
 				</div>
-				
-				<div class="clearfix"></div>
-			</div>			
+			</div>		
 		</div>
 </script>
 

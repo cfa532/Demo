@@ -415,3 +415,50 @@
 .cboxIE #cboxMiddleRight {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#00FFFFFF,endColorstr=#00FFFFFF);
 }
+
+
+.talk-main{ padding:10px 5px; overflow:hidden;}
+.talk-line{ height:1px; overflow:hidden; border-bottom:1px dashed #ccc;}
+.talk-time{ width:135px; background:#fff; margin:-10px auto 0; text-align:center; color:#999;}
+.left-img img{ width:50px; height:50px; border-radius:50%; border:1px solid #ccc;}
+.qipao { 
+position: relative; 
+min-height:23px;
+color: white; 
+border-radius: 5px; 
+max-width:434px; padding:10px; line-height:20px;
+} 
+.qipao:after { 
+content: ''; 
+position: absolute; 
+width: 0; 
+height: 0; 
+border: 8px solid; 
+} 
+/* ¼ýÍ·µÄÎ»ÖÃ */ 
+.qipao-left:after { 
+border-right-color: #e8e7e7; 
+top: 15px; 
+right: 100%; 
+} 
+.qipao-right:after { 
+border-left-color: #f2e3cf; 
+left: 100%; 
+top: 15px; 
+} 
+--> 
+.left-more{
+-moz-box-shadow:0px 2px 2px #cac8c8;
+-webkit-box-shadow:0px 2px 2px #cac8c8;
+box-shadow:0px 2px 2px #cac8c8;
+margin-right:68px; background-color: #e8e7e7; margin-left:16px;
+	}
+.right-more{
+-moz-box-shadow:0px 2px 2px #cac8c8;
+-webkit-box-shadow:0px 2px 2px #cac8c8;
+box-shadow:0px 2px 2px #cac8c8;
+margin-left:68px; background-color:#f2e3cf; margin-right:16px;
+	}
+.talk-left{ padding:10px; overflow:hidden;}
+.qipao-color{ color:#666;}
+.talk-pics{ width:105px; margin-top:8px;}
