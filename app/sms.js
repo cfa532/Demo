@@ -263,7 +263,7 @@
 									$scope.$apply();
 								};
 							}, function(reason) {
-								debug.error(reason, bid);
+								debug.warn(reason, bid);
 							});
 						}($scope.usrList, bid));
 					};

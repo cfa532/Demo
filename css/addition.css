@@ -461,4 +461,5 @@ margin-left:68px; background-color:#f2e3cf; margin-right:16px;
 	}
 .talk-left{ padding:10px; overflow:hidden;}
 .qipao-color{ color:#666;}
-.talk-pics{ width:105px; margin-top:8px;}
+.talk-pics{ width:105px; margin-top:8px; max-height:160px; overflow:hidden;}
+.talk-pics img{ width:100%;}

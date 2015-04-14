@@ -43,7 +43,7 @@ errfunc = function (name, err) {
 function Login($scope) {
     console.log("Login");
     //client.login(null, "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2pFMWd3UURWQ2Z2dFlnYXFSQWFteDNlbTlKRlA3VmlMMXlCYXBKeEd5VmMA", function (sid) {
-    client.login(null, "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2dWUVhaV2QwUmdOdUItNVI1dFgxZ3hoT2IyMDBUZHdFVnMtTEhiTFhwTG8A", function (sid) {
+    client.login(null, "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK3ZyZTY5WEFmRnk1MUItSGwxbUVCYllGZWNHSXNGX2l2OUlCcHVJZTVNZTgA", function (sid) {
         $scope.sid = sid
         //$scope.$apply()
         InitServerIp(sid)
