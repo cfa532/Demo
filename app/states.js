@@ -83,11 +83,11 @@
 			url : "/history",
 			templateUrl : "chathistory.html",
 			controller : function($scope, $rootScope) {
-				G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 				debug.log("in chat history controller");
 				$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
 
 				angular.forEach($scope.myUserInfo.friends, function(ui, bid) {
+					G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 					G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(data) {
 						if (data.length > 0) {
 							data.sort(function(a, b) {return b-a});
