@@ -21,7 +21,7 @@ function loadFile(i, o) {
 			if (err) throw(err);
 			proxy.setdata(sid, bid, text, function(key) {
 				//console.log(o[i].fileKey);
-				console.log(key);
+				//console.log(key);
 				o[i].fileKey = key;
 				//console.log(o);
 				resolve(key);
@@ -33,10 +33,10 @@ function loadFile(i, o) {
 	});
 };
 
-fs.readFile("makefile", "utf-8", function(err, text) {
+fs.readFile("makefile.json", "utf-8", function(err, text) {
 	if (err) throw(err);
 	var mf = JSON.parse(text)[version];		//everything under this version
-	console.log(mf.css);
+	//console.log(mf.css);
 	mf.js.forEach(function(o) {
 		for(var i in o) {
 			(function(i, o) {

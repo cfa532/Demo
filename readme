@@ -1,0 +1,7 @@
+1. How to set up Node.js
+after install node.js, run 'npm'
+	>npm install hprose
+	>npm install promise
+	
+	>node --harmony-proxies pub.js
+	
