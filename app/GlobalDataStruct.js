@@ -422,6 +422,13 @@ function WBase() {
 	this.videos = [];			//key list of videos
 };
 
+function WeiboPicture() {
+	this.id = null;				//key of the image file
+	//this.dataURI = null;		//dataURI of full image, for display only
+	//this.wbID = null;			//weibo this pic belongs to
+	this.thumbnail = null;		//dataURI of thumbnail, for both storage and display
+}
+
 //scope where post is displayed
 function WeiboPost(scope)
 {
@@ -458,7 +465,7 @@ function WeiboPost(scope)
 			wb.relays = self.relays;			//array of relays of the post
 			wb.rating = self.rating;			//number of Praise
 			wb.author = self.author;			//author's nick name
-			wb.pictures = self.pictures;			//key list of pictures
+			wb.pictures = self.pictures;		//key list of pictures
 			wb.videos = self.videos;			//key list of videos
 			
 			G_VARS.httpClient.set(G_VARS.sid, G_VARS.bid, self.wbID, wb, function() {
@@ -492,16 +499,17 @@ function WeiboPost(scope)
 				self.author = data[1].author;			//author's nick name
 				self.pictures = data[1].pictures;		//key list of pictures
 				self.videos = data[1].videos;			//key list of videos;
-				self.picUrls = [];
+				self.picUrls = [];						//images' DataURI arrays, for display
 				self.isFavorite = false;
 				
 				//if (authorID==='n1VYjWmCIYM0tmRsshgKZZ3ECzTZuJQ_4enJptTJRjU')
 				//	debug.info("wb.body=" + self.body);
 				//load attached pictures async
+/*
 				var imgholder = "data:image/png;base64,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";
 				for (var i=0; i<self.pictures.length; i++) {
 					self.picUrls.push(imgholder);
-					G_VARS.httpClient.get(G_VARS.sid, authorID, self.pictures[i], function(imgData) {
+					G_VARS.httpClient.get(G_VARS.sid, authorID, self.pictures[i].id, function(imgData) {
 						var r = new FileReader();
 						r.onloadend = function(e) {
 							self.picUrls.unshift(e.target.result);
@@ -518,7 +526,7 @@ function WeiboPost(scope)
 						r.readAsDataURL(new Blob([imgData[1]], {type: 'image/png'}));
 					});
 				};
-
+*/
 				if (self.parentID !== null) {
 					if (original === true) {
 						//only look for original post, return a false
@@ -560,8 +568,15 @@ function WeiboPost(scope)
 			wb.relays = self.relays;			//array of relays of the post
 			wb.rating = self.rating;			//number of Praise
 			wb.author = self.author;			//author's nick name
-			wb.pictures = self.pictures;			//key list of pictures
+			wb.pictures = [];					//array of WeiboPicture objects
+			for (var i=0; i<self.pictures.length; i++) {
+				var t = new WeiboPicture();
+				t.id = self.pictures[i].id;
+				t.thumbnail = self.pictures[i].thumbnail;
+				wb.pictures.push(t);
+			}
 			wb.videos = self.videos;			//key list of videos
+			
 			G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, wb, function(wbKey) {
 				self.wbID = wbKey;
 				
@@ -573,7 +588,7 @@ function WeiboPost(scope)
 					} else {
 						keylist[1].unshift(wbKey);	//add new key to the beginning of keylist
 					}
-					//my weibos are indexed by the Day of posting.
+					// weibo is indexed by the Day of posting.
 					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, keylist[1], function() {
 						resolve();
 					}, function(name, err) {

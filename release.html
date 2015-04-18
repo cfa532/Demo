@@ -15,16 +15,16 @@
 
 var G_VARS = {
 		bidPath : window.location.pathname+"/appID/userID/",
-		IPList :["97.74.126.127:4800","112.124.113.235:30003","218.74.25.10:8100"],		//api for IP lists
+		IPList :["112.124.113.235:30003","97.74.126.127:4800","218.74.25.10:8100"],		//api for IP lists
 		IPNum : 0,
-		sid : '9f16efcdd1a29b6575148229dbe2c07d121be219',
+		sid : '9f25eb605c1c0ef865c5dd5ade7621c66be5b244',
 //sibao
 //		ppt : "L_-NAwEBA1BQVAH_jgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-QAAAAEP-PBQEBBFRpbWUB_5AAAAAw_44BK0luZE5ROXp3TWVTdG9LOUxJYTM4SFFDb1BmOVZSRTJ5QVA1SlB0R3BRSkEA",
 //Valar
 //		ppt : "L_-NAwEBA1BQVAH_jgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-QAAAAEP-PBQEBBFRpbWUB_5AAAAAw_44BK2JFelU5OWxvNDRFaERGTndTclZ6RmJXSTBDZlFBUWgwclQ2X1JfRm9PRVUA",
 //appowner
-		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2lxclIxcmNlVTY1SnBmQlBscW9GZUVuVnBvMmhQR3pnVlFFdlUzdC1yUHMA",
-		dataBid : 'iqrR1rceU65JpfBPlqoFeEnVpo2hPGzgVQEvU3t-rPs',	//from which JS data are read
+		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK1VGcEk4WVExLWhkU01tekhua3J2YUszcnZIUEVLdHFDYTN3d0RPYnNFdVUA",
+		dataBid : 'UFpI8YQ1-hdSMmzHnkrvaK3rvHPEKtqCa3wwDObsEuU',	//from which JS data are read
 		leither : 'sxKke_rRyWDqv3u7DcoU7wv8mo0_4G86dAEh6LXSlqo', 	//leither-cloud.js
 		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',	//angular.js
 		css : {
@@ -873,7 +873,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 	</div>
 	<div id="container">
 		<div ng-repeat="uri in myPicUrls track by $index" class="grid">
-			<div class="imgholder" ng-click="showFullPic(uri)"><img class="lazy" ng-src="{{uri}}" width="200" height="200"/></div>
+			<div class="imgholder" ng-click="showFullPic(uri)"><img class="lazy" ng-src="{{uri.thumbnail}}" width="120" height="120"/></div>
 			<div class="actions">
 				<a href="javascript:void(0)">
 				</a>
@@ -1060,9 +1060,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 						</div>
 						<div class="lotspic_list">
 							<ul>
-								<li ng-repeat="uri in wb.parentWeibo.picUrls track by $index">
-									<a href="{{uri}}" class="img-group">
-									<img ng-src="{{uri}}"></img></a>
+								<li ng-repeat="uri in wb.parentWeibo.pictures track by $index">
+									<a href="{{uri.thumbnail}}" class="img-group">
+									<img ng-src="{{uri.thumbnail}}"></img></a>
 								</li>
 								<div class="clearfix"></div>
 							</ul>
@@ -1078,9 +1078,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 
 					<div class="lotspic_list">
 						<ul>
-							<li ng-repeat="uri in wb.picUrls track by $index">
-								<a href="{{uri}}" class="img-group">
-									<img ng-src="{{uri}}"></img></a>
+							<li ng-repeat="uri in wb.pictures track by $index">
+								<a href="javascript:void(0);" ng-click="showFullPic(wb, uri.id)">
+									<img ng-src="{{uri.thumbnail}}"></img></a>
 							</li>
 							<div class="clearfix"></div>
 						</ul>

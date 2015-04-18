@@ -6,7 +6,7 @@ function FVPair() { }
 function ScorePair() { }
 function Message() {}
 var hosturl = "112.124.113.235:30003";
-	hosturl = "97.74.126.127:4800";
+//	hosturl = "97.74.126.127:4800";
 var client = new hprose.HttpClient("http://" + hosturl + "/webapi/", ["login","register",
     "getvar", "begin", "commit", "rollback", "setdata", "set", "get", "hset", "hget","hlen","hkeys",
      "hgetall", "hmset","hmget","exit", "lpush", "lpop", "rpush", "rpop", "lrange", "zadd", "zrange",

@@ -60,7 +60,7 @@
 					return deferredStart.promise;
 				}
 			},
-			controller : function(logon, $scope, msgService, $interval) {
+			controller : function(logon, $scope, msgService, $interval, $timeout) {
 				debug.log("in root state controller = " +logon);
 				debug.log($scope.myUserInfo);
 
@@ -68,6 +68,7 @@
 				$interval(function() {msgService.readMsg();}, 5000);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
 				myChatBox.getOnlineUsers();
+				$timeout(function() {G_VARS.spinner.stop();}, 30000)
 			}
 		})
 		.state("root.chat", {
@@ -689,8 +690,18 @@
 			});
 		};
 
-		$scope.showFullPic = function(src) {
-			window.open(src, "_blank");
+		$scope.showFullPic = function(wb, picKey) {
+			G_VARS.httpClient.get(G_VARS.sid, wb.authorID, picKey, function(data) {
+				if (data[1]) {
+					var r = new FileReader();
+					r.onloadend = function(e) {
+						window.open(e.target.result, "_blank");
+					};
+					r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+				};
+			}, function(name, err) {
+				debug.warn(err);
+			});
 		};
 		
 		//publish a new Post with a ParentID
@@ -699,7 +710,7 @@
 			console.log(parentWB)
 			var wb = new WeiboPost();
 			if (parentWB.parentID !== null) {
-				//we are relaying a weibo that has been relayed at least once.
+				//relaying a weibo that has been relayed at least once.
 				//attach its text to the new review and update the parent
 				wb.body = relayText+"://@"+parentWB.author+":"+parentWB.body;		//these 2 fields have value only in a relayed post
 				wb.parentID = parentWB.parentID;

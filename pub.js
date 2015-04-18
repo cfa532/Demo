@@ -3,15 +3,15 @@
 var prom = require("promise");
 var hp = require("hprose");
 var hosturl = "112.124.113.235:30003";
-hosturl ="97.74.126.127:4800";
+//hosturl ="97.74.126.127:4800";
 var client = new HproseHttpClient("http://" + hosturl + "/webapi/",
 		["login","register", "getvar", "begin", "commit", "rollback", "setdata", "set", "get", "hset", "hget","hlen","hkeys",
 		 "hgetall", "hmset","hmget","exit", "lpush", "lpop", "rpush", "rpop", "lrange", "zadd", "zrange",
 		 "sendmsg", "readmsg", "invite", "accept", "test", "veni", "sethostip","proxyget"])
 var proxy = client.useService();
 var fs = require('fs');
-var bid = "iqrR1rceU65JpfBPlqoFeEnVpo2hPGzgVQEvU3t-rPs";
-var sid = "9f16efcdd1a29b6575148229dbe2c07d121be219";
+var bid = "UFpI8YQ1-hdSMmzHnkrvaK3rvHPEKtqCa3wwDObsEuU";
+var sid = "9f25eb605c1c0ef865c5dd5ade7621c66be5b244";
 var version = "1.0.7";
 var ps = [];		//queue to hold all the promises
 

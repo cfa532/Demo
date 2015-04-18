@@ -5,7 +5,8 @@
 	.controller("sidebarController", ["$stateParams", "$scope", "$location", function($stateParams, $scope, $location) {
 		debug.log("in sidebar controller");
 	}])
-	.controller("pictureController", ["$state", "$stateParams", "$scope", function($state, $stateParams, $scope) {
+	.controller("pictureController", ["$state", "$stateParams", "$scope", "$timeout",
+	                                  function($state, $stateParams, $scope, $timeout) {
 		debug.log("in picture controller");
 		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
 		
@@ -20,22 +21,21 @@
 		var getPicsOfDay = function(day, bid) {
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.PostPics, day, function(keys) {
 				if (keys[1]) {
-					//debug.log(keys[1]);
-					for (var i=0; i<keys[1].length; i++) {
-						G_VARS.httpClient.get(G_VARS.sid, bid, keys[1][i], function(data) {
-							if (data[1]) {
-								var r = new FileReader();
-								r.onloadend = function(e) {
-									G_VARS.spinner.stop();
-									$scope.myPicUrls.push(e.target.result);
-									$scope.$apply();
-								};
-								r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+					//keys is array of wbID which has picture
+					angular.forEach(keys[1], function(wbID) {
+						G_VARS.httpClient.get(G_VARS.sid, bid, wbID, function(wb) {
+							if (wb[1]) {
+								angular.forEach(wb[1].pictures, function(pic) {
+									pic.wb = wb[1];
+									$scope.myPicUrls.push(pic);
+									$timeout(function() {G_VARS.spinner.stop()});
+									//setTimeout(function() {}, 1000);
+								});
 							};
 						}, function(name, err) {
 							debug.error(err);
 						});
-					};
+					});
 				} else {
 					G_VARS.spinner.stop();
 				};
@@ -59,8 +59,18 @@
 			});
 		};
 		
-		$scope.showFullPic = function(src) {
-			window.open(src, "_blank");
+		$scope.showFullPic = function(pic) {
+			G_VARS.httpClient.get(G_VARS.sid, pic.wb.authorID, pic.id, function(data) {
+				if (data[1]) {
+					var r = new FileReader();
+					r.onloadend = function(e) {
+						window.open(e.target.result, "_blank");
+					};
+					r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+				};
+			}, function(name, err) {
+				debug.warn(err);
+			});
 		};
 
 		function getAllPics() {
@@ -117,7 +127,7 @@
 			wb.author = $scope.myUserInfo.nickName;
 
 			//upload attached pictures
-			addPictures(wb).then(function(pickeys) {
+			addPictures(wb).then(function() {
 				//pic files uploaded ok, clear tmp files
 				debug.log("number of pics =" + wb.pictures.length);
 				tmpPicFiles.length = 0;
@@ -125,13 +135,11 @@
 				$scope.P.showPicUpload = false;
 								
 				//add a new post to DB and the new postKey to a list
-				wb.pictures = pickeys;
 				wb.set().then(function() {
 					debug.log("addNewPost:", wb);
 					//successfully added a new weibo key. Now clear up
 					$scope.global.weiboCount++;
 					$scope.wbText = '';
-					$scope.P.picKey = null;
 					$scope.wbtxtChanged();
 					
 					//update user's more recent active time
@@ -146,14 +154,14 @@
 					$scope.$apply();
 					G_VARS.spinner.stop();
 					
-					//save pictures key in a global list. The same pic will generate the saem Key
+					//save id of weibo that have pictures in a global list. The same pic will generate the same Key
 					if (wb.pictures.length > 0) {
 						var day = parseInt(new Date().getTime()/86400000);
 						G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, function(keys) {
 							if (keys[1])
-								keys[1] = keys[1].concat(wb.pictures);
+								keys[1] = keys[1].push(wb.wbID);
 							else
-								keys[1] = wb.pictures;
+								keys[1] = [wb.wbID];
 							G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, keys[1], function() {
 								debug.log("pic keys added to global list =" + keys[1]);
 							}, function(name, err) {
@@ -170,29 +178,51 @@
 			});
 		};
 
+		//display thumb nails of selected image files in the pic selection box
+		$scope.fileSelected = function(files) {
+			for (var i=0; i<files.length; i++) {
+				tmpPicFiles.push(files[i]);			//remember all the files selected
+				//$scope.tmpPicUrls.push(window.URL.createObjectURL(files[i]));		//works too
+				
+				var r = new FileReader();
+				r.onloadend = function(e) {
+					$scope.tmpPicUrls.push(e.target.result);	//display as thumbnail in file selection box
+					$scope.$apply();
+				};
+				r.readAsDataURL(files[i], {type: 'image/png'});
+			};
+		};
+
 		//add a picture to Weibo post
 		var addPictures = function(wb) {
 			var ds = [];
-			for (var i=0; i<tmpPicFiles.length; i++) {
-				var f = new FileReader();
-				f.onloadend = function(e) {
-					wb.picUrls.push(e.target.result);
-				};
-				f.readAsDataURL(tmpPicFiles[i], {type: 'image/png'});
-
+			angular.forEach(tmpPicFiles, function(picFile, i) {
 				ds.push(q(function(resolve, reject) {					
 					var r = new FileReader();
 					r.onloadend = function(e) {
 						G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
-							debug.log("result =" +picKey);
-							resolve(picKey);
+							var wp = new WeiboPicture();
+							wp.id = picKey;
+							
+							//draw a thumbnail of the original picture
+							var tmpCanvas = document.createElement("canvas");
+							var img = new Image();
+							img.onload = function(e) {
+								tmpCanvas.width = "120";
+								tmpCanvas.height = "120";
+								tmpCanvas.getContext("2d").drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
+								wp.thumbnail = tmpCanvas.toDataURL();
+								wb.pictures.push(wp);
+								resolve();
+							};
+							img.src = $scope.tmpPicUrls[i];
 						}, function(name, err) {
 							reject(err);
 						});
 					};
-					r.readAsArrayBuffer(tmpPicFiles[i]);
-				}));
-			};
+					r.readAsArrayBuffer(picFile);				
+				}));		
+			});
 			return q.all(ds);
 		};
 		
@@ -215,28 +245,6 @@
 				} else {
 					$scope.P.chCounter = G_VARS.MaxWeiboLength - $scope.wbText.toString().length;
 				}
-			};
-		};
-
-		//display thumb nails of selected image files in the pic selection box
-		$scope.fileSelected = function(files) {
-			for (var i=0; i<files.length; i++) {
-				tmpPicFiles.push(files[i]);			//remember all the files selected
-				var r = new FileReader();
-				r.onloadend = function(e) {
-					//draw a thumbnail of the original picture
-					var tmpCanvas = document.createElement("canvas");
-					var img = new Image();
-					img.onload = function(e) {
-						tmpCanvas.width = "102";
-						tmpCanvas.height = "102";
-						tmpCanvas.getContext("2d").drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
-						$scope.tmpPicUrls.push(tmpCanvas.toDataURL());
-						$scope.$apply();
-					};
-					img.src = e.target.result;
-				};
-				r.readAsDataURL(files[i], {type: 'image/png'});
 			};
 		};
 

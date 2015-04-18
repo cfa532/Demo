@@ -4,4 +4,5 @@ after install node.js, run 'npm'
 	>npm install promise
 	
 	>node --harmony-proxies pub.js
+	without -proxies option, cannot use client.useService command
 	
