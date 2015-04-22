@@ -8,7 +8,6 @@
 	.controller("reviewController", ['$rootScope','$scope', '$http',
 	                                 function($rootScope, $scope, $http) {
 		//console.log("Here in review module")
-
 	}])
 	.service("reviewService", ["$q", "$rootScope", function($q, $rootScope) {
 		this.processMsg = function(htReview) {
@@ -55,7 +54,7 @@
 					};
 				};
 			
-				//after all reviews data are saved correctly, put Weibo back into DB
+				//after all reviews data are saved correctly, update weibo with new reviews
 				$q.all(ds).then(function(keys) {
 					wb.update().then(function() {
 						console.log("key="+wbID+"\n"+keys.length + " messages accepted");

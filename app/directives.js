@@ -92,7 +92,7 @@
 								scope.relayList.push(data[1]);
 								//debug.log(data[1])
 								scope.relayList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
-								scope.$apply();
+								//scope.$apply();
 							};
 						}, function(name, err) {
 							debug.error("In showRelay err=", err);
@@ -151,7 +151,7 @@
 							scope.relay = '';
 							scope.currentPage = 1;
 							getPage(r);
-							scope.$apply();
+							//scope.$apply();
 							
 							//publish a new relayed weibo
 							scope.add()(r.body, scope.weibo);		//call relayPost() in weiboController
@@ -164,7 +164,7 @@
 								scope.relay = '';
 								scope.currentPage = 1;
 								getPage(r);
-								scope.$apply();
+								//scope.$apply();
 
 								//it seems work only when the outside function is defined in direct parent scope
 								//has to be called after updating current weibo, otherwise scope might change
@@ -294,7 +294,7 @@
 								scope.reviewList.push(data[1]);
 								//debug.log(data[1]);
 								scope.reviewList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
-								scope.$apply();
+								//scope.$apply();
 							};
 						}, function(name, err) {
 							debug.error(err);
@@ -348,7 +348,7 @@
 							scope.retext = '';
 							scope.currentPage = 1;
 							getPage(r);
-							scope.$apply();
+							//scope.$apply();
 							updateMyReviewList(reviewKey);
 						} else {
 							//call this only when reviewing my own post
@@ -358,7 +358,7 @@
 								scope.retext = '';
 								scope.currentPage = 1;
 								getPage();
-								scope.$apply();
+								//scope.$apply();
 								updateMyReviewList(reviewKey);
 							}, function(reason) {
 								debug.warn(reason);

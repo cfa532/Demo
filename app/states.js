@@ -812,6 +812,10 @@
 				$scope.myUserInfo.weiboCount++;
 				$scope.myUserInfo.setLastWeibo(wb);
 				$scope.$apply();
+				
+				//close review window and roll to the top of page where the new forward is displayed
+				$scope.R.relayedWeibo = null;
+				scrollTo(0,0);
 			});
 		};
 
