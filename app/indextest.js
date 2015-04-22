@@ -6,11 +6,11 @@ function FVPair() { }
 function ScorePair() { }
 function Message() {}
 var hosturl = "112.124.113.235:30003";
-//	hosturl = "97.74.126.127:4800";
+//hosturl = "97.74.126.127:4800";
 var client = new hprose.HttpClient("http://" + hosturl + "/webapi/", ["login","register",
     "getvar", "begin", "commit", "rollback", "setdata", "set", "get", "hset", "hget","hlen","hkeys",
      "hgetall", "hmset","hmget","exit", "lpush", "lpop", "rpush", "rpop", "lrange", "zadd", "zrange",
-     "sendmsg", "readmsg", "invite", "accept", "test", "veni", "sethostip","proxyget"])
+     "sendmsg", "readmsg", "invite", "accept", "test", "veni", "sethostip","proxyget","del","hdel","hmclear"])
 console.log(hosturl)
 var myApp = angular.module("appModule", [])
 
@@ -42,7 +42,7 @@ errfunc = function (name, err) {
 }
 function Login($scope) {
     console.log("Login");
-    client.login(null, "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK2lxclIxcmNlVTY1SnBmQlBscW9GZUVuVnBvMmhQR3pnVlFFdlUzdC1yUHMA", function (sid) {
+    client.login(null, "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK1VGcEk4WVExLWhkU01tekhua3J2YUszcnZIUEVLdHFDYTN3d0RPYnNFdVUA", function (sid) {
     //client.login(null, "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK3ZyZTY5WEFmRnk1MUItSGwxbUVCYllGZWNHSXNGX2l2OUlCcHVJZTVNZTgA", function (sid) {
         $scope.sid = sid
         //$scope.$apply()
@@ -496,7 +496,14 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
             $scope.appstatus = "invite error"
             $scope.$apply()
         })
-    }
+    };
+    $scope.delKey = function() {
+    	client.hmclear($scope.sid, $scope.bid, $scope.inputest, function() {
+    		console.log($scope.inputest, "deleted");
+    	}, function(name, err) {
+    		console.error(err);
+    	});
+    };
     $scope.accept = function () {
         console.log("accept")
         $scope.appstatus = "accept begin"

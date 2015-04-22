@@ -64,11 +64,20 @@
 				debug.log("in root state controller = " +logon);
 				debug.log($scope.myUserInfo);
 
-				//check for new message every 5 seconds
-				$interval(function() {msgService.readMsg();}, 5000);
+				//check for new message every 10 seconds
+				$interval(function() {msgService.readMsg();}, 10000);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
 				myChatBox.getOnlineUsers();
-				$timeout(function() {G_VARS.spinner.stop();}, 30000)
+				
+				$timeout(function() {G_VARS.spinner.stop();}, 30000);		//stop the spinner after 30s nonetheless
+				
+				var request = window.indexedDB.open("weiboDB", G_VARS.idxDBVersion);
+				request.onerror = function(event) {
+					alert("open indexedDB failed");
+				};
+				request.onsuccess = function(event) {
+					G_VARS.idxDB = event.target.result;
+				};
 			}
 		})
 		.state("root.chat", {
@@ -83,7 +92,7 @@
 		.state("root.chat.history", {
 			url : "/history",
 			templateUrl : "chathistory.html",
-			controller : function($scope, $rootScope) {
+			controller : function($scope, $rootScope, $timeout) {
 				debug.log("in chat history controller");
 				$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
 
@@ -93,10 +102,10 @@
 						if (data.length > 0) {
 							data.sort(function(a, b) {return b-a});
 							G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
-								G_VARS.spinner.stop();
 								ui.lastSMS = m[1];
 								debug.log(m[1], ui);
-								$scope.$apply();
+								//$scope.$apply();
+								$timeout(function() {G_VARS.spinner.stop();});
 							}, function(name, err) {
 								debug.error(err);
 							});
@@ -413,20 +422,54 @@
 			abstract : true,
 			url : "/personal/{bid}",
 			templateUrl : "personal.html",
-			controller : function($scope, $rootScope, $stateParams) {
+			controller : function($scope, $rootScope, $stateParams, $timeout) {
 				debug.log("in personal state ctrl, bid="+$stateParams.bid);
+				$scope.curPics = [];
+
 				//get a list of pics by this user
 				if (!$stateParams.bid || $stateParams.bid===G_VARS.bid) {
 					$rootScope.currUserInfo = $rootScope.myUserInfo;
 				}
 				else {
 					$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
-				}
-				$scope.currUserInfo.getPictures($scope).then(function(pics) {
-					G_VARS.spinner.stop();
-					$scope.myPicKeys = pics;
-				}, function(reason) {
-					debug.error(reason);
+				};
+				
+				var i = 0;
+				function getPictures(data) {
+					if (i>=data.length) return;
+					angular.forEach(data[i].value, function(wbID) {
+						var wb = new WeiboPost();
+						wb.get($scope.currUserInfo.bid, wbID).then(function(readOK) {
+							$scope.curPics = $scope.curPics.concat(wb.pictures);
+							//debug.log($scope.curPics);
+							if ($scope.curPics.length > 6) {
+								$scope.curPics.length=6;			//display up to 6 pics
+								i = data.length;
+								return;
+							} else {
+								if (i < data.length) {
+									i++;
+									$timeout(function() {getPictures(data);});
+								} else {
+									return;
+								};
+							}
+						}, function(reason) {
+							debug.warn(reason);
+						});
+					});							
+				};
+				
+				G_VARS.httpClient.hgetall(G_VARS.sid, $scope.currUserInfo.bid, G_VARS.PostPics, function(data) {					
+					if (data) {
+						//data[i].field is date in which picture is posted
+						//data[i].value is array of wbID which has picture by at the day
+						data.sort(function(a,b) {return b.field-a.field});
+						//console.log(data);
+						getPictures(data);
+					};
+				}, function(name, err) {
+					debug.warn(err);
 				});
 			}
 		})
@@ -499,6 +542,7 @@
 		$scope.weiboList.length = 0;
 		$scope.currentList.length = 0;
 		$scope.global.currentPage = 1;
+		$rootScope.slides = [];
 				
 		$scope.R = {
 				reviewedWeibo	: null,
@@ -527,15 +571,50 @@
 				$scope.R.reviewedWeibo = wb.wbID;		//reviews of this weibo will be loaded.
 			}
 		};
+		
+		$scope.deleteWeibo = function(wb) {
+			if (G_VARS.bid !== wb.authorID) return;
+			debug.info(wb);
+			wb.del().then(function() {
+				var i = G_VARS.search($scope.weiboList, wb);
+				if (i !== -1) {
+					$scope.weiboList.splice(i, 1);
+				};
+				i = G_VARS.search($scope.currentList, wb);
+				if (i !== -1)
+					$scope.currentList.splice(i, 1);
+				$scope.$apply();
+				$scope.myUserInfo.favoriteCount--;
+			}, function(reason) {
+				debug.warn(reason);
+			});
+		};
 
 		$scope.showPicSlider = function(wb) {
-			if (wb.pictures.length === 0) return;
+			if (wb.pictures.length === 0)
+				return;
+			G_VARS.spinner.spin(document.getElementById("pic_slider"));
 			$rootScope.slides = [];
-			for (var i=0; i<wb.pictures.length; i++) {
-				$rootScope.slides.push({
-					image : wb.picUrls[i],
-					text : i
+			angular.forEach(wb.pictures, function(pic, i) {
+				G_VARS.httpClient.get(G_VARS.sid, wb.authorID, pic.id, function(data) {
+					if (data[1]) {
+						var r = new FileReader();
+						r.onloadend = function(e) {
+							$rootScope.slides.push({
+								image : e.target.result,
+								text : i
+							});
+							if ($rootScope.slides.length === wb.pictures.length) 
+								$timeout(function() {G_VARS.spinner.stop();});
+						};
+						r.readAsDataURL(new Blob([data[1]], {type : "image/png"}));
+					};
+				}, function(name, err) {
+					G_VARS.spinner.stop();
+					debug.warn(err);
 				});
+			});
+			for (var i=0; i<wb.pictures.length; i++) {
 			};
 			easyDialog.open({
 				container : 'pic_slider',
@@ -588,7 +667,7 @@
 					return;
 				} else {
 					currentDay--;
-					$timeout(function() {return getAllPosts(currentDay, original)}, 100);
+					$timeout(function() {return getAllPosts(currentDay, original)});
 				};
 			} else {
 				//remember the last date of weibo read and exit
@@ -617,13 +696,12 @@
 			var wb = new WeiboPost($scope);
 			wb.get(bid, key, original).then(function(readOK) {
 				if (readOK) {
-					G_VARS.spinner.stop();
 					$scope.myUserInfo.checkFavorite(wb);
 					$scope.weiboList.push(wb);
 					//sort array in descending order, worked like a charm
 					$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
 					G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
-					$scope.$apply();
+					$timeout(function() {G_VARS.spinner.stop();});	//stop loading sign
 				};
 			}, function(reason) {
 				debug.error(reason);
@@ -731,9 +809,9 @@
 				$scope.weiboList.unshift(wb);
 				G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 				console.log(wb);
-				$scope.$apply();
 				$scope.myUserInfo.weiboCount++;
 				$scope.myUserInfo.setLastWeibo(wb);
+				$scope.$apply();
 			});
 		};
 

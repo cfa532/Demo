@@ -124,48 +124,55 @@
 		$scope.alerts = [];
 		$scope.saveAccount = function() {
 			//should check validity of input here
-			
 			var headpic = document.getElementById("myUploadIcon").files[0];
 			var r = new FileReader();
 			r.onloadend = function(e) {
 				//store the head photo of user
 				G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(key) {
 					$scope.myUserInfo.headPicKey = key;
-					$scope.myUserInfo.set().then(function() {
-						//my icon pic is changed, has to update the corresponding page
-						var f = new FileReader();
-						f.onloadend = function(e) {
-							$scope.myUserInfo.headPicUrl = e.target.result;
-							for (var i=0; i<$scope.weiboList.length; i++) {
-								if ($scope.weiboList[i].authorID === G_VARS.bid) {
-									$scope.weiboList[i].headPicUrl = e.target.result;
+					var f = new FileReader();
+					f.onloadend = function(e) {
+						//draw a thumbnail of the original picture
+						var tmpCanvas = document.createElement("canvas");
+						var img = new Image();
+						img.onload = function(e) {
+							tmpCanvas.width = "200";
+							tmpCanvas.height = "200";
+							tmpCanvas.getContext("2d").drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
+							
+							$scope.myUserInfo.headPicUrl = tmpCanvas.toDataURL();
+							$scope.myUserInfo.set().then(function() {
+								//my icon pic is changed, has to update the corresponding page
+								for (var i=0; i<$scope.weiboList.length; i++) {
+									if ($scope.weiboList[i].authorID === G_VARS.bid) {
+										$scope.weiboList[i].headPicUrl = e.target.result;
+									};
 								};
-							};
-							headpic = null;
-							$scope.alerts[0] = {type: 'success', msg: 'Account updated OK with picture'};
-							$scope.$apply();
-							//alert("Account updated OK with picture");
-							//easyDialog.close();
+							}, function(reason) {
+								$scope.alerts[0] = {type: 'danger', msg: 'Account NOT updated'};
+								debug.error("set myUserInfo err="+reason);
+							});
 						};
-						f.readAsDataURL(headpic);
-					}, function(reason) {
-						$scope.alerts[0] = {type: 'danger', msg: 'Account NOT updated'};
-						debug.error("set myUserInfo err="+reason);
-					});
+						img.src = e.target.result;
+
+						headpic = null;
+						$scope.alerts[0] = {type: 'success', msg: 'Account updated OK with picture'};
+						$scope.$apply();
+					};
+					f.readAsDataURL(headpic);
+					
 				}, function(name, err) {
 					$scope.alerts[2].show = true;
 					debug.error("saveAccount err2=" +err);
 				});
 			};
-			if (angular.isUndefined(headpic) || headpic===null) {
+			if (headpic) {
+				r.readAsArrayBuffer(headpic);
+			} else {
 				$scope.myUserInfo.set().then(function() {
 					$scope.alerts[0] = {type: 'success', msg: 'Account updated OK without picture'};
 					$scope.$apply();
-					//alert("Account updated OK without pic");
-					//easyDialog.close();
 				});
-			} else {
-				r.readAsArrayBuffer(headpic);
 			};
 		};
 		

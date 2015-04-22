@@ -20,16 +20,17 @@
 		
 		var getPicsOfDay = function(day, bid) {
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.PostPics, day, function(keys) {
+				debug.log(keys[1]);
 				if (keys[1]) {
-					//keys is array of wbID which has picture
+					//keys is array of wbID whose weibo has picture
 					angular.forEach(keys[1], function(wbID) {
 						G_VARS.httpClient.get(G_VARS.sid, bid, wbID, function(wb) {
 							if (wb[1]) {
+								debug.log(wb[1])
 								angular.forEach(wb[1].pictures, function(pic) {
 									pic.wb = wb[1];
 									$scope.myPicUrls.push(pic);
 									$timeout(function() {G_VARS.spinner.stop()});
-									//setTimeout(function() {}, 1000);
 								});
 							};
 						}, function(name, err) {
@@ -46,13 +47,16 @@
 		
 		//get all the pics of a user. Pic keys are saved in a global list
 		function getUserPics(bid) {
+			debug.log("in getUserPics", bid);
 			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.PostPics, function(wbDays) {
-				//debug.log(wbDays);
+				debug.log(wbDays);
 				if (wbDays.length>0) {
 					wbDays.sort(function(a,b) {return b-a;});
 					for (var i=0; i<wbDays.length && i<7; i++) {
 						getPicsOfDay(wbDays[i], bid);
 					};
+				} else {
+					G_VARS.spinner.stop();
 				};
 			}, function(name, err) {
 				debug.error("pic controller err= " + err);
@@ -156,10 +160,11 @@
 					
 					//save id of weibo that have pictures in a global list. The same pic will generate the same Key
 					if (wb.pictures.length > 0) {
-						var day = parseInt(new Date().getTime()/86400000);
+						var day = parseInt(wb.timeStamp/86400000);
 						G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, function(keys) {
+							debug.log(keys[1], wb)
 							if (keys[1])
-								keys[1] = keys[1].push(wb.wbID);
+								keys[1].push(wb.wbID);
 							else
 								keys[1] = [wb.wbID];
 							G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, keys[1], function() {

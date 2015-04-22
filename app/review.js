@@ -24,11 +24,8 @@
 		var proc = function(wbID, ht) {
 			//Last parameter ht is a hashtable with 2 keys: reviews and relays
 			//corresponding value is array of reviews or relays. Save each of them
-			G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, wbID, function(data) {
-				//get the weibo being reviewed
-				var wb = new WeiboPost();
-				angular.copy(data[1], wb);
-				//console.log(ht);
+			var wb = new WeiboPost();
+			wb.get(G_VARS.bid, wbID).then(function(readOK) {
 				var ds = [];
 				var r = new WeiboReview();
 				//store all reviews and relays in db and put corresponding keys in Weibo obj
@@ -58,9 +55,9 @@
 					};
 				};
 			
-				//after all reviews data are saved correctly, put Weibo obj back into DB
+				//after all reviews data are saved correctly, put Weibo back into DB
 				$q.all(ds).then(function(keys) {
-					G_VARS.httpClient.set(G_VARS.sid, G_VARS.bid, wbID, wb, function() {
+					wb.update().then(function() {
 						console.log("key="+wbID+"\n"+keys.length + " messages accepted");
 						for (var i=0; i<$rootScope.weiboList.length; i++) {
 							if ($rootScope.weiboList[i].wbID===wbID && $rootScope.weiboList[i].authorID===G_VARS.bid) {
@@ -68,19 +65,13 @@
 								$rootScope.weiboList[i].relays = wb.relays;
 							};
 						};
-						//for (var i=0; i<$rootScope.currentList.length; i++) {
-						//	if ($rootScope.currentList[i].wbID===wbID && $rootScope.currentList[i].authorID===G_VARS.bid) {
-						//		$rootScope.currentList[i].reviews = wb.reviews;
-						//		$rootScope.currentList[i].relays = wb.relays;
-						//	};
-						//};
 						$rootScope.$apply();
-					}, function(name, err) {
-						console.log("readMsg err1=" +err);
+					}, function(reason) {
+						debug.warn(reason);
 					});
 				});
-			}, function(name, err) {
-				console.log("readMsg err2=" +err);
+			}, function(reason) {
+				debug.warn(reason);
 			});
 		};
 	}])

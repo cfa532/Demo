@@ -131,45 +131,44 @@
 					r.body = scope.relay;
 					r.timeStamp = new Date().getTime();
 					r.parentID = scope.weibo.wbID;
-					r.authorID = G_VARS.bid;	//commenting on other's post
+					r.authorID = G_VARS.bid;
 					r.author = scope.author;
 								
 					//add the relay to db and update the Weibo
 					G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, r, function(relayKey) {
+						//commenting on my own weibo, update relay list directly
+						if (scope.weibo.relays === null)
+							scope.weibo.relays = [relayKey];
+						else
+							scope.weibo.relays.unshift(relayKey);
+
 						if (scope.weibo.authorID !== G_VARS.bid) {
 							//commenting another's weibo
 							//send a message to the author of the Post reviewed
 							r.key = relayKey;
 							msgService.sendRelay(r, scope.weibo.authorID);
-							debug.log(scope.weibo);
+							//debug.log(scope.weibo);
 							scope.relay = '';
 							scope.currentPage = 1;
 							getPage(r);
 							scope.$apply();
 							
 							//publish a new relayed weibo
-							scope.add()(r.body, scope.weibo);		//call relayPost() in reviewController
+							scope.add()(r.body, scope.weibo);		//call relayPost() in weiboController
 							
 							//update a global key list for all reviews by me
 							updateMyReviewList(relayKey);
 						} else {						
-							//commenting on my own weibo, update relay list directly
-							if (scope.weibo.relays === null)
-								scope.weibo.relays = [relayKey];
-							else
-								scope.weibo.relays.unshift(relayKey);
-							
-							//debug.log(scope.weibo);
 							scope.weibo.update().then(function() {
 								debug.log("addRelay OK, key="+relayKey);
 								scope.relay = '';
 								scope.currentPage = 1;
-								getPage();
+								getPage(r);
 								scope.$apply();
 
 								//it seems work only when the outside function is defined in direct parent scope
 								//has to be called after updating current weibo, otherwise scope might change
-								scope.add()(r.body, scope.weibo);		//call relayPost() in reviewController
+								scope.add()(r.body, scope.weibo);		//call relayPost() in weiboController
 
 								//update a global key list for all reviews by me
 								updateMyReviewList(relayKey);
@@ -302,7 +301,7 @@
 						});
 					};
 				};
-				
+
 				scope.pageChanged = function() {
 					debug.log("current page="+scope.currentPage);
 					getPage();
@@ -361,8 +360,10 @@
 								getPage();
 								scope.$apply();
 								updateMyReviewList(reviewKey);
+							}, function(reason) {
+								debug.warn(reason);
 							});
-						}
+						};
 					}, function(name, err) {
 						debug.error("add review err2=", err);
 						scope.R.txtInvalid = false;

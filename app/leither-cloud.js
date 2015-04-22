@@ -11,7 +11,7 @@ var leither = (function() {
 	le.client = function(ip) {
 		return new hprose.HttpClient("http://"+ip+"/webapi/", 
 				["register","login","getvar","begin","set","commit","rollback","get","setdata",
-				 "sendmsg","readmsg","lpush","lrange","hset","hget","hgetall","hlen","hdel","hkeys"]);
+				 "sendmsg","readmsg","lpush","lrange","hset","hget","hgetall","hlen","hdel","hkeys","del"]);
 	};
 	return le;
 }());

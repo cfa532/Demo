@@ -11,6 +11,7 @@ var client = new HproseHttpClient("http://" + hosturl + "/webapi/",
 var proxy = client.useService();
 var fs = require('fs');
 var bid = "UFpI8YQ1-hdSMmzHnkrvaK3rvHPEKtqCa3wwDObsEuU";
+//bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
 var sid = "9f25eb605c1c0ef865c5dd5ade7621c66be5b244";
 var version = "1.0.7";
 var ps = [];		//queue to hold all the promises
@@ -20,10 +21,8 @@ function loadFile(i, o) {
 		fs.readFile(o[i].fileKey, "utf-8", function(err, text) {
 			if (err) throw(err);
 			proxy.setdata(sid, bid, text, function(key) {
-				//console.log(o[i].fileKey);
-				//console.log(key);
+				console.log(o[i].fileKey, key);
 				o[i].fileKey = key;
-				//console.log(o);
 				resolve(key);
 			}, function(name, err) {
 				console.error(err);
@@ -46,7 +45,6 @@ fs.readFile("makefile.json", "utf-8", function(err, text) {
 							ps.push(loadFile(d, o[i].deps));
 					};
 				};
-				//return;
 				if (o[i].fileKey) {
 					ps.push(loadFile(i, o));
 				};
@@ -62,7 +60,6 @@ fs.readFile("makefile.json", "utf-8", function(err, text) {
 	};
 	
 	Promise.all(ps).then(function(res) {
-		//console.log(mf[0].jQuery.deps);
 		var o = {};
 		o[version] = mf;
 		var t = JSON.stringify(o);
