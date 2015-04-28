@@ -150,7 +150,7 @@
 					saveAs(new Blob([data[1]], {type: arr[1]}), arr[0]);
 				};
 			}, function(name, err) {
-				debug.error(err);
+				debug.warn(err);
 			});
 		};
 		
@@ -209,7 +209,9 @@
 						m.bid = G_VARS.bid;
 						m.type = 1;				//SMS
 						m.contentType = 2;		//file
-						console.log($scope.fileSent)
+						console.log($scope.fileSent);
+						
+						//concat file name, type and key into a string
 						m.content = $scope.fileSent.name + "\t" + $scope.fileSent.type + "\t" + fileKey;
 						m.timeStamp = new Date().getTime();
 						msgService.sendSMS(bid, m);
@@ -218,7 +220,8 @@
 						$scope.chatSessions[bid].messages.push(m);
 						$scope.chatSessions[bid].timeStamp = m.timeStamp;
 						$scope.fileSent = null;
-						$scope.$apply(); chatbox1.scrollTop(100000);
+						$scope.$apply();
+						chatbox1.scrollTop(100000);		//scroll to bottom
 						
 						//save it in db as conversation
 						SMSService.saveSMS(bid, m);
@@ -249,14 +252,14 @@
 			//get nearby users those are not friends
 			G_VARS.httpClient.getvar(G_VARS.sid, "usernearby", function(data) {
 				//an array of userid on the same node
-				//debug.log(data);
+				debug.log(data);
 				$scope.usrList = {};
 				angular.forEach(data, function(bid) {
 					if (bid!==G_VARS.bid && bid!==null && !$scope.myUserInfo.isFriend(bid)) {
 						(function(ht, bid) {
 							var ui = new UserInfo();
+							console.log("check non-friend bid="+bid);
 							ui.get(bid).then(function(readOK) {
-								//console.log("check non-friend bid="+bid);
 								if (readOK) {
 									ht[bid] = ui;
 									debug.info(ui);

@@ -83,6 +83,7 @@ function UserInfo() {
 		self.bid = bid;
 		return q(function(resolve, reject) {
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.UserInfo, bid, function(data) {
+				debug.info(data[1]);
 				if (data[1]) {
 					angular.copy(data[1], self.b);
 					self.nickName = self.b.nickName;
@@ -121,10 +122,11 @@ function UserInfo() {
 						//!!!VERY important to be called here. Init the loading of all friends UserInfo
 						self.getFriends();
 						
+						//get a list of user's favorite posts
 						G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, function(data) {
 							//data[i].field is author id of favorites
 							//data[i].value is array of wbID by the author
-							if (data.length > 0) {
+							if (data && data.length>0) {
 								var ds = [];
 								angular.forEach(data, function(bid) {
 									ds.push(q(function(resolve, reject) {
@@ -136,7 +138,9 @@ function UserInfo() {
 										});
 									}));
 								});
+								
 								q.all(ds).then(function() {
+									//all favorite weibo ID loaded
 									resolve(true);
 								}, function(reason) {
 									reject(reason);
@@ -148,7 +152,7 @@ function UserInfo() {
 							reject(err);
 						});
 					} else {
-						//reading someone else's UI, read a shallow copy
+						//reading someone else's UI, read a shallow copy of it
 						//self.friends = self.b.friends;
 						self.weiboCount = self.b.weiboCount;
 						self.favoriteCount = self.b.favoriteCount;
@@ -158,8 +162,8 @@ function UserInfo() {
 				} else {
 					//data[1] is null, no data to be read
 					//this user is a first time user, populate UI with predefined data
+					debug.warn("no UI data for "+ bid);
 					resolve(false);
-					//reject("no UI data for ", bid)
 				};
 			}, function(name, err) {
 				reject(err);
@@ -386,21 +390,83 @@ function WBase() {
 	this.videos = [];			//key list of videos
 };
 
-function WeiboPicture() {
-	this.id = null;				//key of the image file
+function WeiboPicture(picID) {
+	this.id = picID;			//key of the image file
 	this.dataURI = null;		//dataURI of full image, for display only
 	this.wbID = null;			//weibo this pic belongs to
 	this.authorID = null;		//owner of the pic file
 	this.thumbnail = null;		//dataURI of thumbnail, for both storage and display
 	var self = this;
 	
-	this.get = function() {
+	this.get = function(callback) {
 		//first check if the pic is available locally
-		//G_VARS
+		debug.log(self.id);
+		var trans = G_VARS.idxDB.transaction([G_VARS.objStore.picture], "readwrite");
+		var request = trans.objectStore(G_VARS.objStore.picture).get(self.id);
+		request.onerror = function(e) {
+			debug.warn("Get picture error ", e);
+		};
+		request.onsuccess = function(e) {
+			debug.log("Get success", e.target.result);
+			//assume result is null if id is not found
+			if (e.target.result) {
+				callback(e.target.result.dataURI);		//return the picture data
+			} else {
+				//no data in idxDB, get it from Leither
+				G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, self.id, function(data) {
+					if (data[1]) {
+						var r = new FileReader();
+						r.onloadend = function(e) {
+							callback(e.target.result);
+						};
+						r.readAsDataURL(new Blob([data[1]], {type : "image/png"}));
+						
+						//save the picture in local DB
+						self.set(data[1]);
+					};
+				}, function(name, err) {
+					reject(err);
+				});
+			};
+		};
 	};
 	
-	this.set = function(img) {
-		//save the image in both LeitherOS and indexedDB
+	//save the image in both LeitherOS and indexedDB
+	//img is an ArrayBuffer
+	this.set = function(img, callback) {
+		G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, img, function(id) {
+			//img is an ArrayBuffer of a image file
+			self.id = id;
+			
+			//also save the image into LeitherOS
+			var r = new FileReader();
+			r.onloadend = function(e) {
+				self.dataURI = e.target.result;
+				var trans = G_VARS.idxDB.transaction([G_VARS.objStore.picture], "readwrite");
+				trans.oncomplete = function(e) {
+					debug.log("Picture set() transaction ok");
+				};
+				trans.onerror = function(e) {
+					debug.warn("pic set() transaction error");
+				};
+				debug.info(self);
+				var wp = {};
+				wp.id = self.id;
+				wp.dataURI = self.dataURI;
+				var request = trans.objectStore(G_VARS.objStore.picture).add(wp);
+				request.onsuccess = function(e) {
+					debug.log("pic save success");
+					callback(true);
+				};
+				request.onerror = function(e) {
+					debug.warn("save pic error", e);
+					callback(false);
+				};
+			};
+			r.readAsDataURL(new Blob([img], {type : "image/png"}));
+		}, function(name, err) {
+			debug.warn(err);
+		});
 	};
 }
 
@@ -419,7 +485,6 @@ function WeiboPost(scope)
 	this.relays = [];			//array of relays of the post
 	this.rating = 0;			//number of Praise
 	this.pictures = [];			//key list of pictures
-	this.picUrls = [];			//data URL of each picture
 	this.videos = [];			//key list of videos
 	this.parentWeibo = [];
 	this.isFavorite = false;
@@ -446,10 +511,7 @@ function WeiboPost(scope)
 			wb.pictures = [];
 			if (self.pictures && self.pictures.length>0) {
 				for(var i=0; i<self.pictures.length; i++) {
-					var p = new WeiboPicture();
-					p.id = self.pictures[i].id;
-					p.thumbnail = self.pictures[i].thumbnail;
-					wb.pictures.push(p);
+					wb.pictures.push(self.pictures[i].id);
 				};
 			}
 			
@@ -482,36 +544,22 @@ function WeiboPost(scope)
 				self.relays = data[1].relays;			//array of relays of the post
 				self.rating = data[1].rating;			//number of Praise
 				self.author = data[1].author;			//author's nick name
-				self.pictures = data[1].pictures;		//key list of pictures
+				//self.pictures = data[1].pictures;		//key list of pictures
 				self.videos = data[1].videos;			//key list of videos;
-				self.picUrls = [];						//images' DataURI arrays, for display
 				self.isFavorite = false;
 				
-				//if (authorID==='n1VYjWmCIYM0tmRsshgKZZ3ECzTZuJQ_4enJptTJRjU')
-				//	debug.info("wb.body=" + self.body);
-				//load attached pictures async
-/*
-				var imgholder = "data:image/png;base64,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";
-				for (var i=0; i<self.pictures.length; i++) {
-					self.picUrls.push(imgholder);
-					G_VARS.httpClient.get(G_VARS.sid, authorID, self.pictures[i].id, function(imgData) {
-						var r = new FileReader();
-						r.onloadend = function(e) {
-							self.picUrls.unshift(e.target.result);
-							self.picUrls.pop();
-							if (scope) scope.$apply();
-							
-							$(".img-group").colorbox({rel:'img-group'+self.wbID});
-							$(".inline").colorbox({inline:true, width:"50%"});
-							$("#click").click(function(){ 
-								$('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
-								return false;
-							});
-						};
-						r.readAsDataURL(new Blob([imgData[1]], {type: 'image/png'}));
+				self.pictures = [];
+				for (var i=0; i<data[1].pictures.length; i++) {
+					var wp = new WeiboPicture(data[1].pictures[i]);
+					wp.get(function(dataURI) {
+						var p = {};
+						p.id = data[1].pictures[i];
+						p.dataURI = dataURI;
+						self.pictures.push(p);
 					});
 				};
-*/
+				
+				//load attached pictures async
 				if (self.parentID !== null) {
 					if (original === true) {
 						//only look for original post, return a false
@@ -526,15 +574,16 @@ function WeiboPost(scope)
 						if (readOK) {
 							self.parentWeibo = pw;
 						} else {
-							self.parentWeibo = null;
+							self.parentWeibo = null;	//original post is deleted, show it on webpage
 						};
+						resolve(true);
 					}, function(reason) {
-						debug.error(reason);
+						reject(reason);
 					});
+				} else {
+					resolve(true);
 				};
-				resolve(true);
 			}, function(name, err) {
-				debug.error(err, self);
 				reject(err);
 			});
 		});
@@ -647,12 +696,9 @@ function WeiboPost(scope)
 			wb.relays = self.relays;			//array of relays of the post
 			wb.rating = self.rating;			//number of Praise
 			wb.author = self.author;			//author's nick name
-			wb.pictures = [];					//array of WeiboPicture objects
+			wb.pictures = [];					//array of picture keys
 			for (var i=0; i<self.pictures.length; i++) {
-				var t = new WeiboPicture();
-				t.id = self.pictures[i].id;
-				t.thumbnail = self.pictures[i].thumbnail;
-				wb.pictures.push(t);
+				wb.pictures.push(self.pictures[i].id);
 			}
 			wb.videos = self.videos;			//key list of videos
 			
@@ -703,10 +749,27 @@ function WeiboMessage()
 {
 	this.bid = null			//bid of the sender
 	this.type = null;		//0: request to add as friend, 1: instant message, 2: reviews, 3: relays
-	this.contentType = 0;	//0: text, 1: pic, 2: voice, 3: video
+	this.contentType = 0;	//0: text, 1: pic, 2: file, 3: video
 	this.content = null;	//type=0: request to be added, type=1: instant message, type=2: reviews msg, type=3: relays msg
 	this.timeStamp = null;	//time message received or sent
 	this.viewed = null;		//type=0: null--not processed, 0--reject, 1--accepted; type=1: 0--not viewed, 1: viewed
+	var self = this;
+	
+	//when contentType=2, content is a string of file name /t file type /t file key
+	function getFileName() {
+		if (self.contentType === 2) {
+			var arr = self.content.toString().split("\t");
+			return arr[0];
+		};
+	};
+	
+	//get the file key if a file is sent over the chatbox
+	function getFileKey() {
+		if (self.contentType === 2) {
+			var arr = self.content.toString().split("\t");
+			return arr[2];
+		};
+	};
 };
 
 //system message struct, a partial view

@@ -36,7 +36,9 @@
 
 						//login succeed, read owner's data
 						debug.log("login bid="+G_VARS.bid);
-						$rootScope.myUserInfo.get(G_VARS.bid).then(function(readOK) {
+						var g = $rootScope.myUserInfo.get(G_VARS.bid);
+						console.log(g);
+						g.then(function(readOK) {
 							if (!readOK) {
 								//UserInfo does not exit, create a default one
 								$rootScope.myUserInfo.bid = G_VARS.bid;
@@ -67,17 +69,9 @@
 				//check for new message every 10 seconds
 				$interval(function() {msgService.readMsg();}, 10000);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
-				myChatBox.getOnlineUsers();
+				//myChatBox.getOnlineUsers();		//unknown user may cause a problem
 				
 				$timeout(function() {G_VARS.spinner.stop();}, 30000);		//stop the spinner after 30s nonetheless
-				
-				var request = window.indexedDB.open("weiboDB", G_VARS.idxDBVersion);
-				request.onerror = function(event) {
-					alert("open indexedDB failed");
-				};
-				request.onsuccess = function(event) {
-					G_VARS.idxDB = event.target.result;
-				};
 			}
 		})
 		.state("root.chat", {
@@ -236,12 +230,14 @@
 				$scope.showBigPic = function(m) {
 					$scope.bigPicUrl = null;
 					$timeout(function() {$scope.$apply()});
+					
 					G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, m.content, function(data) {
-						var r = new FileReader();
-						r.onloadend = function(e) {
-							$scope.bigPicUrl = e.target.result;
-						};
-						r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+						var p = new WeiboPicture(m.comtent);
+						p.set(data[1]).then(function() {
+							debug.log("ok")
+						}, function(reason) {
+							debug.warn(reason);
+						});
 					}, function(name, err) {
 						debug.error(err);
 					});
@@ -254,7 +250,7 @@
 						});
 				};
 				
-				//upload a picture to be sent
+				//upload a picture or file to be sent over SMS
 				$scope.sendFile = function(id) {
 					//simulate file selection event
 		            document.getElementById(id).dispatchEvent(new Event('click'));
@@ -596,6 +592,13 @@
 			G_VARS.spinner.spin(document.getElementById("pic_slider"));
 			$rootScope.slides = [];
 			angular.forEach(wb.pictures, function(pic, i) {
+				var p = new WeiboPicture(pic.id);
+				p.get().then(function() {
+					
+				}, function(reason) {
+					debug.warn(reason);
+				});
+				return;
 				G_VARS.httpClient.get(G_VARS.sid, wb.authorID, pic.id, function(data) {
 					if (data[1]) {
 						var r = new FileReader();
@@ -701,7 +704,8 @@
 					//sort array in descending order, worked like a charm
 					$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
 					G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
-					$timeout(function() {G_VARS.spinner.stop();});	//stop loading sign
+					$scope.$apply();
+					$timeout(function() {G_VARS.spinner.stop();});		//stop loading sign
 				};
 			}, function(reason) {
 				debug.error(reason);
@@ -771,12 +775,21 @@
 		$scope.showFullPic = function(wb, picKey) {
 			G_VARS.httpClient.get(G_VARS.sid, wb.authorID, picKey, function(data) {
 				if (data[1]) {
-					var r = new FileReader();
-					r.onloadend = function(e) {
-						window.open(e.target.result, "_blank");
-					};
-					r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+					var p = new WeiboPicture();
+					p.set(data[1]).then(function() {
+						//window.open(p.dataURI, "_self");
+						debug.log("show full pic", p);
+					}, function(reason) {
+						debug.warn(reason);
+					});
 				};
+//				if (data[1]) {
+//					var r = new FileReader();
+//					r.onloadend = function(e) {
+//						window.open(e.target.result, "_blank");
+//					};
+//					r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
+//				};
 			}, function(name, err) {
 				debug.warn(err);
 			});
@@ -785,7 +798,6 @@
 		//publish a new Post with a ParentID
 		$scope.relayPost = function(relayText, parentWB) {
 			console.log("in relayPost()");
-			console.log(parentWB)
 			var wb = new WeiboPost();
 			if (parentWB.parentID !== null) {
 				//relaying a weibo that has been relayed at least once.
@@ -808,14 +820,13 @@
 			wb.set().then(function() {
 				$scope.weiboList.unshift(wb);
 				G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
-				console.log(wb);
 				$scope.myUserInfo.weiboCount++;
 				$scope.myUserInfo.setLastWeibo(wb);
-				$scope.$apply();
 				
 				//close review window and roll to the top of page where the new forward is displayed
 				$scope.R.relayedWeibo = null;
-				scrollTo(0,0);
+				scrollTo(0,200);
+				$scope.$apply();
 			});
 		};
 
@@ -845,63 +856,5 @@
 			showFavorites($stateParams.bid);
 		};
 	}])
-	.filter("chatTime", function() {
-		return function(ts) {
-			if (!ts)
-				return "无纪录";
-			var d = new Date(ts);
-			var y, mo, h, min, day;
-			h = d.getHours();		//hour
-			min = d.getMinutes();	//minute
-			mo = d.getMonth();		//month
-			y = d.getFullYear();	//year
-			day = d.getDate();
-			
-			var t = parseInt((new Date().getTime() - ts)/3600000);
-			if (t <= 24) {
-				//if (m<10) m="0"+m.toString()
-				return h+ "点" +min+"分";
-			}
-			else if (t>24 && t<8760) {
-				return (mo+1)+"月"+day+"日"+h+ "点" +min+"分";
-			}
-			else {
-				return y+"年"+(mo+1)+"月"+day+"日"+h+ "点" +min+"分";
-			};
-		};
-	})
-	.filter("timePassed", function() {
-		return function(t) {
-			t = parseInt((new Date().getTime() - t)/60000);
-			if (t < 6) {
-				return "刚刚";
-			} else if (t < 60) {
-				return t+"分钟前";
-			} else if (t/60 < 24) {
-				return parseInt(t/60)+"小时前";
-			} else {
-				return parseInt(t/1440) +"天前";
-			};
-		};
-	})
-	.filter("bracket", function() {
-		return function(n) {
-			if (n===0) {
-				return null;
-			} else if (n<1000) {
-				return "("+n+")";
-			} else {
-				return "(999+)";
-			};
-		};
-	})
-	.filter("fileName", function() {
-		return function(m) {				//m is WeiboMessage type
-			if (m && m.contentType === 2) {
-				var arr = m.content.split("\t");
-				return arr[0];
-			};
-		};
-	})
 })();
 

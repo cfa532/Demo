@@ -151,7 +151,6 @@
 							scope.relay = '';
 							scope.currentPage = 1;
 							getPage(r);
-							//scope.$apply();
 							
 							//publish a new relayed weibo
 							scope.add()(r.body, scope.weibo);		//call relayPost() in weiboController
@@ -163,8 +162,7 @@
 								debug.log("addRelay OK, key="+relayKey);
 								scope.relay = '';
 								scope.currentPage = 1;
-								getPage(r);
-								//scope.$apply();
+								getPage();
 
 								//it seems work only when the outside function is defined in direct parent scope
 								//has to be called after updating current weibo, otherwise scope might change

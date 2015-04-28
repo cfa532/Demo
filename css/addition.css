@@ -4,6 +4,7 @@
 .from_wrapper {
 	background: #fff;
 	border-radius: 4px;
+	width:500px; overflow:hidden;
 }
 .from_wrapper h4 {
 	height: 42px;

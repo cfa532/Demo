@@ -4,11 +4,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=8">
 <title>微博首页</title>
-<style type="text/css">
-</style>
-<script type="text/javascript"> 
-</script>
-
 <script type="text/javascript">
 //spinner code
 !function(a,b){"object"==typeof exports?module.exports=b():"function"==typeof define&&define.amd?define(b):a.Spinner=b()}(this,function(){"use strict";function a(a,b){var c,d=document.createElement(a||"div");for(c in b)d[c]=b[c];return d}function b(a){for(var b=1,c=arguments.length;c>b;b++)a.appendChild(arguments[b]);return a}function c(a,b,c,d){var e=["opacity",b,~~(100*a),c,d].join("-"),f=.01+c/d*100,g=Math.max(1-(1-a)/b*(100-f),a),h=j.substring(0,j.indexOf("Animation")).toLowerCase(),i=h&&"-"+h+"-"||"";return l[e]||(m.insertRule("@"+i+"keyframes "+e+"{0%{opacity:"+g+"}"+f+"%{opacity:"+a+"}"+(f+.01)+"%{opacity:1}"+(f+b)%100+"%{opacity:"+a+"}100%{opacity:"+g+"}}",m.cssRules.length),l[e]=1),e}function d(a,b){var c,d,e=a.style;for(b=b.charAt(0).toUpperCase()+b.slice(1),d=0;d<k.length;d++)if(c=k[d]+b,void 0!==e[c])return c;return void 0!==e[b]?b:void 0}function e(a,b){for(var c in b)a.style[d(a,c)||c]=b[c];return a}function f(a){for(var b=1;b<arguments.length;b++){var c=arguments[b];for(var d in c)void 0===a[d]&&(a[d]=c[d])}return a}function g(a,b){return"string"==typeof a?a:a[b%a.length]}function h(a){this.opts=f(a||{},h.defaults,n)}function i(){function c(b,c){return a("<"+b+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',c)}m.addRule(".spin-vml","behavior:url(#default#VML)"),h.prototype.lines=function(a,d){function f(){return e(c("group",{coordsize:k+" "+k,coordorigin:-j+" "+-j}),{width:k,height:k})}function h(a,h,i){b(m,b(e(f(),{rotation:360/d.lines*a+"deg",left:~~h}),b(e(c("roundrect",{arcsize:d.corners}),{width:j,height:d.width,left:d.radius,top:-d.width>>1,filter:i}),c("fill",{color:g(d.color,a),opacity:d.opacity}),c("stroke",{opacity:0}))))}var i,j=d.length+d.width,k=2*j,l=2*-(d.width+d.length)+"px",m=e(f(),{position:"absolute",top:l,left:l});if(d.shadow)for(i=1;i<=d.lines;i++)h(i,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(i=1;i<=d.lines;i++)h(i);return b(a,m)},h.prototype.opacity=function(a,b,c,d){var e=a.firstChild;d=d.shadow&&d.lines||0,e&&b+d<e.childNodes.length&&(e=e.childNodes[b+d],e=e&&e.firstChild,e=e&&e.firstChild,e&&(e.opacity=c))}}var j,k=["webkit","Moz","ms","O"],l={},m=function(){var c=a("style",{type:"text/css"});return b(document.getElementsByTagName("head")[0],c),c.sheet||c.styleSheet}(),n={lines:12,length:7,width:5,radius:10,rotate:0,corners:1,color:"#000",direction:1,speed:1,trail:100,opacity:.25,fps:20,zIndex:2e9,className:"spinner",top:"50%",left:"50%",position:"absolute"};h.defaults={},f(h.prototype,{spin:function(b){this.stop();{var c=this,d=c.opts,f=c.el=e(a(0,{className:d.className}),{position:d.position,width:0,zIndex:d.zIndex});d.radius+d.length+d.width}if(e(f,{left:d.left,top:d.top}),b&&b.insertBefore(f,b.firstChild||null),f.setAttribute("role","progressbar"),c.lines(f,c.opts),!j){var g,h=0,i=(d.lines-1)*(1-d.direction)/2,k=d.fps,l=k/d.speed,m=(1-d.opacity)/(l*d.trail/100),n=l/d.lines;!function o(){h++;for(var a=0;a<d.lines;a++)g=Math.max(1-(h+(d.lines-a)*n)%l*m,d.opacity),c.opacity(f,a*d.direction+i,g,d);c.timeout=c.el&&setTimeout(o,~~(1e3/k))}()}return c},stop:function(){var a=this.el;return a&&(clearTimeout(this.timeout),a.parentNode&&a.parentNode.removeChild(a),this.el=void 0),this},lines:function(d,f){function h(b,c){return e(a(),{position:"absolute",width:f.length+f.width+"px",height:f.width+"px",background:b,boxShadow:c,transformOrigin:"left",transform:"rotate("+~~(360/f.lines*k+f.rotate)+"deg) translate("+f.radius+"px,0)",borderRadius:(f.corners*f.width>>1)+"px"})}for(var i,k=0,l=(f.lines-1)*(1-f.direction)/2;k<f.lines;k++)i=e(a(),{position:"absolute",top:1+~(f.width/2)+"px",transform:f.hwaccel?"translate3d(0,0,0)":"",opacity:f.opacity,animation:j&&c(f.opacity,f.trail,l+k*f.direction,f.lines)+" "+1/f.speed+"s linear infinite"}),f.shadow&&b(i,e(h("#000","0 0 4px #000"),{top:"2px"})),b(d,b(i,h(g(f.color,k),"0 0 1px rgba(0,0,0,.1)")));return d},opacity:function(a,b,c){b<a.childNodes.length&&(a.childNodes[b].style.opacity=c)}});var o=e(a("group"),{behavior:"url(#default#VML)"});return!d(o,"transform")&&o.adj?i():j=d(o,"animation"),h});
@@ -17,21 +12,28 @@ var G_VARS = {
 		bidPath : window.location.pathname+"/appID/userID/",
 		IPList :["112.124.113.235:30003","97.74.126.127:4800","218.74.25.10:8100"],		//api for IP lists
 		IPNum : 0,
-		sid : '9f25eb605c1c0ef865c5dd5ade7621c66be5b244',
+		sid : '4d01b26c7a5128f718871221ad6456bfd505779b',
 //sibao
-		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK05mWGFZeWRERnJ1STBjc0lpdjFCanZWWlFoWVpvby0tVkNMekY1OXpiLWMA",
+//		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzRfNk1ma1BnSjAzVFNycnRsRWF3R2YyOTlQWXpVTHU0MmcybTQ5eFFsOFUA",
 //Valar
 //		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0VING5NeWNaWkJJYndnNG0xdlF2RUtKR2pJOGdoN0hvTTM3S2lLcjBWazgA",
 //appowner
-//		ppt : "L_-FAwEBA1BQVAH_hgABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-IAAAAEP-HBQEBBFRpbWUB_4gAAAAw_4YBK1VGcEk4WVExLWhkU01tekhua3J2YUszcnZIUEVLdHFDYTN3d0RPYnNFdVUA",
-		dataBid : 'UFpI8YQ1-hdSMmzHnkrvaK3rvHPEKtqCa3wwDObsEuU',	//from which JS data are read
+//		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0lXbEZ2Q1JlRHNWblBPaTFzY3ViMnpDSU1sVGp1cXFLWEc4LU1CQzc4TkkA",
+ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzJ6OUlncmFJM2N0ZGVzQ1RwVWNJWWJ0RHF6Y3J6QmlTb3F3YnlNQnNrY0UA",
+		dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U',	//from which JS data are read
 		leither : 'T9cybGj0rD8LxQdyDMKovISsQL8gp7xmhpswqLUJ2Q8', 	//leither-cloud.js has to be loaded on server
 		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',	//angular.js
 		spinner : null,					//spinning image while loading
 		httpClient : null,
 		weiboApp : null,				//["ui.bootstrap", "ui.router"]
 		MaxWeiboLength	: 40,
-				
+		myVersion	: "1.0.7",			//current html version
+		idxDB		: null,				//handle of indexedDB
+		idxDBVersion : 3,
+		objStore : {
+			picture : "_picture_store",
+		},
+		
 		//define global variables used as KEY
 		Posts		: "_array_of_all_weibo_keys",	//keys for all the posts by user, post date is used as Field in hset()
 		PostPics	: "_pictures_of_all_posts",		//SET: [keys]
@@ -42,12 +44,10 @@ var G_VARS = {
 		Friends		: "_friends_in_weibo_app",
 		UnreadSMS	: "_tmp_unread_sms_message",
 		Version		: "_database_version_in_DB",	//where database version number is stored
-		myVersion	: "1.0.7",				//current html version
-		idxDB		: null,					//handle of indexedDB
-		idxDBVersion : 1,
 		Upgrade		: "_upgrade_file_location",
 		makefile	: "_makefile.json",		//where K-V of js and css code stored
 
+		//create a shallow copy of an array of objects
 		slice : function(src, target, start, end) {
 			//clear target array without creating a shadow
 			target.length=0;
@@ -56,6 +56,8 @@ var G_VARS = {
 				target.push(src[i]);
 			};
 		},
+
+		//search items by weibo ID
 		search : function(items, value) {
 			for (var i=0; i<items.length; i++) {
 				if (items[i].wbID == value.wbID) {
@@ -187,7 +189,7 @@ var G_VARS = {
 			}, function(reason) {
 				debug.error(reason);
 			});
-			
+
 			//load css code too
 			for (var k in mf.css) {
 				(function(o) {
@@ -334,6 +336,24 @@ var G_VARS = {
 				itemsPerPage : 10,
 			};
 			
+			var request = window.indexedDB.open("weiboDB", G_VARS.idxDBVersion);
+			request.onerror = function(event) {
+				debug.error("open indexedDB error", event.target.errorCode);
+			};
+			request.onsuccess = function(event) {
+				G_VARS.idxDB = request.result;		//event.target.result;		//IDBDatabase object
+				G_VARS.idxDB.onerror = function(e) {
+					//generic handler for all error in this db
+					debug.warn("weiboDB error,errorCode=" + e.target.errorCode);
+				};
+				debug.log("idxDB opened OK");
+			};
+			request.onupgradeneeded = function(event) {
+				debug.info("here is db upgrade")
+				G_VARS.idxDB = request.result;
+				G_VARS.idxDB.createObjectStore(G_VARS.objStore.picture, {keyPath : "id"});
+			};
+
 			//download a upgrade file from db
 			$scope.getUpgradeFile = function() {
 				G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.Upgrade, function(file) {
@@ -495,6 +515,8 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 			<div class="online_num">{{myUserInfo.friendCount}}</div>
 		</div>
 	</div>
+
+<!-- display full size picture from chatbox -->
 <div class="from_wrapper" id="big_picture" style="display:none;">
 	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
 	<div style="height: 385px; width: 580px">
@@ -526,8 +548,8 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					</div>
 					<div class="bubble_main">
 						<div ng-show="m.contentType===0" class="cont_sms"><p class="page">{{m.content}}</p></div>
-						<img style="max-height:120px; max-width:120px;" ng-show="m.contentType===1" ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="image loading"></img>
-						<a href="javascript:void(0);" ng-show="m.contentType===2" ng-click="saveFile(m)">{{m | fileName}}</a>
+						<img ng-show="m.contentType===1" ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="image loading" style="max-height:120px; max-width:120px;"></img>
+						<a href="javascript:void(0);" ng-show="m.contentType===2" ng-click="saveFile(m)">{{m.getFileName() | fileName}}</a>
 					</div>
 				</div>
 				<div class="clearfix"></div>
@@ -575,19 +597,17 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
 	<div class="account_set">
 		<div class="member_info">
-			<table border="0" cellspacing="0" cellpadding="0" width="600" height="400">
+			<table border="0" cellspacing="0" cellpadding="0">
 				<tr><td>
-					<div style="height: 385px; width: 580px">
 						<carousel interval="2000">
 							<slide ng-repeat="slide in slides" active="slide.active">
-								<img ng-src="{{slide.image}}" style="margin:auto;"/>
+								<img ng-src="{{slide.image}}"/>
 								<div class="carousel-caption">
 									<h4>Slide {{$index}}</h4>
 									<p>{{slide.text}}</p>
 								</div>
 							</slide>
 						</carousel>
-					</div>
  				</td></tr>
 			</table>
 		</div>
@@ -661,7 +681,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 <script type="text/ng-template" id="chatdetail.html">
 <div class="from_wrapper" id="big_picture2" style="display:none;">
 	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
-	<div style="height: 385px; width: 580px">
+	<div>
 		<img ng-src="{{bigPicUrl}}" alt="loading"/>
 	</div>
 	<div class="clearfix"></div>
@@ -683,15 +703,15 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					</span>
 					<div ng-show="picFile">
 						<ul>
-							<li><img style="max-height:120px; max-width:120px" ng-src="{{picUrl}}" alt="loading"/></li>
+							<li><img style="max-height:120px; max-width:120px" ng-src="{{picUrl}}" alt="loading" tooltip="{{picFile.name}}"/></li>
 							<div class="clearfix"></div>
 						</ul>
 					</div>
 					<div ng-show="picFile">								
-						<h2>{{picFile.name}}    <a href="javascript:void(0);" ng-click="unselectFile()">删除</a></h2>
+						<a href="javascript:void(0);" ng-click="unselectFile()">删除</a>
 					</div>
 					<div ng-show="fileSent">								
-						<h2>{{fileSent.name}}    <a href="javascript:void(0);" ng-click="unselectFile()">删除</a></h2>
+						<h2 tooltip="{{fileSent.name}}">{{fileSent.name | fileName}}    <a href="javascript:void(0);" ng-click="unselectFile()">删除</a></h2>
 					</div>
 				</div>
 				<div class="fr" style="padding:10px 20px 20px 10px; width:205px;">		
@@ -717,7 +737,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 							<p ng-show="m.contentType===1" class="talk-pics">
 								<img ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="loading"/>
 							</p>
-							<p ng-show="m.contentType===2"><a href="javascript:void(0)" ng-click="saveFile(m)">{{m | fileName}}</a></p>
+							<p ng-show="m.contentType===2">
+								<a href="javascript:void(0)" ng-click="saveFile(m)" tooltip="m.getFileName()">{{m.getFileName() | fileName}}</a>
+							</p>
 						</div>
 					</div>
 				</div>
@@ -747,7 +769,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					<div class="message">
 						<span ng-show="ui.lastSMS.contentType===0">{{ui.lastSMS.content}}</span>
 						<img style="max-height:120px; max-width:120px;" ng-show="ui.lastSMS.contentType===1" le-src="{{ui.lastSMS.content}}" authorid="{{ui.lastSMS.bid}}" ></img>
-						<a href="javascript:void(0);" ng-show="ui.lastSMS.contentType===2">{{ui.lastSMS | fileName}}</a>
+						<a href="javascript:void(0);" ng-show="ui.lastSMS.contentType===2" tooltip="ui.lastSMS.getFileName()">{{ui.lastSMS.getFileName()}}</a>
 					</div>
 					<div class="pubtime">最后对话: {{ui.lastSMS.timeStamp | chatTime}}</div>
 				</div>
@@ -847,8 +869,8 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 		</div>
 	</div>
 	<div id="container">
-		<div ng-repeat="uri in myPicUrls track by $index" class="grid">
-			<div class="imgholder" ng-click="showFullPic(uri)"><img class="lazy" ng-src="{{uri.thumbnail}}" width="120" height="120"/></div>
+		<div ng-repeat="pic in myPicUrls track by $index" class="grid">
+			<div class="imgholder" ng-click="showFullPic(pic)"><img ng-src="{{pic.dataURI}}" width="120" height="120"/></div>
 			<div class="actions">
 				<a href="javascript:void(0)">
 				</a>
@@ -898,8 +920,8 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 			</div>
 			<div class="imgModList">
 				<ul>
-					<li ng-repeat="uri in curPics track by $index">
-						<a href="javascript:void(0);"><img width="80" height="80" ng-src="{{uri.thumbnail}}" alt=""></a>
+					<li ng-repeat="pic in curPics track by $index">
+						<a href="javascript:void(0);"><img width="80" height="80" ng-src="{{pic.dataURI}}" alt=""></a>
 					</li>
 					<div class="clearfix"></div>
 				</ul>
@@ -1025,7 +1047,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					<b><a ui-sref="root.personal.allPosts({bid:wb.authorID})" title="">{{wb.author}}: </a></b>
 					<span class="msgCnt">{{wb.body}}</span>
 					
-					<div ng-if="wb.parentID!==null" class="WB_media_expand mt15">
+					<div ng-if="wb.parentID!==null && wb.parentWeibo!==null" class="WB_media_expand mt15">
 						<div class="WB_arrow"></div>
 						<div class="WB_info mb5">
 							<a ui-sref="root.personal.allPosts({bid:wb.parentWeibo.authorID})">@{{wb.parentWeibo.author}}</a>
@@ -1035,9 +1057,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 						</div>
 						<div class="lotspic_list">
 							<ul>
-								<li ng-repeat="uri in wb.parentWeibo.pictures track by $index">
-									<a href="{{uri.thumbnail}}" class="img-group">
-									<img ng-src="{{uri.thumbnail}}"></img></a>
+								<li ng-repeat="pic in wb.parentWeibo.pictures track by $index">
+									<a href="{{pic.dataURI}}" class="img-group">
+									<img ng-src="{{pic.dataURI}}"></img></a>
 								</li>
 								<div class="clearfix"></div>
 							</ul>
@@ -1050,12 +1072,19 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 						</span>
 						<div class="clearfix"></div>					
 					</div>
+					<div ng-if="wb.parentID!==null && wb.parentWeibo===null" class="WB_media_expand mt15">
+						<div class="WB_arrow"></div>
+						<div class="WB_text">
+                			The original post is deleted
+						</div>
+						<div class="clearfix"></div>					
+					</div>
 
 					<div class="lotspic_list">
 						<ul>
-							<li ng-repeat="uri in wb.pictures track by $index">
+							<li ng-repeat="pic in wb.pictures track by $index">
 								<a href="javascript:void(0);" ng-click="showPicSlider(wb)">
-									<img ng-src="{{uri.thumbnail}}"></img></a>
+									<img ng-src="{{pic.dataURI}}"></img></a>
 							</li>
 							<div class="clearfix"></div>
 						</ul>

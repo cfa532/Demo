@@ -205,25 +205,34 @@
 				ds.push(q(function(resolve, reject) {					
 					var r = new FileReader();
 					r.onloadend = function(e) {
-						G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
-							var wp = new WeiboPicture();
-							wp.id = picKey;
-							
-							//draw a thumbnail of the original picture
-							var tmpCanvas = document.createElement("canvas");
-							var img = new Image();
-							img.onload = function(e) {
-								tmpCanvas.width = "120";
-								tmpCanvas.height = "120";
-								tmpCanvas.getContext("2d").drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
-								wp.thumbnail = tmpCanvas.toDataURL();
+						var wp = new WeiboPicture();
+						wp.set(e.target.result, function(setOK) {
+							debug.log("within callback " + setOK);
+							if (setOK) {
 								wb.pictures.push(wp);
 								resolve();
+							} else {
+								reject();
 							};
-							img.src = $scope.tmpPicUrls[i];
-						}, function(name, err) {
-							reject(err);
 						});
+//						G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
+//							var wp = new WeiboPicture(picKey);
+//							
+//							//draw a thumbnail of the original picture
+//							var tmpCanvas = document.createElement("canvas");
+//							var img = new Image();
+//							img.onload = function(e) {
+//								tmpCanvas.width = "120";
+//								tmpCanvas.height = "120";
+//								tmpCanvas.getContext("2d").drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
+//								wp.thumbnail = tmpCanvas.toDataURL();
+//								wb.pictures.push(wp);
+//								resolve();
+//							};
+//							img.src = $scope.tmpPicUrls[i];
+//						}, function(name, err) {
+//							reject(err);
+//						});
 					};
 					r.readAsArrayBuffer(picFile);				
 				}));		
@@ -263,4 +272,63 @@
 			});
 		};
 	}])
+	.filter("chatTime", function() {
+		return function(ts) {
+			if (!ts)
+				return "无纪录";
+			var d = new Date(ts);
+			var y, mo, h, min, day;
+			h = d.getHours();		//hour
+			min = d.getMinutes();	//minute
+			mo = d.getMonth();		//month
+			y = d.getFullYear();	//year
+			day = d.getDate();
+			
+			var t = parseInt((new Date().getTime() - ts)/3600000);
+			if (t <= 24) {
+				//if (m<10) m="0"+m.toString()
+				return h+ "点" +min+"分";
+			}
+			else if (t>24 && t<8760) {
+				return (mo+1)+"月"+day+"日"+h+ "点" +min+"分";
+			}
+			else {
+				return y+"年"+(mo+1)+"月"+day+"日"+h+ "点" +min+"分";
+			};
+		};
+	})
+	.filter("timePassed", function() {
+		return function(t) {
+			t = parseInt((new Date().getTime() - t)/60000);
+			if (t < 6) {
+				return "刚刚";
+			} else if (t < 60) {
+				return t+"分钟前";
+			} else if (t/60 < 24) {
+				return parseInt(t/60)+"小时前";
+			} else {
+				return parseInt(t/1440) +"天前";
+			};
+		};
+	})
+	.filter("bracket", function() {
+		return function(n) {
+			if (n===0) {
+				return null;
+			} else if (n<1000) {
+				return "("+n+")";
+			} else {
+				return "(999+)";
+			};
+		};
+	})
+	.filter("fileName", function() {
+		return function(t) {				//t is a file name
+			//limit the displayed file name to 20 chars
+			if (t && t.toString().length > 20) {
+				t = t.substr(0, 17) + "...";
+			};
+			return t;
+		};
+	})
 })();
