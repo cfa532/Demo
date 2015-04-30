@@ -82,8 +82,9 @@ function UserInfo() {
 	this.get = function(bid) {
 		self.bid = bid;
 		return q(function(resolve, reject) {
+			if (bid==="OuZUdgbKkjlk7vJ3Nweq8gf-Z1oLk4CJsFDweemzlUI") console.log(self);
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.UserInfo, bid, function(data) {
-				debug.info(data[1]);
+				if (bid==="OuZUdgbKkjlk7vJ3Nweq8gf-Z1oLk4CJsFDweemzlUI") debug.info(data);
 				if (data[1]) {
 					angular.copy(data[1], self.b);
 					self.nickName = self.b.nickName;
@@ -162,7 +163,7 @@ function UserInfo() {
 				} else {
 					//data[1] is null, no data to be read
 					//this user is a first time user, populate UI with predefined data
-					debug.warn("no UI data for "+ bid);
+					//debug.warn("no UI data for "+ bid);
 					resolve(false);
 				};
 			}, function(name, err) {
@@ -390,44 +391,48 @@ function WBase() {
 	this.videos = [];			//key list of videos
 };
 
-function WeiboPicture(picID) {
+function WeiboPicture(picID, authorID) {
 	this.id = picID;			//key of the image file
 	this.dataURI = null;		//dataURI of full image, for display only
-	this.wbID = null;			//weibo this pic belongs to
-	this.authorID = null;		//owner of the pic file
-	this.thumbnail = null;		//dataURI of thumbnail, for both storage and display
+	this.wbID = null;			//weibo to which this pic belongs to
+	this.authorID = authorID;	//owner of the pic file
+	if (!authorID) {
+		this.authorID = G_VARS.bid;
+	};
 	var self = this;
 	
 	this.get = function(callback) {
 		//first check if the pic is available locally
-		debug.log(self.id);
 		var trans = G_VARS.idxDB.transaction([G_VARS.objStore.picture], "readwrite");
+		trans.oncomplete = function(e) {
+			//debug.log("Picture get() transaction ok");
+		};
+		trans.onerror = function(e) {
+			debug.warn("pic get() transaction error", self.id);
+		};
+
+		//debug.info("WeiboPicture ", self.id);
 		var request = trans.objectStore(G_VARS.objStore.picture).get(self.id);
 		request.onerror = function(e) {
-			debug.warn("Get picture error ", e);
+			//error will be fired if id is not found
+			debug.warn("Picture key not found, " + self.id);
+			G_VARS.httpClient.get(G_VARS.sid, self.authorID, self.id, function(data) {
+				if (data[1]) {
+					var r = new FileReader();
+					r.onloadend = function(e) {
+						callback(e.target.result);
+					};
+					r.readAsDataURL(new Blob([data[1]], {type : "image/png"}));
+					//save the picture in local DB
+					self.set(data[1]);
+				};
+			}, function(name, err) {
+				debug.warn("pic not found " + err);
+			});
 		};
 		request.onsuccess = function(e) {
-			debug.log("Get success", e.target.result);
-			//assume result is null if id is not found
-			if (e.target.result) {
-				callback(e.target.result.dataURI);		//return the picture data
-			} else {
-				//no data in idxDB, get it from Leither
-				G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, self.id, function(data) {
-					if (data[1]) {
-						var r = new FileReader();
-						r.onloadend = function(e) {
-							callback(e.target.result);
-						};
-						r.readAsDataURL(new Blob([data[1]], {type : "image/png"}));
-						
-						//save the picture in local DB
-						self.set(data[1]);
-					};
-				}, function(name, err) {
-					reject(err);
-				});
-			};
+			//debug.log("Get success", e.target.result);
+			callback(e.target.result.dataURI);		//return the picture data
 		};
 	};
 	
@@ -453,7 +458,7 @@ function WeiboPicture(picID) {
 				var wp = {};
 				wp.id = self.id;
 				wp.dataURI = self.dataURI;
-				var request = trans.objectStore(G_VARS.objStore.picture).add(wp);
+				var request = trans.objectStore(G_VARS.objStore.picture).put(wp);
 				request.onsuccess = function(e) {
 					debug.log("pic save success");
 					callback(true);
@@ -525,7 +530,9 @@ function WeiboPost(scope)
 		});
 	};
 
-	this.get = function(authorID, key, original) {
+	this.get = function(key, authorID, original) {
+		if (!authorID)
+			authorID = G_VARS.bid;		//default to current user bid
 		return q(function(resolve, reject) {
 			G_VARS.httpClient.get(G_VARS.sid, authorID, key, function(data) {
 				if (!data[1]) {
@@ -549,17 +556,19 @@ function WeiboPost(scope)
 				self.isFavorite = false;
 				
 				self.pictures = [];
-				for (var i=0; i<data[1].pictures.length; i++) {
-					var wp = new WeiboPicture(data[1].pictures[i]);
+				angular.forEach(data[1].pictures, function(picID, i) {
+					var p = {};
+					p.id = picID;
+					self.pictures.push(p);
+					var wp = new WeiboPicture(picID, authorID);
+					debug.info(picID);
+					//only pic is loaded async
 					wp.get(function(dataURI) {
-						var p = {};
-						p.id = data[1].pictures[i];
 						p.dataURI = dataURI;
-						self.pictures.push(p);
+						if (scope) scope.$apply();	//show the pic right away
 					});
-				};
-				
-				//load attached pictures async
+				});
+
 				if (self.parentID !== null) {
 					if (original === true) {
 						//only look for original post, return a false
@@ -594,11 +603,11 @@ function WeiboPost(scope)
 		return q(function(resolve, reject) {
 			var wbDay = parseInt(self.timeStamp/86400000);
 			
-			//remove the post and corresponding keylist
+			//remove the post from key list of weibos for the day
 			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function(keylist) {
 				if (keylist[1]) {
 					//remove wbID from Posts keylist
-					debug.log(keylist[1]);
+					debug.log("keys before del() ", keylist[1]);
 					keylist[1].splice(keylist[1].indexOf(self.wbID), 1);
 					if (keylist[1].length === 0) {
 						//remove the whole list
@@ -614,7 +623,7 @@ function WeiboPost(scope)
 						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, keylist[1], function() {
 							resolve();
 						}, function(name, err) {
-							debug.error(err);
+							debug.warn(err);
 							reject(err);
 						});
 					};
@@ -633,20 +642,17 @@ function WeiboPost(scope)
 						keylist[1].splice(keylist[1].indexOf(self.wbID), 1);
 						if (keylist[1].length === 0) {
 							//remove the whole list
-							G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function() {
-								debug.info("keylist of post removed");
-								resolve();
+							G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.PostsPics, wbDay, function() {
+								debug.log("keylist of post removed");
 							}, function(name, err) {
 								debug.warn("keylist cannot be removed", err);
-								reject(err);
 							});
 						} else {
 							// weibo is indexed by the day of its posting. Update keylist
-							G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, keylist[1], function() {
-								resolve();
+							G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostsPics, wbDay, keylist[1], function() {
+								debug.log("PostPics removed for day="+wbDay);
 							}, function(name, err) {
 								debug.error(err);
-								reject(err);
 							});
 						};
 					};
@@ -662,11 +668,19 @@ function WeiboPost(scope)
 					if (keys[1]) {
 						//remove this wbID from favorite list
 						keys[1].splice(keys[1].indexOf(self.wbID), 1);
-						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, self.authorID, keys[1], function() {
-							debug.info("favorite removed", self);
-						}, function(name, err) {
-							debug.warn("Remove favorite err=" +err);
-						});
+						if (keys[1].length) {
+							G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, self.authorID, keys[1], function() {
+								debug.log("a favorite removed for author", self);
+							}, function(name, err) {
+								debug.warn("Remove favorite err=" +err);
+							});
+						} else {
+							G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, self.authorID, function() {
+								debug.log("favorites removed for authorID="+self.authorID);
+							}, function(name, err) {
+								debug.warn("Remove favorite failed", err);
+							});
+						}
 					};
 				}, function(name, err) {
 					debug.warn("Remove favorite err=" +err);
@@ -747,12 +761,11 @@ function WeiboReview()
 //general message struct for all SMS message type
 function WeiboMessage()
 {
-	this.bid = null			//bid of the sender
+	this.bid = null			//bid of the sender/author
 	this.type = null;		//0: request to add as friend, 1: instant message, 2: reviews, 3: relays
 	this.contentType = 0;	//0: text, 1: pic, 2: file, 3: video
 	this.content = null;	//type=0: request to be added, type=1: instant message, type=2: reviews msg, type=3: relays msg
 	this.timeStamp = null;	//time message received or sent
-	this.viewed = null;		//type=0: null--not processed, 0--reject, 1--accepted; type=1: 0--not viewed, 1: viewed
 	var self = this;
 	
 	//when contentType=2, content is a string of file name /t file type /t file key

@@ -19,7 +19,7 @@ var G_VARS = {
 //		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0VING5NeWNaWkJJYndnNG0xdlF2RUtKR2pJOGdoN0hvTTM3S2lLcjBWazgA",
 //appowner
 //		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0lXbEZ2Q1JlRHNWblBPaTFzY3ViMnpDSU1sVGp1cXFLWEc4LU1CQzc4TkkA",
-ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzJ6OUlncmFJM2N0ZGVzQ1RwVWNJWWJ0RHF6Y3J6QmlTb3F3YnlNQnNrY0UA",
+ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK2hmSXNqZVFaU2lXRlhUaXpRQUt0eG1uWEJlbEdvNkxDa0JGTERpUjJ2YjQA",
 		dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U',	//from which JS data are read
 		leither : 'T9cybGj0rD8LxQdyDMKovISsQL8gp7xmhpswqLUJ2Q8', 	//leither-cloud.js has to be loaded on server
 		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',	//angular.js
@@ -548,7 +548,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					</div>
 					<div class="bubble_main">
 						<div ng-show="m.contentType===0" class="cont_sms"><p class="page">{{m.content}}</p></div>
-						<img ng-show="m.contentType===1" ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="image loading" style="max-height:120px; max-width:120px;"></img>
+						<img ng-show="m.contentType===1" ng-click="showBigPic(m)" ng-src="{{m.dataURI}}" alt="image loading" style="max-height:120px; max-width:120px;"></img>
 						<a href="javascript:void(0);" ng-show="m.contentType===2" ng-click="saveFile(m)">{{m.getFileName() | fileName}}</a>
 					</div>
 				</div>
@@ -679,72 +679,86 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 </script>
 
 <script type="text/ng-template" id="chatdetail.html">
-<div class="from_wrapper" id="big_picture2" style="display:none;">
-	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
-	<div>
-		<img ng-src="{{bigPicUrl}}" alt="loading"/>
-	</div>
-	<div class="clearfix"></div>
-</div>
-
-		<div class="border_all p10 mb15">
-			<div class="replycontent p10">
-				<textarea id="myChatArea2" ng-model="txtChat" ng-change="txtChanged();" class="input_text" style="width:560px;"></textarea>
-			</div>
-			<div>
-				<div class="wbpm_left fl">
-					插入：
-					<span class="wbpmimgname">
-						<a href="javascript:void(0);" ng-click="sendFile('uploadChatPic2')" class="ico_letterdel">图片</a>
-						<input type="file" onchange="angular.element(this).scope().picSelected(this.files)" id="uploadChatPic2" accept="image/*" class="inputstyle"></input>
-						<span>|</span>
-						<a href="javascript:void(0);" ng-click="sendFile('uploadChatFile2')" class="ico_letterdel">文件</a>
-						<input type="file" onchange="angular.element(this).scope().fileSelected(this.files)" id="uploadChatFile2" class="inputstyle"></input>
-					</span>
-					<div ng-show="picFile">
-						<ul>
-							<li><img style="max-height:120px; max-width:120px" ng-src="{{picUrl}}" alt="loading" tooltip="{{picFile.name}}"/></li>
-							<div class="clearfix"></div>
-						</ul>
-					</div>
-					<div ng-show="picFile">								
-						<a href="javascript:void(0);" ng-click="unselectFile()">删除</a>
-					</div>
-					<div ng-show="fileSent">								
-						<h2 tooltip="{{fileSent.name}}">{{fileSent.name | fileName}}    <a href="javascript:void(0);" ng-click="unselectFile()">删除</a></h2>
-					</div>
-				</div>
-				<div class="fr" style="padding:10px 20px 20px 10px; width:205px;">		
-					<span ng-show="C.chCounter<=30" class="S_textb f14 mr10">还可以输入 <em>{{C.chCounter}}</em> 字</span>		
-					<a class="send_btn W_btn_c" href="javascript:void(0);" ng-click="sendSMS(inPageBid)"><span class="btn_30px">发布</span></a>	
-				</div>
-				<div class="clearfix"></div>
-			</div>
+	<div class="from_wrapper" id="big_picture2" style="display:none;">
+		<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
+		<div>
+			<img ng-src="{{bigPicUrl}}" alt="loading"/>
 		</div>
-		<div class="wbpmlist">
-			<div class="talk-main border_all mb15 pr">
-				<div ng-repeat="m in inPageMsgs track by $index">
-					<div ng-show="showTimeLine($index)">
+		<div class="clearfix"></div>
+	</div>
+	<div class="border_all p10 mb15">
+		<div class="replycontent p10">
+			<textarea id="myChatArea2" ng-model="txtChat"
+				ng-change="txtChanged();" class="input_text" style="width: 560px;"></textarea>
+		</div>
+		<div>
+			<div class="wbpm_left fl">
+				插入： <span class="wbpmimgname"> <a href="javascript:void(0);"
+					ng-click="sendFile('uploadChatPic2')" class="ico_letterdel">图片</a>
+					<input type="file"
+					onchange="angular.element(this).scope().picSelected(this.files)"
+					id="uploadChatPic2" accept="image/*" class="inputstyle"></input> <span>|</span>
+					<a href="javascript:void(0);"
+					ng-click="sendFile('uploadChatFile2')" class="ico_letterdel">文件</a>
+					<input type="file"
+					onchange="angular.element(this).scope().fileSelected(this.files)"
+					id="uploadChatFile2" class="inputstyle"></input>
+				</span>
+				<div ng-show="picFile">
+					<ul>
+						<li><img style="max-height: 120px; max-width: 120px"
+							ng-src="{{picUrl}}" alt="loading" tooltip="{{picFile.name}}" /></li>
+						<div class="clearfix"></div>
+					</ul>
+				</div>
+				<div ng-show="picFile">
+					<a href="javascript:void(0);" ng-click="unselectFile()">删除</a>
+				</div>
+				<div ng-show="fileSent">
+					<h2 tooltip="{{fileSent.name}}">
+						{{fileSent.name | fileName}} <a href="javascript:void(0);"
+							ng-click="unselectFile()">删除</a>
+					</h2>
+				</div>
+			</div>
+			<div class="fr" style="padding: 10px 20px 20px 10px; width: 205px;">
+				<span ng-show="C.chCounter<=30" class="S_textb f14 mr10">还可以输入
+					<em>{{C.chCounter}}</em> 字
+				</span> <a class="send_btn W_btn_c" href="javascript:void(0);"
+					ng-click="sendSMS(inPageBid)"><span class="btn_30px">发布</span></a>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="wbpmlist">
+		<div class="talk-main border_all mb15 pr">
+			<div ng-repeat="m in inPageMsgs track by $index">
+				<div ng-show="showTimeLine($index)">
 					<div class="talk-line mt15"></div>
 					<div class="talk-time">{{m.timeStamp | chatTime}}</div>
+				</div>
+				<div class="talk-left">
+					<div
+						ng-class="m.bid===myUserInfo.bid ? 'left-img fr' : 'left-img fl'">
+						<a ui-sref="root.personal.allPosts({bid:m.bid})" title=""><img
+							ng-src="{{myUserInfo.friends[m.bid].headPicUrl || myUserInfo.headPicUrl}}" /></a>
 					</div>
-					<div class="talk-left">
-					    <div ng-class="m.bid===myUserInfo.bid ? 'left-img fr' : 'left-img fl'">
-							<a ui-sref="root.personal.allPosts({bid:m.bid})" title=""><img ng-src="{{myUserInfo.friends[m.bid].headPicUrl || myUserInfo.headPicUrl}}"/></a>
-						</div>
-						<div ng-class="m.bid===myUserInfo.bid ? 'qipao qipao-right right-more fr' : 'qipao qipao-left left-more fl'"> 
-							<p ng-show="m.contentType===0" class="qipao-color">{{m.content}}</p>
-							<p ng-show="m.contentType===1" class="talk-pics">
-								<img ng-click="showBigPic(m)" le-src="{{m.content}}" authorid="{{m.bid}}" alt="loading"/>
-							</p>
-							<p ng-show="m.contentType===2">
-								<a href="javascript:void(0)" ng-click="saveFile(m)" tooltip="m.getFileName()">{{m.getFileName() | fileName}}</a>
-							</p>
-						</div>
+					<div
+						ng-class="m.bid===myUserInfo.bid ? 'qipao qipao-right right-more fr' : 'qipao qipao-left left-more fl'">
+						<p ng-show="m.contentType===0" class="qipao-color">{{m.content}}</p>
+						<p ng-show="m.contentType===1" class="talk-pics">
+							<img ng-click="showBigPic(m)" ng-src="{{m.dataURI}}"
+								alt="loading image" />
+						</p>
+						<p ng-show="m.contentType===2">
+							<a href="javascript:void(0)" ng-click="saveFile(m)"
+								tooltip="m.getFileName()">{{m.getFileName() | fileName}}</a>
+						</p>
 					</div>
 				</div>
-			</div>		
+			</div>
 		</div>
+	</div>
 </script>
 
 <script type="text/ng-template" id="chathistory.html">
@@ -768,7 +782,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					<p class="mb10"><b><a ui-sref="root.chat.detail({bid:bid})" title="" class="f10a2c7">{{ui.nickName}}</a></b></p>
 					<div class="message">
 						<span ng-show="ui.lastSMS.contentType===0">{{ui.lastSMS.content}}</span>
-						<img style="max-height:120px; max-width:120px;" ng-show="ui.lastSMS.contentType===1" le-src="{{ui.lastSMS.content}}" authorid="{{ui.lastSMS.bid}}" ></img>
+						<img style="max-height:120px; max-width:120px;" ng-show="ui.lastSMS.contentType===1" ng-src="{{ui.lastSMS.dataURI}}"></img>
 						<a href="javascript:void(0);" ng-show="ui.lastSMS.contentType===2" tooltip="ui.lastSMS.getFileName()">{{ui.lastSMS.getFileName()}}</a>
 					</div>
 					<div class="pubtime">最后对话: {{ui.lastSMS.timeStamp | chatTime}}</div>

@@ -162,13 +162,13 @@
 					if (wb.pictures.length > 0) {
 						var day = parseInt(wb.timeStamp/86400000);
 						G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, function(keys) {
-							debug.log(keys[1], wb)
+							//debug.log(keys[1], wb)
 							if (keys[1])
 								keys[1].push(wb.wbID);
 							else
 								keys[1] = [wb.wbID];
 							G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, keys[1], function() {
-								debug.log("pic keys added to global list =" + keys[1]);
+								debug.log("wbID with pic added to global list =" + keys[1]);
 							}, function(name, err) {
 								debug.error(err);
 							});
@@ -179,11 +179,12 @@
 					};
 				}, function(reason) {
 					debug.error(reason);
+					G_VARS.spinner.stop();
 				});
 			});
 		};
 
-		//display thumb nails of selected image files in the pic selection box
+		//display thumbnails of selected image files in the pic selection box
 		$scope.fileSelected = function(files) {
 			for (var i=0; i<files.length; i++) {
 				tmpPicFiles.push(files[i]);			//remember all the files selected
@@ -215,26 +216,8 @@
 								reject();
 							};
 						});
-//						G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
-//							var wp = new WeiboPicture(picKey);
-//							
-//							//draw a thumbnail of the original picture
-//							var tmpCanvas = document.createElement("canvas");
-//							var img = new Image();
-//							img.onload = function(e) {
-//								tmpCanvas.width = "120";
-//								tmpCanvas.height = "120";
-//								tmpCanvas.getContext("2d").drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
-//								wp.thumbnail = tmpCanvas.toDataURL();
-//								wb.pictures.push(wp);
-//								resolve();
-//							};
-//							img.src = $scope.tmpPicUrls[i];
-//						}, function(name, err) {
-//							reject(err);
-//						});
 					};
-					r.readAsArrayBuffer(picFile);				
+					r.readAsArrayBuffer(picFile);
 				}));		
 			});
 			return q.all(ds);

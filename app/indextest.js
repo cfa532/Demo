@@ -263,8 +263,9 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
     }
     $scope.hget = function () {
         console.log("hget sid:" + $scope.sid + "bid:" + $scope.bid);
-        client.hget($scope.sid, $scope.bid, "key2", "field" + $scope.count, function (data) {
-            $scope.bid = data[0]
+        client.hget($scope.sid, "IWlFvCReDsVnPOi1scub2zCIMlTjuqqKXG8-MBC78NI", "_app_user_information", "IWlFvCReDsVnPOi1scub2zCIMlTjuqqKXG8-MBC78NI", function (data) {
+            //$scope.bid = data[0]
+        	console.log(data[1]);
             $scope.appstatus = "hget ok.value=[" + data[1] + "]"
             $scope.$apply()
             console.log($scope.appstatus);

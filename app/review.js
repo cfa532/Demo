@@ -24,7 +24,7 @@
 			//Last parameter ht is a hashtable with 2 keys: reviews and relays
 			//corresponding value is array of reviews or relays. Save each of them
 			var wb = new WeiboPost();
-			wb.get(G_VARS.bid, wbID).then(function(readOK) {
+			wb.get(wbID).then(function(readOK) {
 				var ds = [];
 				var r = new WeiboReview();
 				//store all reviews and relays in db and put corresponding keys in Weibo obj

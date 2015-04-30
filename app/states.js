@@ -37,8 +37,7 @@
 						//login succeed, read owner's data
 						debug.log("login bid="+G_VARS.bid);
 						var g = $rootScope.myUserInfo.get(G_VARS.bid);
-						console.log(g);
-						g.then(function(readOK) {
+						$rootScope.myUserInfo.get(G_VARS.bid).then(function(readOK) {
 							if (!readOK) {
 								//UserInfo does not exit, create a default one
 								$rootScope.myUserInfo.bid = G_VARS.bid;
@@ -69,7 +68,7 @@
 				//check for new message every 10 seconds
 				$interval(function() {msgService.readMsg();}, 10000);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
-				//myChatBox.getOnlineUsers();		//unknown user may cause a problem
+				myChatBox.getOnlineUsers();		//unknown user may cause a problem
 				
 				$timeout(function() {G_VARS.spinner.stop();}, 30000);		//stop the spinner after 30s nonetheless
 			}
@@ -97,9 +96,13 @@
 							data.sort(function(a, b) {return b-a});
 							G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
 								ui.lastSMS = m[1];
-								debug.log(m[1], ui);
-								//$scope.$apply();
-								$timeout(function() {G_VARS.spinner.stop();});
+								if (m[1].contentType === 1) {
+									new WeiboPicture(m[1].content, m[1].bid).get(function(uri) {
+										m[1].dataURI = uri;
+									});
+								};
+								$scope.$apply();
+								G_VARS.spinner.stop();
 							}, function(name, err) {
 								debug.error(err);
 							});
@@ -228,26 +231,14 @@
 				};
 				
 				$scope.showBigPic = function(m) {
-					$scope.bigPicUrl = null;
-					$timeout(function() {$scope.$apply()});
-					
-					G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, m.content, function(data) {
-						var p = new WeiboPicture(m.comtent);
-						p.set(data[1]).then(function() {
-							debug.log("ok")
-						}, function(reason) {
-							debug.warn(reason);
-						});
-					}, function(name, err) {
-						debug.error(err);
-					});
-					
+					$scope.bigPicUrl = m.dataURI;
+					$timeout(function() {$scope.$apply();});
 					easyDialog.open({
 						container : 'big_picture2',
 						fixed : false,
 						drag : true,
 						overlay : true
-						});
+					});
 				};
 				
 				//upload a picture or file to be sent over SMS
@@ -313,7 +304,7 @@
 					};
 				};
 
-				var getChatHistory = function(bid) {
+				var getChatDetail = function(bid) {
 					$scope.inPageMsgs.length = 0;
 					if ($scope.chatSessions[bid]) {
 						//a chat with a friend is going on. resort the msgs for in page display
@@ -349,12 +340,18 @@
 										for (var i=0; i<ts.length && i<50; i++) {
 											G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, ts[i], function(msg) {
 												if (msg[1]) {
-													//debug.log(msg[1]);
+													if (msg[1].contentType === 1) {
+														//debug.info(msg[1])
+														new WeiboPicture(msg[1].content, msg[1].bid).get(function(uri) {
+															msg[1].dataURI = uri;
+														});
+													};
 													$scope.chatSessions[bid].messages.push(msg[1]);
 													$scope.inPageMsgs.push(msg[1]);
 													$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
 													G_VARS.spinner.stop();
 													$scope.$apply();
+													//$timeout(function() {$scope.$apply();});
 												}
 											}, function(name, err) {
 												debug.error(err);
@@ -375,7 +372,7 @@
 						});
 					};
 				};
-				getChatHistory($stateParams.bid);
+				getChatDetail($stateParams.bid);
 
 				$("#myChatArea2").keyup(function(e) {	//use keyup to avoid misfire in chinese input
 					if (e.keyCode === 13) {
@@ -422,34 +419,30 @@
 				debug.log("in personal state ctrl, bid="+$stateParams.bid);
 				$scope.curPics = [];
 
-				//get a list of pics by this user
+				//get current UserInfo object
 				if (!$stateParams.bid || $stateParams.bid===G_VARS.bid) {
 					$rootScope.currUserInfo = $rootScope.myUserInfo;
-				}
-				else {
+				} else {
 					$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
 				};
 				
-				var i = 0;
-				function getPictures(data) {
-					if (i>=data.length) return;
-					angular.forEach(data[i].value, function(wbID) {
+				//display thumbnails on the user profile area
+				//var i = 0;
+				function getPictures(arr, i) {
+					if (i>5 || i>=arr.length)
+						return;
+					angular.forEach(arr[i].value, function(wbID) {
 						var wb = new WeiboPost();
-						wb.get($scope.currUserInfo.bid, wbID).then(function(readOK) {
+						wb.get(wbID, $scope.currUserInfo.bid).then(function(readOK) {
 							$scope.curPics = $scope.curPics.concat(wb.pictures);
-							//debug.log($scope.curPics);
 							if ($scope.curPics.length > 6) {
-								$scope.curPics.length=6;			//display up to 6 pics
-								i = data.length;
+								$scope.curPics.length = 6;			//display up to 6 pics
+								i = arr.length;
 								return;
 							} else {
-								if (i < data.length) {
-									i++;
-									$timeout(function() {getPictures(data);});
-								} else {
-									return;
-								};
-							}
+								i++;
+								$timeout(function() {getPictures(arr, i);});
+							};
 						}, function(reason) {
 							debug.warn(reason);
 						});
@@ -461,8 +454,7 @@
 						//data[i].field is date in which picture is posted
 						//data[i].value is array of wbID which has picture by at the day
 						data.sort(function(a,b) {return b.field-a.field});
-						//console.log(data);
-						getPictures(data);
+						getPictures(data, 0);
 					};
 				}, function(name, err) {
 					debug.warn(err);
@@ -589,36 +581,15 @@
 		$scope.showPicSlider = function(wb) {
 			if (wb.pictures.length === 0)
 				return;
-			G_VARS.spinner.spin(document.getElementById("pic_slider"));
+			//G_VARS.spinner.spin(document.getElementById("pic_slider"));
 			$rootScope.slides = [];
 			angular.forEach(wb.pictures, function(pic, i) {
-				var p = new WeiboPicture(pic.id);
-				p.get().then(function() {
-					
-				}, function(reason) {
-					debug.warn(reason);
-				});
-				return;
-				G_VARS.httpClient.get(G_VARS.sid, wb.authorID, pic.id, function(data) {
-					if (data[1]) {
-						var r = new FileReader();
-						r.onloadend = function(e) {
-							$rootScope.slides.push({
-								image : e.target.result,
-								text : i
-							});
-							if ($rootScope.slides.length === wb.pictures.length) 
-								$timeout(function() {G_VARS.spinner.stop();});
-						};
-						r.readAsDataURL(new Blob([data[1]], {type : "image/png"}));
-					};
-				}, function(name, err) {
-					G_VARS.spinner.stop();
-					debug.warn(err);
+				$rootScope.slides.push({
+					image : pic.dataURI,
+					text : i
 				});
 			});
-			for (var i=0; i<wb.pictures.length; i++) {
-			};
+
 			easyDialog.open({
 				container : 'pic_slider',
 				fixed : false,
@@ -697,7 +668,7 @@
 		//read one weibo and add it to weiboList
 		var getWeibo = function(bid, key, original) {
 			var wb = new WeiboPost($scope);
-			wb.get(bid, key, original).then(function(readOK) {
+			wb.get(key, bid, original).then(function(readOK) {
 				if (readOK) {
 					$scope.myUserInfo.checkFavorite(wb);
 					$scope.weiboList.push(wb);
@@ -783,13 +754,6 @@
 						debug.warn(reason);
 					});
 				};
-//				if (data[1]) {
-//					var r = new FileReader();
-//					r.onloadend = function(e) {
-//						window.open(e.target.result, "_blank");
-//					};
-//					r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
-//				};
 			}, function(name, err) {
 				debug.warn(err);
 			});

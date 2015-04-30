@@ -21,9 +21,9 @@
 		SMSService.addCallback(function(bid) {
 			//called by processMsg when a new msg is received
 			if ($scope.chatSessions[bid]) {
-				$scope.chatSessions[bid].messages.sort(function(a,b) {return a.timeStamp - b.timeStamp})
+				$scope.chatSessions[bid].messages.sort(function(a,b) {return a.timeStamp - b.timeStamp;})
 				$scope.$apply();
-				chatbox1.scrollTop(100000);
+				chatbox1.scrollTop(100000);		//scroll to the bottom
 			}
 		});
 		
@@ -46,6 +46,7 @@
 				var cs = new ChatSession();
 				cs.bid = friend.bid, cs.friend = friend;
 				$scope.chatSessions[friend.bid] = cs;
+				
 				//first check if there are unread msgs in SMSUnread db
 				G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, friend.bid, function(data) {
 					if (data[1]) {
@@ -53,6 +54,12 @@
 						cs.messages = cs.messages.concat(data[1]);
 						cs.messages.sort(function(a,b) {return a.timeStamp - b.timeStamp});
 						$timeout(function() {$scope.$apply(); chatbox1.scrollTop(100000)});
+						//get local pics for message to display
+						angular.forEach(data[1], function(m) {
+							new WeiboPicture(m.content, m.bid).get(function(uri) {
+								m.dataURI = uri;
+							});
+						});
 					} else {
 						//no unread msgs, load msgs from last day
 						//get all of them for now
@@ -60,10 +67,16 @@
 						G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, friend.bid, function(ts) {
 							if (ts.length>0) {
 								ts.sort(function(a,b) {return a-b});
+								//get the past 50 messages
 								for (var i=ts.length-1; i>=0 && ts.length-i<50; i--) {
 									G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, friend.bid, ts[i], function(msg) {
 										if (msg[1]) {
-											if (msg[1].contentType===1) debug.info(msg[1])
+											if (msg[1].contentType === 1) {
+												debug.info(msg[1])
+												new WeiboPicture(msg[1].content, msg[1].bid).get(function(uri) {
+													msg[1].dataURI = uri;
+												});
+											};
 											cs.messages.unshift(msg[1]);
 											cs.messages.sort(function(a,b) {return a.timeStamp - b.timeStamp});
 											$timeout(function() {$scope.$apply(); chatbox1.scrollTop(100000)});
@@ -89,18 +102,8 @@
 		};
 		
 		$scope.showBigPic = function(m) {
-			$scope.bigPicUrl = null;
-			$timeout(function() {$scope.$apply()});
-			G_VARS.httpClient.get(G_VARS.sid, G_VARS.bid, m.content, function(data) {
-				var r = new FileReader();
-				r.onloadend = function(e) {
-					$scope.bigPicUrl = e.target.result;
-				};
-				r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
-			}, function(name, err) {
-				debug.error(err);
-			});
-			
+			$scope.bigPicUrl = m.dataURI;
+			//$scope.$apply();
 			easyDialog.open({
 				container : 'big_picture',
 				fixed : false,
@@ -193,8 +196,13 @@
 						$scope.picFile = null;
 						$scope.$apply(); chatbox1.scrollTop(100000);
 						
-						//save it in db as conversation
+						//save message in db as conversation
 						SMSService.saveSMS(bid, m);
+						
+						//save the pic in local indexedDB too
+						new WeiboPicture(picKey).set(e.target.result, function(setOK) {
+							debug.log("pic in msg saved="+setOK);
+						});
 					}, function(name, err) {
 						debug.error(err);
 					});
@@ -248,17 +256,21 @@
 			};
 		};
 		
+		$scope.getOnlineNodes = function() {
+			G_VARS.httpClient.getvar(G_VARS.sid, "onlinehost", function(data) {
+			});
+		};
+
 		$scope.getOnlineUsers = function() {
 			//get nearby users those are not friends
 			G_VARS.httpClient.getvar(G_VARS.sid, "usernearby", function(data) {
 				//an array of userid on the same node
-				debug.log(data);
+				//debug.log(data);
 				$scope.usrList = {};
 				angular.forEach(data, function(bid) {
 					if (bid!==G_VARS.bid && bid!==null && !$scope.myUserInfo.isFriend(bid)) {
 						(function(ht, bid) {
 							var ui = new UserInfo();
-							console.log("check non-friend bid="+bid);
 							ui.get(bid).then(function(readOK) {
 								if (readOK) {
 									ht[bid] = ui;
@@ -266,20 +278,14 @@
 									$scope.$apply();
 								};
 							}, function(reason) {
-								debug.warn(reason, bid);
+								debug.warn(bid, reason);
 							});
 						}($scope.usrList, bid));
 					};
 				});
 			});
 		};
-		
-		$scope.getOnlineNodes = function() {
-			G_VARS.httpClient.getvar(G_VARS.sid, "onlinehost", function(data) {
-			});
-		};
 		//$scope.getOnlineUsers();
-		
 		$("#myChatArea").keyup(function(e) {	//use keyup to avoid misfire in chinese input
 			if (e.keyCode === 13) {
 				$scope.sendSMS($scope.chatFriend.bid);
@@ -305,13 +311,12 @@
 					
 					//make the new messages shown in chat box
 					for (var i=0; i<sortFunctions.length; i++) {
-						//sort msgs differently inPage and floating window
+						//sort msgs differently on inPage and floating window
 						sortFunctions[i](bid);
 					};
 				};
 				
-				//update unread msg records
-				//first get old unread msgs
+				//add new msgs in to unread msgs array
 				G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, function(data) {
 					if (data[1]) {
 						for (var i=0; i<data[1].length; i++) {
