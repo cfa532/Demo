@@ -27,6 +27,14 @@
 			}
 		});
 		
+		var getMsgPic = function(m) {
+			if (m.contentType === 1) {
+				new WeiboPicture(m.content, m.bid).get(function(uri) {
+					m.dataURI = uri;
+				});
+			};
+		};
+		
 		//start to chat with a friend. Take a UserInfo as input.
 		$scope.startChat = function(friend)
 		{
@@ -38,7 +46,7 @@
 			if ($scope.chatSessions[friend.bid]) {
 				//there is an ongoing conversation with the friend
 				//any incoming message will be populated by processMsg();
-				$scope.chatSessions[friend.bid].messages.sort(function(a,b) {return a.timeStamp - b.timeStamp});
+				$scope.chatSessions[friend.bid].messages.sort(function(a,b) { return a.timeStamp - b.timeStamp;} );
 				$timeout(function() {$scope.$apply(); chatbox1.scrollTop(100000)});
 			} else {
 				//no existing chat session, open one. Clean unread msgs only when user opened a new chat session
@@ -56,9 +64,7 @@
 						$timeout(function() {$scope.$apply(); chatbox1.scrollTop(100000)});
 						//get local pics for message to display
 						angular.forEach(data[1], function(m) {
-							new WeiboPicture(m.content, m.bid).get(function(uri) {
-								m.dataURI = uri;
-							});
+							getMsgPic(m);
 						});
 					} else {
 						//no unread msgs, load msgs from last day
@@ -71,12 +77,7 @@
 								for (var i=ts.length-1; i>=0 && ts.length-i<50; i--) {
 									G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, friend.bid, ts[i], function(msg) {
 										if (msg[1]) {
-											if (msg[1].contentType === 1) {
-												debug.info(msg[1])
-												new WeiboPicture(msg[1].content, msg[1].bid).get(function(uri) {
-													msg[1].dataURI = uri;
-												});
-											};
+											getMsgPic(m);
 											cs.messages.unshift(msg[1]);
 											cs.messages.sort(function(a,b) {return a.timeStamp - b.timeStamp});
 											$timeout(function() {$scope.$apply(); chatbox1.scrollTop(100000)});
@@ -189,7 +190,7 @@
 						m.timeStamp = new Date().getTime();
 						msgService.sendSMS(bid, m);
 						
-						debug.log($scope.chatSessions[bid]);
+						getMsgPic(m);
 						$scope.chatSessions[bid].messages.push(m);
 						$scope.chatSessions[bid].timeStamp = m.timeStamp;
 						$scope.picUrl = null;
@@ -270,15 +271,13 @@
 				angular.forEach(data, function(bid) {
 					if (bid!==G_VARS.bid && bid!==null && !$scope.myUserInfo.isFriend(bid)) {
 						(function(ht, bid) {
-							var ui = new UserInfo();
-							ui.get(bid).then(function(readOK) {
+							var ui = new UserInfo(bid);
+							ui.get(function(readOK) {
 								if (readOK) {
 									ht[bid] = ui;
 									debug.info(ui);
 									$scope.$apply();
 								};
-							}, function(reason) {
-								debug.warn(bid, reason);
 							});
 						}($scope.usrList, bid));
 					};
@@ -298,8 +297,8 @@
 		
 		//refresh chatbox content to show new messages
 		var sortFunctions = [];
-		this.addCallback = function(sort) {
-			sortFunctions.push(sort);
+		this.addCallback = function(callback) {
+			sortFunctions.push(callback);
 		};
 		
 		this.processMsg = function(htSMS) {

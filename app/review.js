@@ -24,7 +24,7 @@
 			//Last parameter ht is a hashtable with 2 keys: reviews and relays
 			//corresponding value is array of reviews or relays. Save each of them
 			var wb = new WeiboPost();
-			wb.get(wbID).then(function(readOK) {
+			wb.get(wbID, G_VARS.bid, false, function() {
 				var ds = [];
 				var r = new WeiboReview();
 				//store all reviews and relays in db and put corresponding keys in Weibo obj
@@ -56,7 +56,7 @@
 			
 				//after all reviews data are saved correctly, update weibo with new reviews
 				$q.all(ds).then(function(keys) {
-					wb.update().then(function() {
+					wb.update(function() {
 						console.log("key="+wbID+"\n"+keys.length + " messages accepted");
 						for (var i=0; i<$rootScope.weiboList.length; i++) {
 							if ($rootScope.weiboList[i].wbID===wbID && $rootScope.weiboList[i].authorID===G_VARS.bid) {
@@ -65,8 +65,6 @@
 							};
 						};
 						$rootScope.$apply();
-					}, function(reason) {
-						debug.warn(reason);
 					});
 				});
 			}, function(reason) {

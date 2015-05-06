@@ -36,24 +36,18 @@
 
 						//login succeed, read owner's data
 						debug.log("login bid="+G_VARS.bid);
-						var g = $rootScope.myUserInfo.get(G_VARS.bid);
-						$rootScope.myUserInfo.get(G_VARS.bid).then(function(readOK) {
+						$rootScope.myUserInfo = new UserInfo(G_VARS.bid);
+						$rootScope.myUserInfo.get(function(readOK) {
 							if (!readOK) {
 								//UserInfo does not exit, create a default one
-								$rootScope.myUserInfo.bid = G_VARS.bid;
-								//save the newly created UserInfo
-								$rootScope.myUserInfo.set().then(function() {
+								$rootScope.myUserInfo.set(function() {
 									//debug.log($rootScope.myUserInfo);
 									deferredStart.resolve(321);									
-								}, function(reason) {
-									debug.error(reason);
 								});
 							} else {
 								//get my head pic
 								deferredStart.resolve(123);
 							};
-						}, function(reason) {
-							debug.error(reason);
 						});
 					}, function(reason) {
 						debug.error(reason);
@@ -147,17 +141,24 @@
 
 				//display chat time every hour
 				$scope.showTimeLine = function(mi) {
-					//console.log(mi);
 					// take a Message as param
 					// check if the time difference from this message to its previous message cross the hourly border
 					if (mi===0 || mi===$scope.chatSessions[$stateParams.bid].messages.length-1) return false;
 					var tt = parseInt($scope.chatSessions[$stateParams.bid].messages[mi].timeStamp/1000/3600);
 					var pt = parseInt($scope.chatSessions[$stateParams.bid].messages[mi-1].timeStamp/1000/3600);
-					//console.log(tt, pt);
-					if (tt !== pt) return true;
+					if (tt !== pt) 
+						return true;
 					return false;
 				};
 
+				var getMsgPic = function(m) {
+					if (m.contentType === 1) {
+						new WeiboPicture(m.content, m.bid).get(function(uri) {
+							m.dataURI = uri;
+						});
+					};
+				};
+				
 				//take the chatting friend's bid as parameter
 				$scope.sendSMS = function(bid) {
 					if ($scope.txtChat && $scope.txtChat.toString().replace(/\s+/g,"") !== '') {
@@ -189,11 +190,12 @@
 								m.timeStamp = new Date().getTime();
 								msgService.sendSMS(bid, m);
 								
-								debug.log($scope.chatSessions[bid]);
+								getMsgPic(m);
 								$scope.chatSessions[bid].messages.push(m);
 								$scope.chatSessions[bid].timeStamp = m.timeStamp;
 								$scope.picUrl = null;
 								$scope.picFile = null;
+								$scope.$apply();
 								//save it in db as conversation
 								SMSService.saveSMS(bid, m);
 							}, function(name, err) {
@@ -215,7 +217,6 @@
 								m.timeStamp = new Date().getTime();
 								msgService.sendSMS(bid, m);
 								
-								debug.log($scope.chatSessions[bid]);
 								$scope.chatSessions[bid].messages.push(m);
 								$scope.chatSessions[bid].timeStamp = m.timeStamp;
 								$scope.fileSent = null;
@@ -255,9 +256,9 @@
 						var r = new FileReader();
 						r.onloadend = function(e) {
 							$scope.picUrl = e.target.result;
+							$scope.$apply();
 						};
 						$scope.picFile = files[0];
-						$scope.$apply();
 						r.readAsDataURL(files[0], {type: 'image/png'});
 					};
 				};
@@ -267,6 +268,7 @@
 					$scope.picFile = null;
 					if (files!==null && files.length>0) {
 						$scope.fileSent = files[0];
+						$scope.$apply();
 					};
 				};
 				
@@ -325,8 +327,10 @@
 						//first check if there are unread msgs in SMSUnread db
 						G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, function(data) {
 							if (data[1]) {
+								//there are unread msgs
 								cs.messages = cs.messages.concat(data[1]);
 								for (var i=0; i<cs.messages.length; i++) {
+									getMsgPic(cs.messages[i]);
 									$scope.inPageMsgs.push(cs.messages[i]);
 									$scope.$apply();
 								};
@@ -340,12 +344,7 @@
 										for (var i=0; i<ts.length && i<50; i++) {
 											G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, ts[i], function(msg) {
 												if (msg[1]) {
-													if (msg[1].contentType === 1) {
-														//debug.info(msg[1])
-														new WeiboPicture(msg[1].content, msg[1].bid).get(function(uri) {
-															msg[1].dataURI = uri;
-														});
-													};
+													getMsgPic(msg[1]);
 													$scope.chatSessions[bid].messages.push(msg[1]);
 													$scope.inPageMsgs.push(msg[1]);
 													$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
@@ -563,7 +562,7 @@
 		$scope.deleteWeibo = function(wb) {
 			if (G_VARS.bid !== wb.authorID) return;
 			debug.info(wb);
-			wb.del().then(function() {
+			wb.del(function() {
 				var i = G_VARS.search($scope.weiboList, wb);
 				if (i !== -1) {
 					$scope.weiboList.splice(i, 1);
@@ -571,10 +570,8 @@
 				i = G_VARS.search($scope.currentList, wb);
 				if (i !== -1)
 					$scope.currentList.splice(i, 1);
-				$scope.$apply();
 				$scope.myUserInfo.favoriteCount--;
-			}, function(reason) {
-				debug.warn(reason);
+				$scope.$apply();
 			});
 		};
 
@@ -661,25 +658,22 @@
 					};
 				};
 			}, function(name, err) {
-				debug.error(err);
+				debug.error(err, bid, day);
 			});
 		};
 		
 		//read one weibo and add it to weiboList
 		var getWeibo = function(bid, key, original) {
 			var wb = new WeiboPost($scope);
-			wb.get(key, bid, original).then(function(readOK) {
-				if (readOK) {
-					$scope.myUserInfo.checkFavorite(wb);
-					$scope.weiboList.push(wb);
-					//sort array in descending order, worked like a charm
-					$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
-					G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
-					$scope.$apply();
-					$timeout(function() {G_VARS.spinner.stop();});		//stop loading sign
-				};
-			}, function(reason) {
-				debug.error(reason);
+			wb.get(key, bid, original, function() {
+				//debug.log(wb);
+				$scope.myUserInfo.checkFavorite(wb);
+				$scope.weiboList.push(wb);
+				//sort array in descending order, worked like a charm
+				$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
+				G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+				$scope.$apply();
+				$timeout(function() {G_VARS.spinner.stop();});		//stop loading sign
 			});
 		};
 		
@@ -781,7 +775,7 @@
 			wb.authorID = G_VARS.bid;
 			wb.author = $scope.myUserInfo.nickName;
 			
-			wb.set().then(function() {
+			wb.set(function() {
 				$scope.weiboList.unshift(wb);
 				G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 				$scope.myUserInfo.weiboCount++;

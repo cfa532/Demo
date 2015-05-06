@@ -1,7 +1,7 @@
 /*master.css*/
 @charset "utf-8";
 .profile_top{background:#f2f2f2; padding:20px 0 10px 10px;}
-.pf_head{ width:150px; float:left; margin-right:40px;}
+.pf_head {width:150px; float:left; margin-right:40px;}
 .pf_head img,.userPic img{
 	width:78px;
 	height:78px;

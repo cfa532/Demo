@@ -13,12 +13,11 @@ var G_VARS = {
 		IPList :["112.124.113.235:30003","97.74.126.127:4800","218.74.25.10:8100"],		//api for IP lists
 		IPNum : 0,
 		sid : '4d01b26c7a5128f718871221ad6456bfd505779b',
+//xiaoxie
+//	ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzRfNk1ma1BnSjAzVFNycnRsRWF3R2YyOTlQWXpVTHU0MmcybTQ5eFFsOFUA",
 //sibao
-//		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzRfNk1ma1BnSjAzVFNycnRsRWF3R2YyOTlQWXpVTHU0MmcybTQ5eFFsOFUA",
-//Valar
-//		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0VING5NeWNaWkJJYndnNG0xdlF2RUtKR2pJOGdoN0hvTTM3S2lLcjBWazgA",
+//	ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0VING5NeWNaWkJJYndnNG0xdlF2RUtKR2pJOGdoN0hvTTM3S2lLcjBWazgA",
 //appowner
-//		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0lXbEZ2Q1JlRHNWblBPaTFzY3ViMnpDSU1sVGp1cXFLWEc4LU1CQzc4TkkA",
 ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK2hmSXNqZVFaU2lXRlhUaXpRQUt0eG1uWEJlbEdvNkxDa0JGTERpUjJ2YjQA",
 		dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U',	//from which JS data are read
 		leither : 'T9cybGj0rD8LxQdyDMKovISsQL8gp7xmhpswqLUJ2Q8', 	//leither-cloud.js has to be loaded on server
@@ -33,6 +32,8 @@ ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBB
 		objStore : {
 			picture : "_picture_store",
 		},
+		MaxHeight : 800,		//max height and width of pictures uploaded
+		MaxWidth : 800,
 		
 		//define global variables used as KEY
 		Posts		: "_array_of_all_weibo_keys",	//keys for all the posts by user, post date is used as Field in hset()
@@ -65,6 +66,18 @@ ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBB
 				};
 			};
 			return -1;
+		},
+		//resize a photo propotionally 
+		scaleSize : function(maxW, maxH, currW, currH) {
+			var ratio = currH / currW;
+			if (currW >= maxW && ratio <= 1){
+				currW = maxW;
+				currH = currW * ratio;
+			} else if (currH >= maxH) {
+					currH = maxH;
+					currW = currH / ratio;
+			};
+			return [currW, currH];
 		},
 	};
 
@@ -151,10 +164,10 @@ ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBB
 						loadExternalJS();
 					};
 				}, function(name, err) {
-					debug.log("getSysUser err=" + err);
+					debug.error("getSysUser err=" + err);
 				});
 			}, function(name, err) {
-				debug.log(err);
+				debug.error(err);
 			});
 		});
 	};
@@ -328,7 +341,7 @@ ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBB
 			$rootScope.currentList = [];		//weibos being displayed in current page
 			//$rootScope.myFriends = {};		//all my friends
 			$rootScope.appID = "newWeibo";
-			$rootScope.myUserInfo = new UserInfo();
+			$rootScope.myUserInfo = null;
 			$rootScope.currUserInfo = $rootScope.myUserInfo; 	//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
 			$rootScope.chatSessions = {};
 			$rootScope.global = {
@@ -547,9 +560,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 						<div ng-class="getMsgClass(m.bid, 2)"><i></i><em></em></div>
 					</div>
 					<div class="bubble_main">
-						<div ng-show="m.contentType===0" class="cont_sms"><p class="page">{{m.content}}</p></div>
+						<div ng-show="m.contentType===0" class="cont_sms"><p class="page">{{m | message}}</p></div>
 						<img ng-show="m.contentType===1" ng-click="showBigPic(m)" ng-src="{{m.dataURI}}" alt="image loading" style="max-height:120px; max-width:120px;"></img>
-						<a href="javascript:void(0);" ng-show="m.contentType===2" ng-click="saveFile(m)">{{m.getFileName() | fileName}}</a>
+						<a href="javascript:void(0);" ng-show="m.contentType===2" ng-click="saveFile(m)">{{m | message}}</a>
 					</div>
 				</div>
 				<div class="clearfix"></div>
@@ -620,7 +633,7 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 	<div class="account_set">
 		<form name="accountForm" novalidate>
 			<div class="pf_head">
-				<p class="mb10"><img id="myUserIcon" width="148" ng-src="{{myUserInfo.headPicUrl}}"/></p>
+				<p class="mb10"><img id="myUserIcon" ng-src="{{myUserInfo.headPicUrl}}"/></p>
 				<p class="tc mb10 pr">					
 					<a href="javascript:void(0);" class="up_file_img"></a>
 					<input onchange="uploadMyIcon()" type="file" id="myUploadIcon" accept="image/*" class="up_file_input"></input>
@@ -745,14 +758,12 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 					</div>
 					<div
 						ng-class="m.bid===myUserInfo.bid ? 'qipao qipao-right right-more fr' : 'qipao qipao-left left-more fl'">
-						<p ng-show="m.contentType===0" class="qipao-color">{{m.content}}</p>
+						<p ng-show="m.contentType===0" class="qipao-color">{{m | message}}</p>
 						<p ng-show="m.contentType===1" class="talk-pics">
-							<img ng-click="showBigPic(m)" ng-src="{{m.dataURI}}"
-								alt="loading image" />
+							<img ng-click="showBigPic(m)" ng-src="{{m.dataURI}}" alt="loading image" />
 						</p>
 						<p ng-show="m.contentType===2">
-							<a href="javascript:void(0)" ng-click="saveFile(m)"
-								tooltip="m.getFileName()">{{m.getFileName() | fileName}}</a>
+							<a href="javascript:void(0)" ng-click="saveFile(m)">{{m | message}}</a>
 						</p>
 					</div>
 				</div>
@@ -781,9 +792,9 @@ G_VARS.spinner = new Spinner(	// show the onload spinner
 				<div class="wbpmcontent">
 					<p class="mb10"><b><a ui-sref="root.chat.detail({bid:bid})" title="" class="f10a2c7">{{ui.nickName}}</a></b></p>
 					<div class="message">
-						<span ng-show="ui.lastSMS.contentType===0">{{ui.lastSMS.content}}</span>
+						<span ng-show="ui.lastSMS.contentType===0">{{ui.lastSMS | message}}</span>
 						<img style="max-height:120px; max-width:120px;" ng-show="ui.lastSMS.contentType===1" ng-src="{{ui.lastSMS.dataURI}}"></img>
-						<a href="javascript:void(0);" ng-show="ui.lastSMS.contentType===2" tooltip="ui.lastSMS.getFileName()">{{ui.lastSMS.getFileName()}}</a>
+						<a href="javascript:void(0);" ng-show="ui.lastSMS.contentType===2">{{ui.lastSMS | message}}</a>
 					</div>
 					<div class="pubtime">最后对话: {{ui.lastSMS.timeStamp | chatTime}}</div>
 				</div>

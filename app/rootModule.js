@@ -93,10 +93,11 @@
 			getUserPics($stateParams.bid);
 		};
 	}])
-	.controller("postController", ["$scope", "$rootScope", "$state", function($scope, $rootScope, $state) {
+	.controller("postController", ["$scope", "$rootScope", "$state", "$q",
+	                               function($scope, $rootScope, $state, $q) {
 		//publish new post
 		debug.log("In Post controller")
-		var q = angular.injector(['ng']).get('$q');
+		//var q = angular.injector(['ng']).get('$q');
 		$scope.P = {
 				txtInvalid		: true,
 				chCounter		: G_VARS.MaxWeiboLength,
@@ -131,15 +132,33 @@
 			wb.author = $scope.myUserInfo.nickName;
 
 			//upload attached pictures
-			addPictures(wb).then(function() {
+			var ds = [];
+			angular.forEach(tmpPicFiles, function(picFile) {
+				var df = $q.defer();
+				var r = new FileReader();
+				r.onloadend = function(e) {
+					var p = new WeiboPicture();
+					p.set(e.target.result, function(setOK) {
+						if (setOK) {
+							wb.pictures.push(p);
+							df.resolve();
+						} else {
+							df.reject();
+						};
+					});
+				};
+				r.readAsDataURL(picFile);
+				ds.push(df.promise);
+			});
+			//create new post after all pics are submitted
+			$q.all(ds).then(function() {
 				//pic files uploaded ok, clear tmp files
-				debug.log("number of pics =" + wb.pictures.length);
 				tmpPicFiles.length = 0;
 				$scope.tmpPicUrls.length = 0;
 				$scope.P.showPicUpload = false;
 								
 				//add a new post to DB and the new postKey to a list
-				wb.set().then(function() {
+				wb.set(function() {
 					debug.log("addNewPost:", wb);
 					//successfully added a new weibo key. Now clear up
 					$scope.global.weiboCount++;
@@ -181,6 +200,8 @@
 					debug.error(reason);
 					G_VARS.spinner.stop();
 				});
+			}, function(reason) {
+				debug.warn(reason);
 			});
 		};
 
@@ -201,26 +222,6 @@
 
 		//add a picture to Weibo post
 		var addPictures = function(wb) {
-			var ds = [];
-			angular.forEach(tmpPicFiles, function(picFile, i) {
-				ds.push(q(function(resolve, reject) {					
-					var r = new FileReader();
-					r.onloadend = function(e) {
-						var wp = new WeiboPicture();
-						wp.set(e.target.result, function(setOK) {
-							debug.log("within callback " + setOK);
-							if (setOK) {
-								wb.pictures.push(wp);
-								resolve();
-							} else {
-								reject();
-							};
-						});
-					};
-					r.readAsArrayBuffer(picFile);
-				}));		
-			});
-			return q.all(ds);
 		};
 		
 		//changed the style of submit button by checking validity of input text
@@ -312,6 +313,23 @@
 				t = t.substr(0, 17) + "...";
 			};
 			return t;
+		};
+	})
+	.filter("message", function() {
+		return function(m) {					//m is a message
+			if (!m) return;
+			if (m.contentType === 2)	{		// a file
+				var arr = m.content.toString().split("\t");
+				if (arr[0].toString().length > 20) {
+					return arr[0].toString().substr(0, 17) + "...";
+				};
+				return arr[0];
+			}
+			else if (m.contentType === 1) {  	// a picture
+				;
+			} else {
+				return m.content;		//text message
+			};
 		};
 	})
 })();

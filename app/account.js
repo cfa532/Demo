@@ -9,14 +9,11 @@
 	    }];
 	    
 	    var bidPath = window.location.pathname+"/appID/userID";
-	    //debug.log("userid path="+userid);
 	    function logon($q) {
 			//retrieve user information
 			this.getSysUser = function() {
-				//debug.log(userid);
 				var deferredUser = $q.defer();
 				var deferredVer = $q.defer();
-//				var dePage = $q.defer();
 
 				//make an asynchronous call to get sid, then return the promise
 				getSid().then(function(sid) {
@@ -125,51 +122,35 @@
 		$scope.saveAccount = function() {
 			//should check validity of input here
 			var headpic = document.getElementById("myUploadIcon").files[0];
-			var r = new FileReader();
-			r.onloadend = function(e) {
-				//store the head photo of user
-				G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(key) {
-					$scope.myUserInfo.headPicKey = key;
-					var f = new FileReader();
-					f.onloadend = function(e) {
-						//draw a thumbnail of the original picture
-						var tmpCanvas = document.createElement("canvas");
-						var img = new Image();
-						img.onload = function(e) {
-							tmpCanvas.width = "200";
-							tmpCanvas.height = "200";
-							tmpCanvas.getContext("2d").drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
-							
-							$scope.myUserInfo.headPicUrl = tmpCanvas.toDataURL();
-							$scope.myUserInfo.set().then(function() {
-								//my icon pic is changed, has to update the corresponding page
-								for (var i=0; i<$scope.weiboList.length; i++) {
-									if ($scope.weiboList[i].authorID === G_VARS.bid) {
-										$scope.weiboList[i].headPicUrl = e.target.result;
-									};
+			var f = new FileReader();
+			f.onloadend = function(e) {
+				var np = new WeiboPicture();
+				np.set(f.result, function(setOK) {
+					if (setOK) {
+						$scope.myUserInfo.headPicUrl = np.dataURI;
+						$scope.myUserInfo.headPicKey = np.id;
+						$scope.myUserInfo.set(function() {
+							//my icon pic is changed, has to update the corresponding page
+							for (var i=0; i<$scope.weiboList.length; i++) {
+								if ($scope.weiboList[i].authorID === G_VARS.bid) {
+									$scope.weiboList[i].headPicUrl = np.dataURI;
 								};
-							}, function(reason) {
-								$scope.alerts[0] = {type: 'danger', msg: 'Account NOT updated'};
-								debug.error("set myUserInfo err="+reason);
-							});
-						};
-						img.src = e.target.result;
-
-						headpic = null;
-						$scope.alerts[0] = {type: 'success', msg: 'Account updated OK with picture'};
-						$scope.$apply();
+							};
+							$scope.$apply();
+						});
+					} else {
+						$scope.alerts[2].show = true;
+						debug.warn("UserInfo not saved");
 					};
-					f.readAsDataURL(headpic);
-					
-				}, function(name, err) {
-					$scope.alerts[2].show = true;
-					debug.error("saveAccount err2=" +err);
 				});
+				headpic = null;
+				$scope.alerts[0] = {type: 'success', msg: 'Account updated OK with picture'};
+				$scope.$apply();
 			};
 			if (headpic) {
-				r.readAsArrayBuffer(headpic);
+				f.readAsDataURL(headpic);
 			} else {
-				$scope.myUserInfo.set().then(function() {
+				$scope.myUserInfo.set(function() {
 					$scope.alerts[0] = {type: 'success', msg: 'Account updated OK without picture'};
 					$scope.$apply();
 				});
@@ -181,12 +162,24 @@
 		};
 		
 		$window.uploadMyIcon = function() {
-			var img = document.getElementById("myUserIcon");
-			var file = document.getElementById("myUploadIcon").files[0];
+			var img = document.getElementById("myUserIcon");				//current user icon
+			var file = document.getElementById("myUploadIcon").files[0];	//new icon to be uploaded
 			if (file) {
 				var r = new FileReader();
 				r.onloadend = function(e) {
-					img.setAttribute("src", e.target.result);
+					var newImg = new Image();
+					newImg.onload = function(e) {
+						var maxWidth = 200, maxHeight = 200;
+						var newSize = G_VARS.scaleSize(maxWidth, maxHeight, newImg.width, newImg.height);
+						var imageWidth = newSize[0], imageHeight = newSize[1];
+						debug.info(imageWidth, imageHeight);
+						
+						var tmpCanvas = document.createElement("canvas");
+						tmpCanvas.width = imageWidth, tmpCanvas.height = imageHeight;
+						tmpCanvas.getContext("2d").drawImage(newImg, 0, 0, imageWidth, imageHeight);
+						img.setAttribute("src", tmpCanvas.toDataURL());
+					};
+					newImg.src = r.result;
 				};
 				r.readAsDataURL(file);
 			};
