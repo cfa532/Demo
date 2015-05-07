@@ -60,7 +60,7 @@
 				debug.log($scope.myUserInfo);
 
 				//check for new message every 10 seconds
-				$interval(function() {msgService.readMsg();}, 10000);
+				//$interval(function() {msgService.readMsg();}, 10000);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
 				myChatBox.getOnlineUsers();		//unknown user may cause a problem
 				
