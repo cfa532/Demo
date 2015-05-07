@@ -31,6 +31,7 @@
 			if (m.contentType === 1) {
 				new WeiboPicture(m.content, m.bid).get(function(uri) {
 					m.dataURI = uri;
+					$scope.$apply();
 				});
 			};
 		};
@@ -77,7 +78,7 @@
 								for (var i=ts.length-1; i>=0 && ts.length-i<50; i--) {
 									G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, friend.bid, ts[i], function(msg) {
 										if (msg[1]) {
-											getMsgPic(m);
+											getMsgPic(msg[1]);
 											cs.messages.unshift(msg[1]);
 											cs.messages.sort(function(a,b) {return a.timeStamp - b.timeStamp});
 											$timeout(function() {$scope.$apply(); chatbox1.scrollTop(100000)});
@@ -104,13 +105,13 @@
 		
 		$scope.showBigPic = function(m) {
 			$scope.bigPicUrl = m.dataURI;
-			//$scope.$apply();
+
 			easyDialog.open({
 				container : 'big_picture',
 				fixed : false,
 				drag : true,
 				overlay : true
-				});
+			});
 		};
 				
 		//upload a picture to be sent
@@ -275,7 +276,7 @@
 							ui.get(function(readOK) {
 								if (readOK) {
 									ht[bid] = ui;
-									debug.info(ui);
+									//debug.info(ui);
 									$scope.$apply();
 								};
 							});

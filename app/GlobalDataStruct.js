@@ -294,8 +294,6 @@ function UserInfo(bid) {
 	this.getLastWeibo = function() {
 		//read the latest weibo of this user
 		if (self.b.lastPostKey) {
-			self.lastPost = new WeiboPost();
-		} else {
 			G_VARS.httpClient.get(G_VARS.sid, self.bid, self.b.lastPostKey, function(data) {
 				if (data[1]) {
 					self.lastPost = data[1];
@@ -303,6 +301,8 @@ function UserInfo(bid) {
 			}, function(name, err) {
 				debug.warn(err);
 			});
+		} else {
+			self.lastPost = new WeiboPost();
 		};
 	};
 	

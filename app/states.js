@@ -59,10 +59,17 @@
 				debug.log("in root state controller = " +logon);
 				debug.log($scope.myUserInfo);
 
-				//check for new message every 10 seconds
-				//$interval(function() {msgService.readMsg();}, 10000);
+				//begin to check for new message
+				var readMessage = function() {
+					G_VARS.httpClient.readmsg(G_VARS.sid, function() {
+						msgService.readMsg();
+						readMessage();
+					});
+				};
+				readMessage();
+				
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
-				//myChatBox.getOnlineUsers();		//unknown user may cause a problem
+				myChatBox.getOnlineUsers();		//unknown user may cause a problem
 				
 				$timeout(function() {G_VARS.spinner.stop();}, 30000);		//stop the spinner after 30s nonetheless
 			}
@@ -155,6 +162,7 @@
 					if (m.contentType === 1) {
 						new WeiboPicture(m.content, m.bid).get(function(uri) {
 							m.dataURI = uri;
+							$scope.$apply();
 						});
 					};
 				};
@@ -437,14 +445,21 @@
 								angular.forEach(wb[1].pictures, function(picKey) {
 									var p = new WeiboPicture(picKey, $rootScope.currUserInfo.bid);
 									p.get(function(uri) {
+										//remove duplicated pics
+										for (var j=0; j<$scope.curPics.length; j++) {
+											debug.info(j, p.id);
+											if ($scope.curPics[j].id === p.id)
+												return;
+										};
 										$scope.curPics.push(p);
+										$scope.$apply();
 										if ($scope.curPics.length > 6) {
 											$scope.curPics.length = 6;			//display up to 6 pics
 											i = arr.length;
 											return;
 										} else {
 											i++;
-											$timeout(function() {getPictures(arr, i);});
+											getPictures(arr, i);
 										};
 									});
 								});
@@ -470,8 +485,9 @@
 		.state("root.personal.friends", {
 			url : "/friends",
 			templateUrl : "friends.html",
-			controller : function($scope) {
+			controller : function($scope, $timeout) {
 				debug.log("root.personal.friends state")
+				$timeout(function() {G_VARS.spinner.stop();});		//stop the spinner after 30s nonetheless
 			},
 		})
 		.state("root.personal.allPosts", {
