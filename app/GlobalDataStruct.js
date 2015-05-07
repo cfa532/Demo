@@ -141,7 +141,7 @@ function UserInfo(bid) {
 				//self.friends = self.b.friends;
 				self.weiboCount = self.b.weiboCount;
 				self.favoriteCount = self.b.favoriteCount;
-				//self.getLastWeibo();
+				self.getLastWeibo();
 				callback(true);
 			};
 		}, function(name, err) {
@@ -291,19 +291,19 @@ function UserInfo(bid) {
 		self.set();
 	};
 	
-	this.getLastWeibo = function(callback) {
+	this.getLastWeibo = function() {
 		//read the latest weibo of this user
-		G_VARS.httpClient.get(G_VARS.sid, self.bid, self.b.lastPostKey, function(data) {
-			if (data[1]) {
-				self.lastPost = data[1];
-			} else {
-				self.lastPost = new WeiboPost();
-			};
-			debug.info(self.lastPost);
-			callback();
-		}, function(name, err) {
-			debug.warn(err);
-		});
+		if (self.b.lastPostKey) {
+			self.lastPost = new WeiboPost();
+		} else {
+			G_VARS.httpClient.get(G_VARS.sid, self.bid, self.b.lastPostKey, function(data) {
+				if (data[1]) {
+					self.lastPost = data[1];
+				};
+			}, function(name, err) {
+				debug.warn(err);
+			});
+		};
 	};
 	
 	this.setLastWeibo = function(wb) {
@@ -369,7 +369,6 @@ function WeiboPicture(picID, authorID) {
 		request.onsuccess = function(e) {
 			if (e.target.result) {
 				self.dataURI = e.target.result.dataURI;
-				debug.info("idx Pic", self.dataURI);
 				callback(e.target.result.dataURI);		//return the picture data
 			}
 			else {
@@ -378,7 +377,6 @@ function WeiboPicture(picID, authorID) {
 						var r = new FileReader();
 						r.onloadend = function(e) {
 							self.dataURI = r.result;
-							debug.log("Pic not in idxDB", self);
 							callback(r.result);
 
 							//save the picture in local DB
@@ -424,7 +422,7 @@ function WeiboPicture(picID, authorID) {
 			self.dataURI = tmpCanvas.toDataURL();
 			
 			//save the pic as binary array on Leither to save bandwidth
-			G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, dataURItoBlob(self.dataURI), function(picKey) {
+			G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, dataURLToBlob(self.dataURI), function(picKey) {
 				//now we have a scaled down picture, save it
 				debug.log("pic key=" + picKey);
 				self.id = picKey;
@@ -454,23 +452,35 @@ function WeiboPicture(picID, authorID) {
 		};
 		img.src = dataURL;
 	};
-	
-	function dataURItoBlob(dataURI) {
-	    // convert base64 to raw binary data held in a string
-	    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-	    var byteString = atob(dataURI.split(',')[1]);
-	    // separate out the mime component
-	    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-	    // write the bytes of the string to an ArrayBuffer
-	    return new ArrayBuffer(byteString.length);
+
+	function dataURLToBlob(dataURL) {
+		var BASE64_MARKER = ';base64,';
+		if (dataURL.indexOf(BASE64_MARKER) === -1) {
+			var parts = dataURL.split(',');
+			var contentType = parts[0].split(':')[1];
+			var raw = decodeURIComponent(parts[1]);
+			return new Blob([ raw ], {type : contentType});
+		};
+		var parts = dataURL.split(BASE64_MARKER);
+		var contentType = parts[0].split(':')[1];
+		var raw = window.atob(parts[1]);
+		var rawLength = raw.length;
+		var uInt8Array = new Uint8Array(rawLength);
+
+		for (var i = 0; i < rawLength; ++i) {
+			uInt8Array[i] = raw.charCodeAt(i);
+		}
+		//debug.info(uInt8Array);
+		//return new Blob([uInt8Array], {type : contentType});
+		return uInt8Array;		//return binary data of the pic
 	};
 }
 
-//scope where post is displayed
-function WeiboPost(scope)
+// scope where post is displayed
+function WeiboPost(wbID, authorID, original, scope)
 {
-	this.authorID = null;		//if null, use login user ID
-	this.wbID = null;
+	this.authorID = authorID;	//if null, use login user ID
+	this.wbID = wbID;
 	this.author = null;			//author's nick name
 	this.parentID = null;		//the post reviewed by this post, if any
 	this.parentAuthorID = null;	//author of the parent post
@@ -484,8 +494,9 @@ function WeiboPost(scope)
 	this.videos = [];			//key list of videos
 	this.parentWeibo = [];
 	this.isFavorite = false;
+	this.original = original;
+	this.scope = scope;
 	var self = this;
-//	var q = angular.injector(['ng']).get('$q');
 	
 	//update weibo record with new data, when new reviews are added
 	this.update = function(callback) {
@@ -501,7 +512,6 @@ function WeiboPost(scope)
 		wb.rating = self.rating;			//number of Praise
 		wb.author = self.author;			//author's nick name
 		wb.videos = self.videos;			//key list of videos
-//		wb.pictures = self.pictures;		//key list of pictures		
 		wb.pictures = [];
 		if (self.pictures && self.pictures.length>0) {
 			for(var i=0; i<self.pictures.length; i++) {
@@ -516,16 +526,14 @@ function WeiboPost(scope)
 		});
 	};
 
-	this.get = function(key, authorID, original, callback) {
+	this.get = function(callback) {
 		if (!authorID)
 			authorID = G_VARS.bid;		//default to current user bid
-		G_VARS.httpClient.get(G_VARS.sid, authorID, key, function(data) {
+		G_VARS.httpClient.get(G_VARS.sid, self.authorID, self.wbID, function(data) {
 			if (!data[1]) {
-				debug.warn("no weibo data, bid="+authorID+" wbID="+key);
+				debug.warn("no weibo data, bid="+self.authorID+" wbID="+self.wbID);
 				return;
 			};
-			self.authorID = authorID;				//if null, use login user ID
-			self.wbID = key;
 			self.parentID = data[1].parentID;		//the post reviewed by self post, if any
 			self.parentAuthorID = data[1].parentAuthorID;	//author of the parent post
 			self.body = data[1].body;				//text of the post
@@ -541,20 +549,20 @@ function WeiboPost(scope)
 			
 			self.pictures = [];
 			angular.forEach(data[1].pictures, function(picID) {
-				var wp = new WeiboPicture(picID, authorID);
+				var wp = new WeiboPicture(picID, self.authorID);
 				wp.get(function(uri) {
 					wp.dataURI = uri;
 					self.pictures.push(wp);
-					if (scope) scope.$apply();	//show the pic right away
+					if (self.scope) self.scope.$apply();	//show the pic right away
 				});
 			});
 
-			if (self.parentID && !original) {
+			if (self.parentID && !self.original) {
 				//there is a parent weibo, load it.
 				//Notice: make sure only to read one direct parent weibo
 				//a weibo that can be a parentWeibo must be original itself
-				var pw = new WeiboPost(scope);
-				pw.get(self.parentAuthorID, self.parentID, true, function(readOK) {
+				var pw = new WeiboPost(self.parentID, self.parentAuthorID, true, self.scope);
+				pw.get(function(readOK) {
 					if (readOK) {
 						self.parentWeibo = pw;
 					} else {
@@ -577,12 +585,11 @@ function WeiboPost(scope)
 		G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function(keylist) {
 			if (keylist[1]) {
 				//remove wbID from Posts keylist
-				debug.log("keys before del() ", keylist[1]);
+				//debug.log("keys before del() ", keylist[1]);
 				keylist[1].splice(keylist[1].indexOf(self.wbID), 1);
 				if (keylist[1].length === 0) {
 					//remove the whole list
 					G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function() {
-						debug.info("keylist of post removed");
 						callback();
 					}, function(name, err) {
 						debug.warn("keylist cannot be removed", err);
@@ -590,7 +597,6 @@ function WeiboPost(scope)
 				} else {
 					// weibo is indexed by the day of its posting. Update keylist
 					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, keylist[1], function() {
-						debug.info("weibo removed from list");
 						callback();
 					}, function(name, err) {
 						debug.warn(err);
@@ -602,23 +608,24 @@ function WeiboPost(scope)
 		});
 		
 		//update PostPics if this weibo has picture
-		if (self.pictures && self.pictures.length>0) {
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function(keylist) {
-				if (keylist[1]) {
+		if (self.pictures.length > 0) {
+			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function(picKeys) {
+				if (picKeys[1]) {
 					//remove wbID from Posts keylist
-					debug.log(keylist[1]);
-					keylist[1].splice(keylist[1].indexOf(self.wbID), 1);
-					if (keylist[1].length === 0) {
+					debug.log(picKeys[1]);
+					picKeys[1].splice(picKeys[1].indexOf(self.wbID), 1);
+					
+					if (picKeys[1].length === 0) {
 						//remove the whole list
-						G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.PostsPics, wbDay, function() {
-							debug.log("keylist of post removed");
+						G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function() {
+							debug.log("keylist of post removed", picKeys[1]);
 						}, function(name, err) {
 							debug.warn("keylist cannot be removed", err);
 						});
 					} else {
 						// weibo is indexed by the day of its posting. Update keylist
-						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostsPics, wbDay, keylist[1], function() {
-							debug.log("PostPics removed for day="+wbDay);
+						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, picKeys[1], function() {
+							debug.log("PostPics removed", picKeys[1]);
 						}, function(name, err) {
 							debug.error(err);
 						});
@@ -630,7 +637,6 @@ function WeiboPost(scope)
 		};
 		
 		if (self.isFavorite) {
-			console.log("isfavroite")
 			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, self.authorID, function(keys) {
 				if (keys[1]) {
 					//remove this wbID from favorite list
@@ -680,15 +686,15 @@ function WeiboPost(scope)
 			wb.pictures.push(self.pictures[i].id);
 		}
 		wb.videos = self.videos;			//key list of videos
+		var wbDay = parseInt(self.timeStamp/86400000);
 		
 		G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, wb, function(wbKey) {
 			self.wbID = wbKey;
-			
 			//add new Key to Weibo list, always add newest post to the front(left)
-			var wbDay = parseInt(self.timeStamp/86400000);
 			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function(keylist) {
 				if (keylist[1]) {
-					keylist[1].unshift(wbKey);	//add new key to the beginning of keylist
+					if (keylist[1].indexOf(wbKey) === -1)
+						keylist[1].unshift(wbKey);	//add new key to the beginning of keylist
 				} else {
 					keylist[1] = [wbKey];
 				}
@@ -704,6 +710,27 @@ function WeiboPost(scope)
 		}, function(name, err) {
 			debug.error(err);
 		});
+		
+		//if there is pic in weibo, add it to PostPics list
+		if (self.pictures.length > 0) {
+			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function(keylist) {
+				if (keylist[1] && keylist[1].length>0) {
+					//add wbID to PostPics keylist
+					if (keylist[1].indexOf(self.wbID) === -1)
+						keylist[1].push(self.wbID);
+				} else {
+					keylist[1] = [self.wbID];
+				};
+				// weibo is indexed by the day of its posting. Update keylist
+				G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, keylist[1], function() {
+					debug.log("PostPics added", keylist[1]);
+				}, function(name, err) {
+					debug.error(err);
+				});
+			}, function(name, err) {
+				debug.warn(err);
+			});
+		};
 	};
 };
 

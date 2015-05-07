@@ -20,19 +20,20 @@
 		
 		var getPicsOfDay = function(day, bid) {
 			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.PostPics, day, function(keys) {
-				debug.log(keys[1]);
 				if (keys[1]) {
 					//keys is array of wbID whose weibo has picture
 					angular.forEach(keys[1], function(wbID) {
 						G_VARS.httpClient.get(G_VARS.sid, bid, wbID, function(wb) {
-							if (wb[1]) {
-								debug.log(wb[1])
-								angular.forEach(wb[1].pictures, function(pic) {
-									pic.wb = wb[1];
-									$scope.myPicUrls.push(pic);
+							//wb[1] is a WBASE object
+							//debug.log(wb[1]);
+							angular.forEach(wb[1].pictures, function(picKey) {
+								var p = new WeiboPicture(picKey, bid);
+								p.get(function(uri) {
+									//do nothing other than get the picture
+									$scope.myPicUrls.push(p);
 									$timeout(function() {G_VARS.spinner.stop()});
 								});
-							};
+							});
 						}, function(name, err) {
 							debug.error(err);
 						});

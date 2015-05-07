@@ -62,7 +62,7 @@
 				//check for new message every 10 seconds
 				//$interval(function() {msgService.readMsg();}, 10000);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
-				myChatBox.getOnlineUsers();		//unknown user may cause a problem
+				//myChatBox.getOnlineUsers();		//unknown user may cause a problem
 				
 				$timeout(function() {G_VARS.spinner.stop();}, 30000);		//stop the spinner after 30s nonetheless
 			}
@@ -426,24 +426,31 @@
 				};
 				
 				//display thumbnails on the user profile area
-				//var i = 0;
 				function getPictures(arr, i) {
 					if (i>5 || i>=arr.length)
 						return;
 					angular.forEach(arr[i].value, function(wbID) {
-						var wb = new WeiboPost();
-						wb.get(wbID, $scope.currUserInfo.bid).then(function(readOK) {
-							$scope.curPics = $scope.curPics.concat(wb.pictures);
-							if ($scope.curPics.length > 6) {
-								$scope.curPics.length = 6;			//display up to 6 pics
-								i = arr.length;
-								return;
-							} else {
-								i++;
-								$timeout(function() {getPictures(arr, i);});
+						G_VARS.httpClient.get(G_VARS.sid, $rootScope.currUserInfo.bid, wbID, function(wb) {
+							//wb[1] is a WBASE object
+							if (wb[1]) {
+								//debug.log(wb[1]);
+								angular.forEach(wb[1].pictures, function(picKey) {
+									var p = new WeiboPicture(picKey, $rootScope.currUserInfo.bid);
+									p.get(function(uri) {
+										$scope.curPics.push(p);
+										if ($scope.curPics.length > 6) {
+											$scope.curPics.length = 6;			//display up to 6 pics
+											i = arr.length;
+											return;
+										} else {
+											i++;
+											$timeout(function() {getPictures(arr, i);});
+										};
+									});
+								});
 							};
-						}, function(reason) {
-							debug.warn(reason);
+						}, function(name, err) {
+							debug.error(err);
 						});
 					});							
 				};
@@ -463,33 +470,8 @@
 		.state("root.personal.friends", {
 			url : "/friends",
 			templateUrl : "friends.html",
-			controller : function($scope) {				
-				for (var i=0; i<$scope.currUserInfo.b.friends.length; i++) {
-					(function(bid) {
-						if ($scope.currUserInfo.friends[bid]) {
-							$scope.currUserInfo.friends[bid].getLastWeibo().then(function(wb) {
-								$scope.$apply();
-							}, function(reason) {
-								debug.error(reason);
-							});
-						} else {
-							var f = new UserInfo();
-							$scope.currUserInfo.friends[bid] = f;
-							f.get(bid).then(function(readOK) {
-								if (readOK) {
-									debug.info(f);
-									f.getLastWeibo().then(function(wb) {
-										$scope.$apply();
-									}, function(reason) {
-										debug.error(reason);
-									});
-								};
-							}, function(reason) {
-								debug.error(reason);
-							});
-						};
-					}($scope.currUserInfo.b.friends[i].bid));
-				};
+			controller : function($scope) {
+				debug.log("root.personal.friends state")
 			},
 		})
 		.state("root.personal.allPosts", {
@@ -570,7 +552,9 @@
 				i = G_VARS.search($scope.currentList, wb);
 				if (i !== -1)
 					$scope.currentList.splice(i, 1);
-				$scope.myUserInfo.favoriteCount--;
+				$scope.myUserInfo.weiboCount--;
+				if ($scope.myUserInfo.checkFavorite(wb))
+					$scope.myUserInfo.favortieCount--;
 				$scope.$apply();
 			});
 		};
@@ -664,8 +648,8 @@
 		
 		//read one weibo and add it to weiboList
 		var getWeibo = function(bid, key, original) {
-			var wb = new WeiboPost($scope);
-			wb.get(key, bid, original, function() {
+			var wb = new WeiboPost(key, bid, original, $scope);
+			wb.get(function() {
 				//debug.log(wb);
 				$scope.myUserInfo.checkFavorite(wb);
 				$scope.weiboList.push(wb);
@@ -738,18 +722,9 @@
 		};
 
 		$scope.showFullPic = function(wb, picKey) {
-			G_VARS.httpClient.get(G_VARS.sid, wb.authorID, picKey, function(data) {
-				if (data[1]) {
-					var p = new WeiboPicture();
-					p.set(data[1]).then(function() {
-						//window.open(p.dataURI, "_self");
-						debug.log("show full pic", p);
-					}, function(reason) {
-						debug.warn(reason);
-					});
-				};
-			}, function(name, err) {
-				debug.warn(err);
+			var p = new WeiboPicture(picKey, wb.authorID);
+			p.get(function(uri) {
+				window.open(uri, "_self");
 			});
 		};
 		

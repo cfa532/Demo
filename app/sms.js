@@ -284,7 +284,7 @@
 				});
 			});
 		};
-		//$scope.getOnlineUsers();
+
 		$("#myChatArea").keyup(function(e) {	//use keyup to avoid misfire in chinese input
 			if (e.keyCode === 13) {
 				$scope.sendSMS($scope.chatFriend.bid);
