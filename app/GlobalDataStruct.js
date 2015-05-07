@@ -336,22 +336,6 @@ function Friend() {
 	this.group = 'default';
 };
 	
-//Data structure of Weibo post information
-function WBase() {
-	this.parentID = null;		//the post reviewed by this post, if any
-	this.parentAuthorID = null;	//author of the parent post
-	this.body = '';				//text of the post
-	this.tags = [];				//array of tags
-	this.timeStamp = null;
-	this.reviews = [];			//array of reviews to the Post
-	this.relays = [];			//array of relays of the post
-	this.rating = 0;			//number of Praise
-	this.author = null;			//author's nick name
-	this.authorID = null;		//if null, use login user ID
-	this.pictures = [];			//key list of pictures
-	this.videos = [];			//key list of videos
-};
-
 function WeiboPicture(picID, authorID) {
 	this.id = picID;			//key of the image file
 	this.dataURI = null;		//dataURI of full image, for display only
@@ -385,6 +369,7 @@ function WeiboPicture(picID, authorID) {
 		request.onsuccess = function(e) {
 			if (e.target.result) {
 				self.dataURI = e.target.result.dataURI;
+				debug.info("idx Pic", self.dataURI);
 				callback(e.target.result.dataURI);		//return the picture data
 			}
 			else {
@@ -720,6 +705,22 @@ function WeiboPost(scope)
 			debug.error(err);
 		});
 	};
+};
+
+//Data structure of Weibo post information
+function WBase() {
+	this.parentID = null;		//the post reviewed by this post, if any
+	this.parentAuthorID = null;	//author of the parent post
+	this.body = '';				//text of the post
+	this.tags = [];				//array of tags
+	this.timeStamp = null;
+	this.reviews = [];			//array of reviews to the Post
+	this.relays = [];			//array of relays of the post
+	this.rating = 0;			//number of Praise
+	this.author = null;			//author's nick name
+	this.authorID = null;		//if null, use login user ID
+	this.pictures = [];			//key list of pictures
+	this.videos = [];			//key list of videos
 };
 
 function WeiboReview()
