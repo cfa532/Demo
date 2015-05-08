@@ -8,6 +8,7 @@
 	                        function($q, $rootScope, reviewService, SMSService) {
 		//var q = angular.injector(['ng']).get('$q');
 		debug.log("in msgService");
+		var self = this;
 		
 		//send a review message to the author of a post being reviewed
 		this.sendReview = function(review, destID) {
@@ -147,8 +148,10 @@
 				};
 				reviewService.processMsg(htReview);
 				SMSService.processMsg(htSMS);
+				self.readMsg();
 			}, function(name, err) {
 				debug.error("read msg failed = " +err, new Date());
+				self.readMsg();
 			});
 		};
 	}])

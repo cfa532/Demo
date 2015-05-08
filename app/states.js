@@ -60,13 +60,13 @@
 				debug.log($scope.myUserInfo);
 
 				//begin to check for new message
-				var readMessage = function() {
-					G_VARS.httpClient.readmsg(G_VARS.sid, function() {
-						msgService.readMsg();
-						readMessage();
-					});
-				};
-				readMessage();
+				msgService.readMsg();
+//				var readMessage = function() {
+//					G_VARS.httpClient.readmsg(G_VARS.sid, function(msgs) {
+//						readMessage();
+//					});
+//				};
+//				readMessage();
 				
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
 				myChatBox.getOnlineUsers();		//unknown user may cause a problem
