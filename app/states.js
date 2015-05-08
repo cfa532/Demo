@@ -57,17 +57,10 @@
 			},
 			controller : function(logon, $scope, msgService, $interval, $timeout) {
 				debug.log("in root state controller = " +logon);
-				debug.log($scope.myUserInfo);
+				debug.log("Login user", $scope.myUserInfo);
 
 				//begin to check for new message
 				msgService.readMsg();
-//				var readMessage = function() {
-//					G_VARS.httpClient.readmsg(G_VARS.sid, function(msgs) {
-//						readMessage();
-//					});
-//				};
-//				readMessage();
-				
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
 				myChatBox.getOnlineUsers();		//unknown user may cause a problem
 				
@@ -79,8 +72,6 @@
 			url : "/chat",
 			templateUrl : "chat.html",
 			controller : function(logon, $scope) {
-				//var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
-				//myChatBox.getOnlineUsers();
 			}
 		})
 		.state("root.chat.history", {
@@ -446,11 +437,11 @@
 									var p = new WeiboPicture(picKey, $rootScope.currUserInfo.bid);
 									p.get(function(uri) {
 										//remove duplicated pics
-										for (var j=0; j<$scope.curPics.length; j++) {
-											debug.info(j, p.id);
-											if ($scope.curPics[j].id === p.id)
-												return;
-										};
+//										for (var j=0; j<$scope.curPics.length; j++) {
+//											debug.info(j, p.id);
+//											if ($scope.curPics[j].id === p.id)
+//												return;
+//										};
 										$scope.curPics.push(p);
 										$scope.$apply();
 										if ($scope.curPics.length > 6) {
@@ -518,7 +509,7 @@
 	                                function($state, $stateParams, $scope, $rootScope, $timeout) {
 		debug.log("in weibo controller")
 		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
-		var q = angular.injector(['ng']).get('$q');
+
 		//state switch
 		var iDay = 0;			//index of the most recent day, used by getPosts() to read single user's posts
 		var wbListLen = 0;		//length of weibo list
@@ -717,7 +708,7 @@
 		var showFavorites = function(bid) {
 			debug.log("in showFavorites");
 			$scope.totalItems = 0;
-			//G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+
 			G_VARS.httpClient.hgetall(G_VARS.sid, bid, G_VARS.Favorites, function(data) {
 				if (data === null) {
 					return;

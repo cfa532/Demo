@@ -532,6 +532,7 @@ function WeiboPost(wbID, authorID, original, scope)
 		G_VARS.httpClient.get(G_VARS.sid, self.authorID, self.wbID, function(data) {
 			if (!data[1]) {
 				debug.warn("no weibo data, bid="+self.authorID+" wbID="+self.wbID);
+				callback();
 				return;
 			};
 			self.parentID = data[1].parentID;		//the post reviewed by self post, if any
