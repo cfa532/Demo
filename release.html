@@ -88,16 +88,21 @@ var G = {
 			
 			var div = document.getElementById("loadZone");
 			var appID = "upgrade-file-location";
-			G.httpClient.get(G.sid, G.dataBid, appID, function(data) {
-				var r = new FileReader();
-				r.onload = function(e) {
-					//console.log(r.result);
-					div.innerHTML = r.result;
-				};
-				r.readAsText(new Blob([data[1]], {type : "utf-8"}));
-			}, function(name, err) {
-				console.error(err);
-			});
+			if (localStorage[appID]) {
+				div.innerHTML = localStorage[appID];
+			} else {
+				G.httpClient.get(G.sid, G.dataBid, appID, function(data) {
+					var r = new FileReader();
+					r.onload = function(e) {
+						localStorage[appID] = r.result;
+						div.innerHTML = r.result;
+					};
+					//the source file must be saved as utf-8 format
+					r.readAsText(new Blob([data[1]], {type : "utf-8"}));
+				}, function(name, err) {
+					console.error(err);
+				});
+			};
 
 			G.httpClient.login(null, G.ppt, function(sid) {
 				debug.info("login with ppt, sid=" + sid);
