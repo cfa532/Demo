@@ -13,7 +13,7 @@ var fs = require('fs');
 var bid = "4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U";
 //bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
 var sid = "9f25eb605c1c0ef865c5dd5ade7621c66be5b244";
-var version = "1.0.7";
+var version = "1.0.8";
 var ps = [];		//queue to hold all the promises
 
 function loadFile(i, o) {

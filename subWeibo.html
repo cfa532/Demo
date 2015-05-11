@@ -1,228 +1,1238 @@
-<div class="publisherTop border_all mb15 p10">
-	<div class="send_weibo" ng-controller="postController">
-      	<form name="weiboForm" ng-submit="(!P.txtInvalid) && addNewPost()" novalidate>  
-			<div class="title_area">
-				<div class="title fl f16">����Ϣû���ϰ���ʵʱ������</div>
-				<div ng-show="P.chCounter<=30" class="S_textb fr f14">
-				   ���������� <em>{{P.chCounter}}</em> ��
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<title>微博首页</title>
+<script type="text/javascript">
+//spinner code
+!function(a,b){"object"==typeof exports?module.exports=b():"function"==typeof define&&define.amd?define(b):a.Spinner=b()}(this,function(){"use strict";function a(a,b){var c,d=document.createElement(a||"div");for(c in b)d[c]=b[c];return d}function b(a){for(var b=1,c=arguments.length;c>b;b++)a.appendChild(arguments[b]);return a}function c(a,b,c,d){var e=["opacity",b,~~(100*a),c,d].join("-"),f=.01+c/d*100,g=Math.max(1-(1-a)/b*(100-f),a),h=j.substring(0,j.indexOf("Animation")).toLowerCase(),i=h&&"-"+h+"-"||"";return l[e]||(m.insertRule("@"+i+"keyframes "+e+"{0%{opacity:"+g+"}"+f+"%{opacity:"+a+"}"+(f+.01)+"%{opacity:1}"+(f+b)%100+"%{opacity:"+a+"}100%{opacity:"+g+"}}",m.cssRules.length),l[e]=1),e}function d(a,b){var c,d,e=a.style;for(b=b.charAt(0).toUpperCase()+b.slice(1),d=0;d<k.length;d++)if(c=k[d]+b,void 0!==e[c])return c;return void 0!==e[b]?b:void 0}function e(a,b){for(var c in b)a.style[d(a,c)||c]=b[c];return a}function f(a){for(var b=1;b<arguments.length;b++){var c=arguments[b];for(var d in c)void 0===a[d]&&(a[d]=c[d])}return a}function g(a,b){return"string"==typeof a?a:a[b%a.length]}function h(a){this.opts=f(a||{},h.defaults,n)}function i(){function c(b,c){return a("<"+b+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',c)}m.addRule(".spin-vml","behavior:url(#default#VML)"),h.prototype.lines=function(a,d){function f(){return e(c("group",{coordsize:k+" "+k,coordorigin:-j+" "+-j}),{width:k,height:k})}function h(a,h,i){b(m,b(e(f(),{rotation:360/d.lines*a+"deg",left:~~h}),b(e(c("roundrect",{arcsize:d.corners}),{width:j,height:d.width,left:d.radius,top:-d.width>>1,filter:i}),c("fill",{color:g(d.color,a),opacity:d.opacity}),c("stroke",{opacity:0}))))}var i,j=d.length+d.width,k=2*j,l=2*-(d.width+d.length)+"px",m=e(f(),{position:"absolute",top:l,left:l});if(d.shadow)for(i=1;i<=d.lines;i++)h(i,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(i=1;i<=d.lines;i++)h(i);return b(a,m)},h.prototype.opacity=function(a,b,c,d){var e=a.firstChild;d=d.shadow&&d.lines||0,e&&b+d<e.childNodes.length&&(e=e.childNodes[b+d],e=e&&e.firstChild,e=e&&e.firstChild,e&&(e.opacity=c))}}var j,k=["webkit","Moz","ms","O"],l={},m=function(){var c=a("style",{type:"text/css"});return b(document.getElementsByTagName("head")[0],c),c.sheet||c.styleSheet}(),n={lines:12,length:7,width:5,radius:10,rotate:0,corners:1,color:"#000",direction:1,speed:1,trail:100,opacity:.25,fps:20,zIndex:2e9,className:"spinner",top:"50%",left:"50%",position:"absolute"};h.defaults={},f(h.prototype,{spin:function(b){this.stop();{var c=this,d=c.opts,f=c.el=e(a(0,{className:d.className}),{position:d.position,width:0,zIndex:d.zIndex});d.radius+d.length+d.width}if(e(f,{left:d.left,top:d.top}),b&&b.insertBefore(f,b.firstChild||null),f.setAttribute("role","progressbar"),c.lines(f,c.opts),!j){var g,h=0,i=(d.lines-1)*(1-d.direction)/2,k=d.fps,l=k/d.speed,m=(1-d.opacity)/(l*d.trail/100),n=l/d.lines;!function o(){h++;for(var a=0;a<d.lines;a++)g=Math.max(1-(h+(d.lines-a)*n)%l*m,d.opacity),c.opacity(f,a*d.direction+i,g,d);c.timeout=c.el&&setTimeout(o,~~(1e3/k))}()}return c},stop:function(){var a=this.el;return a&&(clearTimeout(this.timeout),a.parentNode&&a.parentNode.removeChild(a),this.el=void 0),this},lines:function(d,f){function h(b,c){return e(a(),{position:"absolute",width:f.length+f.width+"px",height:f.width+"px",background:b,boxShadow:c,transformOrigin:"left",transform:"rotate("+~~(360/f.lines*k+f.rotate)+"deg) translate("+f.radius+"px,0)",borderRadius:(f.corners*f.width>>1)+"px"})}for(var i,k=0,l=(f.lines-1)*(1-f.direction)/2;k<f.lines;k++)i=e(a(),{position:"absolute",top:1+~(f.width/2)+"px",transform:f.hwaccel?"translate3d(0,0,0)":"",opacity:f.opacity,animation:j&&c(f.opacity,f.trail,l+k*f.direction,f.lines)+" "+1/f.speed+"s linear infinite"}),f.shadow&&b(i,e(h("#000","0 0 4px #000"),{top:"2px"})),b(d,b(i,h(g(f.color,k),"0 0 1px rgba(0,0,0,.1)")));return d},opacity:function(a,b,c){b<a.childNodes.length&&(a.childNodes[b].style.opacity=c)}});var o=e(a("group"),{behavior:"url(#default#VML)"});return!d(o,"transform")&&o.adj?i():j=d(o,"animation"),h});
+
+var G_VARS = {
+		bidPath : window.location.pathname+"/appID/userID/",
+		IPList :["112.124.113.235:30003","97.74.126.127:4800","218.74.25.10:8100"],		//api for IP lists
+		IPNum : 0,
+		sid : '4d01b26c7a5128f718871221ad6456bfd505779b',
+//xiaoxie
+//	ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzRfNk1ma1BnSjAzVFNycnRsRWF3R2YyOTlQWXpVTHU0MmcybTQ5eFFsOFUA",
+//sibao
+//	ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0VING5NeWNaWkJJYndnNG0xdlF2RUtKR2pJOGdoN0hvTTM3S2lLcjBWazgA",
+//appowner
+ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK2hmSXNqZVFaU2lXRlhUaXpRQUt0eG1uWEJlbEdvNkxDa0JGTERpUjJ2YjQA",
+		dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U',	//from which JS data are read
+		leither : 'vq-uYGXEf6yzbXV0_Th3SqzHBWyxuGJjryxVDUMY5f0', 	//leither-cloud.js has to be loaded on server
+		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',	//angular.js
+		spinner : null,					//spinning image while loading
+		httpClient : null,
+		weiboApp : null,				//["ui.bootstrap", "ui.router"]
+		MaxWeiboLength	: 40,
+		myVersion	: "1.0.7",			//current html version
+		idxDB		: null,				//handle of indexedDB
+		idxDBVersion : 3,
+		objStore : {
+			picture : "_picture_store",
+		},
+		MaxHeight : 800,		//max height and width of pictures uploaded
+		MaxWidth : 800,
+		
+		//define global variables used as KEY
+		Posts		: "_array_of_all_weibo_keys",	//keys for all the posts by user, post date is used as Field in hset()
+		PostPics	: "_pictures_of_all_posts",		//SET: [keys]
+		Favorites	: "_favorite_posts_array",		//favorites are stored by user as Post. HSET: Key, bid, key of the favorite post
+		UserInfo	: "_app_user_information",		//user information for weibo app
+		Reviews		: "_array_of_review_keys",		//all of the reviews send by user, post date is used as Field
+		Request		: "_request_to_become_friends",
+		Friends		: "_friends_in_weibo_app",
+		UnreadSMS	: "_tmp_unread_sms_message",
+		Version		: "_database_version_in_DB",	//where database version number is stored
+		Upgrade		: "_upgrade_file_location",
+		makefile	: "_makefile.json",		//where K-V of js and css code stored
+
+		//create a shallow copy of an array of objects
+		slice : function(src, target, start, end) {
+			//clear target array without creating a shadow
+			target.length=0;
+			
+			for (var i=start; i<end && i<src.length; i++) {
+				target.push(src[i]);
+			};
+		},
+		//search items by weibo ID
+		search : function(items, value) {
+			for (var i=0; i<items.length; i++) {
+				if (items[i].wbID == value.wbID) {
+					return i;
+				};
+			};
+			return -1;
+		},
+		//resize a photo propotionally 
+		scaleSize : function(maxW, maxH, currW, currH) {
+			var ratio = currH / currW;
+			if (currW >= maxW && ratio <= 1){
+				currW = maxW;
+				currH = currW * ratio;
+			} else if (currH >= maxH) {
+					currH = maxH;
+					currW = currH / ratio;
+			};
+			return [currW, currH];
+		},
+	};
+
+	//customize log function. Disable it by setting isDebug to false
+	function setDebug(isDebug) {
+		if (isDebug) {
+			window.debug = {
+				log: window.console.log.bind(window.console),
+				error: window.console.error.bind(window.console),
+				info: window.console.info.bind(window.console),
+				warn: window.console.warn.bind(window.console)
+			};
+		} else {
+			var __no_op = function() {};
+			window.debug = {
+				log: __no_op,
+				error: __no_op,
+				warn: __no_op,
+				info: __no_op
+			}
+		}
+	};
+	setDebug(true);
+
+	//Both check server availability and load Leither
+	function loadLeither(ip, callback) {
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.async = "async";
+		if (script.readyState) { //IE
+			script.onreadystatechange = function() {
+				if (script.readyState == "loaded" || script.readyState == "complete") {
+					script.onreadystatechange = null;
+					callback(ip);
+				};
+			};
+		} else { //Others
+			script.onload = function() {
+				callback(ip);
+			};
+		};
+		script.addEventListener("error", function() {
+			//try next server IP in a predefined list
+			debug.log("check next server=" + G_VARS.IPList[G_VARS.IPNum])
+			checkServer(G_VARS.IPList[G_VARS.IPNum++]);
+		});
+		//here is a problem with illegitimate sid
+		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G_VARS.sid+'&bid='+G_VARS.dataBid+'&key='+G_VARS.leither;
+		debug.log(script);
+		document.getElementsByTagName("head")[0].appendChild(script);		//load Leither first
+	};
+
+	function checkServer(ip) {
+		if (ip===null || typeof(ip)==='undefined') {
+			debug.log("no server available");
+			return;
+		};
+		//try to load Leither from potential server
+		loadLeither(ip, function(ip) {
+			//the server is live, Leither loaded from it
+			G_VARS.httpClient = leither.client(ip);
+			console.log(G_VARS.httpClient);
+			G_VARS.httpClient.login(null, G_VARS.ppt, function(sid) {
+				debug.info("login with ppt, sid=" + sid);
+				G_VARS.sid = sid;
+				G_VARS.httpClient.getvar(sid, 'self', function(usr) {
+					G_VARS.bid = usr.id;
+					if (localStorage[G_VARS.angular]===null || typeof(localStorage[G_VARS.angular])==='undefined') {
+						G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.angular, function(data) {
+							var r = new FileReader();
+							r.onload = function(e) {
+								localStorage[G_VARS.angular] = e.target.result;
+								debug.log("angular saved in local storage and loaded");
+								eval(localStorage[G_VARS.angular]);	//it works because angular is defined as window.angular
+								loadExternalJS();
+							};
+							r.readAsText(new Blob([data[1]]));
+						}, function(name, err) {
+							debug.log(err);
+						});
+					} else {
+						eval(localStorage[G_VARS.angular]);
+						debug.log("angular loaded from local storage")
+						loadExternalJS();
+					};
+				}, function(name, err) {
+					debug.error("getSysUser err=" + err);
+				});
+			}, function(name, err) {
+				debug.error(err);
+			});
+		});
+	};
+	
+	function loadExternalJS() {
+		G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.makefile, function(data) {
+			//console.log(data)
+			var mf = JSON.parse(data[1])[G_VARS.myVersion];
+			console.log(mf);
+			
+			//load JS files and save in localStorage
+			var q = angular.injector(['ng']).get('$q');
+			var ds = [];
+			for (var k in mf.js[0]) {
+				//dependencies need to be loaded and executed first
+				ds.push(loadScript(mf.js[0][k], q));
+			};
+			q.all(ds).then(function() {
+				//weiboApp needed for the following JS code
+				G_VARS.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"])
+				ds = [];
+				for (var k in mf.js[1]) {
+					// exec JS that depends on previous ones
+					ds.push(loadScript(mf.js[1][k], q));
+				};
+				q.all(ds).then(function() {
+					debug.info("All js code files loaded")
+					startApp();
+				}, function(reason) {
+					debug.error(reason);
+				});
+			}, function(reason) {
+				debug.error(reason);
+			});
+
+			//load css code too
+			for (var k in mf.css) {
+				(function(o) {
+					var cs = document.createElement("style");
+					cs.rel = "stylesheet";
+					cs.type = "text/css";
+					if (localStorage[o.fileKey]) {
+						cs.textContent = localStorage[o.fileKey];
+						document.getElementsByTagName("head")[0].appendChild(cs);
+					} else {
+						G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, o.fileKey, function(data) {
+							//debug.log(data[1])
+							var r = new FileReader();
+							r.onload = function(e) {
+								localStorage[o.fileKey] = e.target.result;
+								cs.textContent = e.target.result;
+								document.getElementsByTagName("head")[0].appendChild(cs);
+							};
+							r.readAsText(new Blob([data[1]]));
+						}, function(name, err) {
+							debug.error(err);
+						});
+					};									
+				})(mf.css[k]);
+			};
+		}, function(name, err) {
+			debug.error(err);
+		});
+	};
+	
+	//the 1st param is key to a js script, 2nd is the script
+	function loadScript(o, q) {
+		return q(function(resolve, reject) {
+			var script = document.createElement("script")
+			if (localStorage[o.fileKey]) {
+				//debug.info(v);
+				script.type = "text/javascript";
+				script.textContent = localStorage[o.fileKey];
+				document.getElementsByTagName("head")[0].appendChild(script);
+				if (o.deps) {
+					loadDeps(o.deps, q).then(function() {
+						resolve();
+					}, function(reason) {
+						reject(reason);
+					});
+				} else
+					resolve();
+			} else {
+				G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, o.fileKey, function(data) {
+					if (data[1]) {
+						var r = new FileReader();
+						r.onload = function(e) {
+							localStorage[o.fileKey] = e.target.result;
+							script.type = "text/javascript";
+							script.textContent = e.target.result;
+							document.getElementsByTagName("head")[0].appendChild(script);
+							console.log(script)
+							if (o.deps) {
+								loadDeps(o.deps, q).then(function() {
+									resolve();
+								}, function(reason) {
+									reject(reason);
+								});
+							} else
+								resolve();
+						};
+						r.readAsText(new Blob([data[1]]));
+					} else {
+						reject("source code data not found, fileKey="+ o.fileKey);
+					};
+				}, function(name, err) {
+					reject(err);
+				});
+			};
+		});
+	};
+
+	function loadDeps(deps, q) {
+		var ds = [];
+		angular.forEach(deps, function(o) {
+			var script = document.createElement("script")
+			if (localStorage[o.fileKey]) {
+				script.type = "text/javascript";
+				script.textContent = localStorage[o.fileKey];
+				document.getElementsByTagName("head")[0].appendChild(script);
+			} else {
+				ds.push(q(function(resolve, reject) {
+					G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, o.fileKey, function(data) {
+						if (data[1]) {
+							var r = new FileReader();
+							r.onload = function(e) {
+								localStorage[o.fileKey] = e.target.result;
+								script.type = "text/javascript";
+								script.textContent = e.target.result;
+								document.getElementsByTagName("head")[0].appendChild(script);
+								console.log(script)
+								resolve();
+							};
+							r.readAsText(new Blob([data[1]]));
+						} else {
+							reject("source code data not found, key="+k);
+						};
+					}, function(name, err) {
+						reject(err);
+					});					
+				}));
+			};
+		});
+		return q.all(ds);
+	};
+	
+	function startApp() {
+		//after app defined, attach controllers, services and filters to it
+		
+		G_VARS.weiboApp.controller("appController", function($scope, $rootScope, $window) {
+			console.log("In app controller");
+			$scope.appBid = G_VARS.dataBid;	//app publisher's bid
+			
+			// show Update sign if version number different
+			G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.Version, function(appVersion) {
+				//get app version number
+				if (appVersion[1] !== G_VARS.myVersion) {
+					$scope.newVersionAvailable = true;
+				} else {
+					$scope.newVersionAvailable = false;
+				};
+				debug.log(appVersion[1] + ", " + G_VARS.myVersion);
+			}, function(name, err) {
+				debug.error(err);
+			});
+			
+			//do little here, just initiate some global variables
+			//var myRootScope = angular.element(document.getElementById("myAppRoot")).scope();
+			$rootScope.weiboList = [];			//all the weibos read into memory
+			$rootScope.currentList = [];		//weibos being displayed in current page
+			//$rootScope.myFriends = {};		//all my friends
+			$rootScope.appID = "newWeibo";
+			$rootScope.myUserInfo = null;
+			$rootScope.currUserInfo = $rootScope.myUserInfo; 	//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
+			$rootScope.chatSessions = {};
+			$rootScope.global = {
+				currentPage : 1,
+				itemsPerPage : 10,
+			};
+			
+			var request = window.indexedDB.open("weiboDB", G_VARS.idxDBVersion);
+			request.onerror = function(event) {
+				debug.error("open indexedDB error", event.target.errorCode);
+			};
+			request.onsuccess = function(event) {
+				G_VARS.idxDB = request.result;		//event.target.result;		//IDBDatabase object
+				G_VARS.idxDB.onerror = function(e) {
+					//generic handler for all error in this db
+					debug.warn("weiboDB error,errorCode=" + e.target.errorCode);
+				};
+				debug.log("idxDB opened OK");
+			};
+			request.onupgradeneeded = function(event) {
+				debug.info("here is db upgrade")
+				G_VARS.idxDB = request.result;
+				G_VARS.idxDB.createObjectStore(G_VARS.objStore.picture, {keyPath : "id"});
+			};
+
+			//download a upgrade file from db
+			$scope.getUpgradeFile = function() {
+				G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.Upgrade, function(file) {
+					if (file[1]) {
+						saveAs(new Blob([file[1]], {type: "text/html"}), "release.html");
+						alert("New version saved, overwrite current file to upgrade");
+					}
+				}, function(name, err) {
+					debug.error(err);
+				});
+			};
+		})
+		.controller("modalController", function($scope, $modal) {
+			
+		})
+		
+		angular.bootstrap(document, ['appModule']);
+		debug.log("app started");
+	};
+
+checkServer(G_VARS.IPList[G_VARS.IPNum++]);
+</script>
+</head>
+
+<body id="myAppRoot" ng-controller="appController">
+<script  type="text/javascript">
+G_VARS.spinner = new Spinner(	// show the onload spinner
+	{
+		lines: 15,				// The number of lines to draw
+		length: 20,				// The length of each line
+		width: 12,				// The line thickness
+		radius: 32,				// The radius of the inner circle
+		corners: 1,				// Corner roundness (0..1)
+		rotate: 30,				// The rotation offset
+		direction: 1,			// 1: clockwise, -1: counterclockwise
+		color: '#999',			// #rgb or #rrggbb or array of colors
+		speed: 1,				// Rounds per second
+		trail: 76,				// Afterglow percentage
+		shadow: true,			// Whether to render a shadow
+		hwaccel: false,			// Whether to use hardware acceleration
+		className: 'spinner',	// The CSS class to assign to the spinner
+		zIndex: 2e9,			// The z-index (defaults to 2000000000)
+		top: '50%',				// Top position relative to parent
+		left: '50%'				// Left position relative to parent
+	}).spin(document.getElementById('myAppRoot'));
+</script>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="head_box">
+			
+			<a id="logo" href="javascript:void(0);"></a>
+			<div id="menu_bar">	
+				<div class="nav">
+					<a class="nav-link" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');"><i class="nav-icon"></i><span>导航</span></a>
+					<div id="header_main_menu" onmouseover="showPlusMobile('header_main_menu');" onmouseout="hidePlusMobile('header_main_menu');" style="display:none;">
+						<div class="inner">	
+							<ul>
+								<li><a href="#" class="main-link"><i class="weibo_icon"></i><span>微博</span></a></li>
+								<li><a href="#" class="main-link"><i class="videos_icon"></i><span>视频</span></a></li>
+								<li><a href="#" class="main-link"><i class="activities_icon"></i><span>活动</span></a></li>
+								<li><a href="#" class="main-link"><i class="design_icon"></i><span>LEITHER原创</span></a></li>
+								<li><a href="#" class="main-link"><i class="following_icon"></i><span>我的关注</span></a></li>
+							</ul>
+							<div class="up_arrow"></div>							
+						</div>
+					</div>
 				</div>
-				<div class="clearfix"></div>
+				<div class="right-part">
+					<form method="get" action="" class="searching-unit">
+						<input type="text" size="27" name="" value="" class="default_value"/>						
+						<a href="javascript:void(0);" class="go"></a>
+					</form>
+					<a href="javascript:void(0);" ng-click="getUpgradeFile();" ng-show="newVersionAvailable">
+					<img width="40" height="40" ng-src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/7QAsUGhvdG9zaG9wIDMuMAA4QklNA+0AAAAAABAASAAAAAEAAQBIAAAAAQAB/+E/eWh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4NCjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4NCgk8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPg0KCQk8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iPg0KCQkJPGRjOmZvcm1hdD5pbWFnZS9qcGVnPC9kYzpmb3JtYXQ+DQoJCQk8ZGM6dGl0bGU+DQoJCQkJPHJkZjpBbHQ+DQoJCQkJCTxyZGY6bGkgeG1sOmxhbmc9IngtZGVmYXVsdCI+5YiX5Y2wPC9yZGY6bGk+DQoJCQkJPC9yZGY6QWx0Pg0KCQkJPC9kYzp0aXRsZT4NCgkJPC9yZGY6RGVzY3JpcHRpb24+DQoJCTxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wR0ltZz0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL2cvaW1nLyI+DQoJCQk8eG1wOk1ldGFkYXRhRGF0ZT4yMDE0LTA5LTE1VDEyOjQ1OjE1KzA4OjAwPC94bXA6TWV0YWRhdGFEYXRlPg0KCQkJPHhtcDpNb2RpZnlEYXRlPjIwMTQtMDktMTVUMDQ6NDU6MTlaPC94bXA6TW9kaWZ5RGF0ZT4NCgkJCTx4bXA6Q3JlYXRlRGF0ZT4yMDE0LTA5LTE1VDEyOjQ1OjE1KzA4OjAwPC94bXA6Q3JlYXRlRGF0ZT4NCgkJCTx4bXA6Q3JlYXRvclRvb2w+QWRvYmUgSWxsdXN0cmF0b3IgQ1M2IChXaW5kb3dzKTwveG1wOkNyZWF0b3JUb29sPg0KCQkJPHhtcDpUaHVtYm5haWxzPg0KCQkJCTxyZGY6QWx0Pg0KCQkJCQk8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4NCgkJCQkJCTx4bXBHSW1nOndpZHRoPjI1NjwveG1wR0ltZzp3aWR0aD4NCgkJCQkJCTx4bXBHSW1nOmhlaWdodD4yNTY8L3htcEdJbWc6aGVpZ2h0Pg0KCQkJCQkJPHhtcEdJbWc6Zm9ybWF0PkpQRUc8L3htcEdJbWc6Zm9ybWF0Pg0KCQkJCQkJPHhtcEdJbWc6aW1hZ2U+LzlqLzRBQVFTa1pKUmdBQkFnRUFTQUJJQUFELzdRQXNVR2h2ZEc5emFHOXdJRE11TUFBNFFrbE5BKzBBQUFBQUFCQUFTQUFBQUFFQQ0KQVFCSUFBQUFBUUFCLys0QURrRmtiMkpsQUdUQUFBQUFBZi9iQUlRQUJnUUVCQVVFQmdVRkJna0dCUVlKQ3dnR0JnZ0xEQW9LQ3dvSw0KREJBTURBd01EQXdRREE0UEVBOE9EQk1URkJRVEV4d2JHeHNjSHg4Zkh4OGZIeDhmSHdFSEJ3Y05EQTBZRUJBWUdoVVJGUm9mSHg4Zg0KSHg4Zkh4OGZIeDhmSHg4Zkh4OGZIeDhmSHg4Zkh4OGZIeDhmSHg4Zkh4OGZIeDhmSHg4Zkh4OGZIeDhmLzhBQUVRZ0JBQUVBQXdFUg0KQUFJUkFRTVJBZi9FQWFJQUFBQUhBUUVCQVFFQUFBQUFBQUFBQUFRRkF3SUdBUUFIQ0FrS0N3RUFBZ0lEQVFFQkFRRUFBQUFBQUFBQQ0KQVFBQ0F3UUZCZ2NJQ1FvTEVBQUNBUU1EQWdRQ0JnY0RCQUlHQW5NQkFnTVJCQUFGSVJJeFFWRUdFMkVpY1lFVU1wR2hCeFd4UWlQQg0KVXRIaE14Wmk4Q1J5Z3ZFbFF6UlRrcUt5WTNQQ05VUW5rNk96TmhkVVpIVEQwdUlJSm9NSkNoZ1poSlJGUnFTMFZ0TlZLQnJ5NC9QRQ0KMU9UMFpYV0ZsYVcxeGRYbDlXWjJocGFtdHNiVzV2WTNSMWRuZDRlWHA3ZkgxK2YzT0VoWWFIaUltS2k0eU5qbytDazVTVmxwZVltWg0KcWJuSjJlbjVLanBLV21wNmlwcXF1c3JhNnZvUkFBSUNBUUlEQlFVRUJRWUVDQU1EYlFFQUFoRURCQ0VTTVVFRlVSTmhJZ1p4Z1pFeQ0Kb2JId0ZNSFI0U05DRlZKaWN2RXpKRFJEZ2hhU1V5V2lZN0xDQjNQU05lSkVneGRVa3dnSkNoZ1pKalpGR2lka2RGVTM4cU96d3lncA0KMCtQemhKU2t0TVRVNVBSbGRZV1ZwYlhGMWVYMVJsWm1kb2FXcHJiRzF1YjJSMWRuZDRlWHA3ZkgxK2YzT0VoWWFIaUltS2k0eU5qbw0KK0RsSldXbDVpWm1wdWNuWjZma3FPa3BhYW5xS21xcTZ5dHJxK3YvYUFBd0RBUUFDRVFNUkFEOEE5VTRxN0ZYWXE3RlhZcTdGWFlxNw0KRlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3Rg0KWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWA0KWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWQ0KcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcQ0KN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxNw0KRlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3Rg0KWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE4MTg4L25CRnBsNitpK1hZRjFMVjFKU1dRMU1NVERxdncwNXNPKzRBN250bWZwdENaN3kyRA0KcWRiMnBIRWVHTzh2c0R6L0FGSFhQTzF4Ky8xenpUTFljNmtXOXMvcGJlSEdJeDErNDV0SWFUSEhvSFI1TzBNMC93Q0kvRGI3a3EvVA0KRVA4QTFOdW8vd0RCM0dUOEhIM0Q1Tlg1ckwvT2w4eTErbUlmK3B0MUgvZzduSHdjZmNQa3Y1ckwvT2w4eTc5TVEvOEFVMjZqL3dBSA0KYzQrRGo3aDhsL05aZjUwdm1YZnBpSC9xYmRSLzRPNXg4SEgzRDVMK2F5L3pwZk11L1RFUC9VMjZqL3dkemo0T1B1SHlYODFsL25TKw0KWmQrbUlmOEFxYmRSL3dDRHVjZkJ4OXcrUy9tc3Y4Nlh6THYweEQvMU51by84SGM0K0RqN2g4bC9OWmY1MHZtWGZwaUgvcWJkUi80Tw0KNXg4SEgzRDVMK2F5L3dBNlh6THYweEQvQU5UYnFQOEF3ZHpqNE9QdUh5WDgxbC9uUytaZCttSWYrcHQxSC9nN25Id2NmY1BrdjVyTA0KL09sOHk3OU1RLzhBVTI2ai93QUhjNCtEajdoOGwvTlpmNTB2bVhmcGlIL3FiZFIvNE81eDhISDNENUwrYXkvenBmTXUvVEVQL1UyNg0Kai93ZHpqNE9QdUh5WDgxbC9uUytaZCttSWY4QXFiZFIvd0NEdWNmQng5dytTL21zdjg2WHpLWVdHb2VZV0liUnZOOTNKS3U0Z21taw0KWlQ3bEdZLzhSd0hUWXowREtPdHpSUDFTK2Rzczh1Zm5Kck9tWHNXbmVjNEEwTWhDcHFrS2dFZHVUcXZ3c1BIaUFSNEhNRFAyZjFoOA0KbmJhVHRnazFrK2Y2M3NNRThOeEJIUEE2eXd5cUhpa1UxVmxZVkJCSFlqTlVSVHZnYkZoZmdTN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3Rg0KWFlxN0ZXRS9tMzV1bTh2ZVdDbGs1VFU5U2I2dGFNdjJsQkg3eVFlNnJzUGNqTXZSNGVPZS9JT0IyanFmQ3g3ZlVkZzhUbGtqOHRhZQ0Kc1VRRDZ4ZEx5bWxPL0FIKzNwNDljNkRrOGh6WXZOTE5QSzBzem1TUnQyZGpVbklzbFBqaXJ1T0t1NDRxN2ppcnVPS3U0NHE3amlydQ0KT0t1NDRxN2ppcnVPS3U0NHE3amlydU9LdHJ5Umd5RXF5bW9ZYkVIRldYYUxxc1dzVzdhVHFvOVIySDdtWTA1R2c4ZjVoNDk4a0RiRQ0KaW5vSDVLK1lieXkxRzg4bTZoSnpXRU5QcHJuK1dvTG92c1FlWUhiNHMxUGFPQ3ZXUGk5RDJQcWlieG4zaDYvbXFkNjdGWFlxN0ZYWQ0KcTdGWFlxN0ZYWXE3RlhZcTdGWGp2NXdjcm56MTVmdEgzZ2d0NUxoVi93QW9zZjhBcWt1Ympzd2JFK2J6dmJoOVVSNUY1THExeTE1cQ0KVnhjTWFobklYMlViS1B1R2JFbDBvQ0Q0WUUwN2hpdE80WXJUdUdLMDdoaXRPNFlyVHVHSzA3aGl0TzRZclR1R0swN2hpdE80WXJUdQ0KR0swN2hpdE80WXJUdUdLMHZoZVNHWkpvenhrallNcDl3YTQydFBROUpuTVhuN3lycVVPeHVwQkMxRFQ0WkJ4L1ZLY3ExZ3ZHZmM1UA0KWnNxeng5NzZDem5Ic25ZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE4ZS9OWC95WXVqZjh3RC9BUEU1TTNQWm4wbjN2T2R1ZlZIMw0KUEhlT1o3cDNjY1ZkeHhWM0hGWGNjVmR4eFYzSEZYY2NWZHh4VjNIRlhjY1ZkeHhWM0hGWGNjVmR4eFYzSEZYY2NWZHh4Vm5tai84QQ0KSGY4QUpQOEF6RVFmcVRLOVYvZEgzT1IyZi9meDk3Nkh6bTNzM1lxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcThlL05YL3lZdWpmOA0Kd0QvOFRremM5bWZTZmU4NTI1OVVmYzhoNDVudW1keHhWM0hGWGNjVmR4eFYzSEZVODAzUjVKN0tPVUxHUTNMZGxKT3pFZGE1UlBKUg0KYy9EZzRvZzdJcjlBUy95US93REFIK3VROFZ0L0xlNzVPL1FFdjhrUC9BSCt1UGlyK1c5M3lkK2dKZjVJZitBUDljZkZYOHQ3dms3OQ0KQVMveVEvOEFBSCt1UGlyK1c5M3lTM1dkTmUxV0lzcURtVDloZVBTbnZsdU9kdU5xY1hDQnlTdmpscmlPNDRxN2ppcnVPS3U0NHE3ag0KaXJPTkovNVNEeVQvQU14RVA2a3l2VmYzUjl6azluLzM4ZmUraDg1dDdOMkt1eFYyS3V4VjJLdXhWMkt1eFYyS3V4VjJLdkh2elYvOA0KbUxvMy9NQS8vRTVNM1BabjBuM3ZPZHVmVkgzUEp1T1o3cG5jY1ZkeHhWM0hGWGNjVmR4eFZtM2wyMzh2dG8xdTEzTmJKY0hueldXUg0KRmNmRzFLZ212VE1MTVo4UnEzY2FYd3ZESEVZMysxTXZxdmxUL2xvc3YrUnNmOWNydkozRnlLdzk4Zm1IZlZmS24vTFJaZjhBSTJQKw0KdU41TzRyV0h2ajh3NzZyNVUvNWFMTC9rYkgvWEc4bmNWckQzeCtZZDlWOHFmOHRGbC95TmovcmplVHVLMWg3NC9NTWU4NFFhUWtWdA0KOVFrZ2tZcy9xZWk2c1FLQ2xlSk9aR25Nck51QnJ2RG9jSkh3WXh4ekpkYzdqaXJ1T0t1NDRxN2ppcnVPS3MwMHIvbElmSlgvQURFdw0KL3FUSzlWL2RIM09UMmY4QTM4ZmUraHM1dDdOMkt1eFYyS3V4VjJLdXhWMkt1eFYyS3V4VjJLdkh2elYvOG1MbzMvTUEvd0R4T1ROeg0KMlo5Sjk3em5ibjFSOXp5cmptZTZWM0hGWGNjVmR4eFYzSEZYY2NWZXovbDdwVVUvayt3bGFOV0xldFVrQTlKM0dhZlZUcklmeDBlbg0KN09nRGhqOGZ2TEl2MEhCL3ZwZitCR1kvaUZ6ZkREdjBIQi92cGY4QWdSajRoWHd3NzlCd2Y3NlgvZ1JqNGhYd3c3OUJ3Zjc2WC9nUg0KajRoWHd3d0Q4MjlQanRyWFRTaUJlVHkxb0tkQXVaK2hsWkxxTzE0MUdQdmVhOGMyTG9uY2NWZHh4VjNIRlhjY1ZkeHhWbUdsL3dESw0KUmVTLytZbUg5U1pYcXY3bys1eXV6LzcrUHZmUTJjMjltN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWGozNXEvOEFreGRHL3dDWQ0KQi84QWljbWJuc3o2VDczbk8zUHFqN25sL0hNOTBydU9LdTQ0cTdqaXJ1T0t1NDRxOXIvTHZ5cGEzM2s3VDdwNzYvaGFUMXF4MjkzTA0KRkdPTTdyOEtLUUIwM3pUNnJNUmtJb2ZMeWVtN1AwNGxoaWJsMTVTSTZsa2YrQjdML3E1NnIvMG5ULzhBTldZMzVnOTBma0hOL0tSNw0KNS82WS9yZC9nZXkvNnVlcS93RFNkUDhBODFZL21EM1IrUVg4cEh2bi9wait0MytCN0wvcTU2ci9BTkowL3dEelZqK1lQZEg1QmZ5aw0KZStmK21QNjNmNEhzditybnF2OEEwblQvQVBOV1A1ZzkwZmtGL0tSNzUvNlkvcmVlL20vb0VHbVd1bU5GZFhkeDZyeWdpNnVKSndLQg0KZnNoeWFkY3o5RGtNaWRoOG5VZHJZUkNNYUpPL1VrL2U4ejQ1c25SdTQ0cTdqaXJ1T0t1NDRxN2ppckxOTS81U1R5WC9BTXhNUC9HbQ0KVjZyKzZQdWNycy8rL2o3MzBMbk52WnV4VjJLdXhWMkt1eFYyS3V4VjJLdXhWMkt1eFY0OSthdi9BSk1YUnY4QW1BZi9BSW5KbTU3TQ0KK2srOTV6dHo2bys1NXB4elBkSTdqaXJ1T0t1NDRxN2ppcnVPS3ZvSDhyUCtVRDB6L252L0FOUkVtYUhXL3dCNmZoOXoxL1pmK0x4Kw0KUDNsbGVZcm51eFYyS3V4VjVmOEFubUsyZWtmOFpKditJcG15N041bDBuYmYweDk3eVBqbTJlY2R4eFYzSEZYY2NWZHh4VjNIRldVYQ0KYi95a3Zrei9BSmlvditOTXIxWDkwZmM1ZlovOS9IM3ZvVE9iZXpkaXJzVmRpcnNWZGlyc1ZkaXJzVmRpcnNWZGlyeDc4MWYvQUNZdQ0KamY4QU1BLy9BQk9UTnoyWjlKOTd6bmJuMVI5enpyam1lNlIzSEZYY2NWZHh4VjNIRlhjY1ZlKy9sZUtlUmRNLzU3LzlSRW1hSFcvMw0KcCtIM1BYOWwvd0NMeCtQM2xsT1lybnV4VjJLdXhWNWwrZDRyWjZUL0FNWkp2K0lwbXk3TjVsMG5iZjB4OTd5YmptMmVjZHh4VjNIRg0KWGNjVmR4eFYzSEZXUmFmL0FNcE41Ti81aW92K05NcjFYOTBmYzVmWi93RGZ4OTc2RXptM3MzWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcQ0KN0ZYWXE4ZS9OWC95WXVqZjh3RC9BUEU1TTNQWm4wbjN2T2R1ZlZIM1BQOEFqbWU2UjNIRlhjY1ZYUlc4c3NnamlScEpHK3lpZ3NUMw0KMkF3RTF6VEdKSm9JajlEYXIveXhULzhBSXAvNlpIeEk5NGJQQXlmelQ4bmZvYlZmK1dLZi9rVS85TWZFajNoZkF5ZnpUOG51WDViUQ0KeXcrUzlPaWxSbzVGOWJramdxUldlUTdnNW85WVFjcHI4YlBWOW14SXdSQjgvdkxKY3huT2RpcnNWZGlyem44NUxPNnViVFN4Ynd2TQ0KVmtsNUNOUzFLaGV0TTJQWjhnQ2JkTjJ6Q1VveG9YdTh1L1EycS84QUxGUC9BTWluL3BtMDhTUGVIbi9BeWZ6VDhuZm9iVmYrV0tmLw0KQUpGUC9USHhJOTRYd01uODAvSkRQRTZPeU9wVjFKREtSUWdqcUNEa2cxa0ViRnJqaFE3amlydU9LcDlZZjhwUDVPLzVpNHYrTk1yMQ0KWDkwZmM1Zlovd0RmeDk3NkR6bTNzM1lxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcThlL05YL3lZdWpmOHdEL0FQRTVNM1BabjBuMw0Kdk9kdWZWSDNNRDRqTTkwYnVJeFYzRVlxdWphU0tSWkluS1NJUXlPcElZRWJnZ2pwZ0l0SWtRYkQxSHliK2FTdndzTmZjSyt5eGFoMA0KQjhCS0IwLzF2djhBSE5YcU5EMWg4bm9kRjJzRDZjdnovVzlKVmxkUXlrTXJDcXNOd1FlNHpXTzlieFYyS3V4VjJLdXhWMktySnBvbw0KWW5tbWRZNG93V2VSeUZWUU9wSlBUQ0JmSkJJQXN2TGZPZjVvU3o4N0RRWE1jTzZ5MzNSMjlvdjVSL2xkZkNtYlhUYUd0NS9KNTdYZA0Kclg2Y2Z6L1U4NElKSkpOU2R5VG15ZEZiWEVZcTdpTVZkeEdLcDNZLzhwVDVPLzVpNHY4QWpUSzlWL2RIM09aMmQvZng5NzZDem0zcw0KM1lxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcThlL05YL3lZdWpmOHdELzhUa3pjOW1mU2ZlODUyNTlVZmN3amptZTZKM0hGWGNjVg0KZHh4VjNIRldWK1VQUHVwYUV5MjAxYnJUSzd3RS9GSFhxWXllbityMCtYWE1UVWFTT1RjYlNkbm91MHA0ZGp2RDd2YzloMG5XTk8xYQ0Kelc3c0poTkMyeHA5cFQvS3k5UWMwdVRIS0JvdlVZYzBja2VLSnNJeklOcnNWZGlyc1ZTL1hOZjB6UmJNM1YvS0VYcEhHTjNkdkJGNw0KNVppeFNtYURSbjFFTVVlS1JlTitiUE8ycWVZSlRHeCtyNmVwckhhcWV0T2pTSDlvL2dNM2VuMHNjZm5KNVhXOW9Uekd1VWU3OWJHKw0KT1pMZ080NHE3amlydU9LdTQ0cW0xbi95bFhrLy9tTWovd0NOTXIxWDkwZmM1dlozOS9IM3ZvTE9iZXpkaXJzVmRpcnNWZGlyc1ZkaQ0KcnNWZGlyc1ZkaXJ4NzgxZi9KaTZOL3pBUC94T1ROejJaOUo5N3puYm4xUjl6RE9PWjdvWGNjVmR4eFYzSEZYY2NWZHh4Vk1ORjF2VQ0KOUd2QmRXRXBqZm82SGRIWCtWMTdqSzh1S014UmI5UHFaNFpjVVM5aDhxZWQ5TjE2TVJiVytvcVBqdG1QMnFkVEdmMmgrSXpTNmpTeQ0KeCtjWHE5SDJoRE9LNVM3djFNanpGYzkyS3NXODIrZk5QME5XdDRhWE9wRWJRZy9DbGU4aEg2dXVaZW4wa3NtNTJpNjdXOW93dzdEZQ0KZmQrdDVEcTJxNmpxMTIxM2Z6R2FadWxkbFVmeXFPZ0dickhqakFVSGxjK29ubGx4U05sQmNjbTB1NDRxN2ppcnVPS3U0NHE3amlxWg0KMm4vS1YrVVArWXlQOWFaWHF2N28rNXp1enY3K1B2ZlFPYzI5bTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhqMzVxLzhBa3hkRw0KL3dDWUIvOEFpY21ibnN6NlQ3M25PM1BxajdtSmNCbWU2S25jQml0TzRERmFkd0dLMDdnTVZwM0FZclR1QXhXbDBaZUtSWkkyS1NJUQ0KeU9wb1FSMElJd0VXa0VnMkhwUGxMOHlnL0N5MXhncmJMSGZkQWZhVURwL3JmZjQ1cTlSb2VzUGs5RG9lMXI5T1g1L3JVdk4zNWtzMw0KT3gwTnVLN3JKZmRDZkVSZjgxZmQ0NGROb2VzL2t4MTNhMzhPTDUvcS9XODZZTTdGbUpabU5XWTdrazlTVG0wZWZPKzVhNERGYWR3Rw0KSzA3Z01WcDNBWXJUdUF4V25jQml0TzRERmFSdHIveWxubEgvQUpqSS93QmFaWHF2N28rNXplenY3K1B2ZlFPYzI5bTdGWFlxN0ZYWQ0KcTdGWFlxN0ZYWXE3RlhZcTdGWGozNXEvK1RGMGIvbUFmL2ljbWJuc3o2VDczbk8zUHFqN21NOE16blNVN2hpdE80WXJUdUdLMDdoaQ0KdE80WXJUdUdLMDdoaXRPNFlyVHVHSzA3aGl0TzRZclR1R0swN2hpdE80WXJUdUdLMDdoaXRPNFlyU3ZiL3dES1hlVXYrWTFQMXBrTg0KVi9kSDNPWDJmL2Z4OTc2QXptM3MzWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxOGUvTlgveVl1amY4d0QvOFRremM5bWZTZmU4NQ0KMjU5VWZjeC9obWM2VjNERlhjTVZkd3hWUHJ1eTh2d1h3MDk0YmhHcEdwdkJLckFGMVZ1Umk5TVZIeGRPV1lzWlRNZUt4N25ZWk1lRw0KTStDajAzdjlGZnBVUDBYYWFkRkpMcVNOUElKNUxhRzJqYmdHYUdna2RubzJ3TEFBRHJrdkVNalVkdHIrYlg0TWNZSm1MM0lBOTNNMg0KcXhhTnA5NUg5WnRmVWpqbGpuV09CbURGTGlCUFZDRnFEa3JwMDJHQTVaUjJQbDhpempwNFRIRkc5d2R2NlFGL0loVGwwT0JQTHNWKw0KR2I2NFdEeVJtbkVRT3pSbzFPdjI0ejkrRVpUNG5EMC9Td2xwZ01Jbi9GK2pjZmVFWlA1WHMvcTEya1R2OWV0M2pqalJpQ3J5TENKSg0Ka0FwV3RlWEg1VXlBMUJzWHlQNjltK1dpand5cjZoUTk1cXorbWtIYWFMYXkyVUU3TS9PV0M4bFlBaW5LMlRrbE51bGV1VGxsSUpIbg0KSDdXbkhwNG1BUGVKbi9TOGtGcG1ueDNVNytzeFMzZ2phYWRsQUxjRTdMWGFyRWdDdVdaSjhJMjVsb3dZaE03OGdMS0wrcmFYcUVVNA0Kc3JkN1M0dDQybVVQSjZxeUltN2cvQ3BWZ3Z4ZUdRNHBSSXMyQzI4T1BJRHdqaElGODd2OXJjR2kyOG1pdmNGbSt2bFhuaGlGT0pnaQ0KWlVjbmJyVXNma3B4bGxJblg4UDZVdzA0T0xpL2o1ajNEbitQSnkyMmoyMm1XYzkxYlRUeTNYcUZtU1pZd29SK0lvREc5ZnZ3Y1V6SQ0KZ0VDdkw5cWlPT09PSmtDVEsrdGRmY2c5VDA5TFdhUDBtTDI4OGF6d013QWJnL1pnTzRJSXl6SFBpRy9NTk9mRUlFVnlJc0lUaGxqUw0KN2hpcnVHS3JvZjhBbEwvS1gvTWFuNjB5R3EvdWo3bks3UDhBNytQdmUvNXpiMmJzVmRpcnNWZGlyc1ZkaXJzVmRpcnNWZGlyc1ZlTw0KL200eGgvTURRWm5GSXBiUjRsYi9BQ3VUN2Y4QURETnoyWWZTZmU4NzI0UFZIM0pNNlVZak04amQwWWE0NEV1NDRxN2ppcklMK0xTcA0KOVMvU0Q2aEVZS1J0NkVheW1ZOEVVRmFGRlFFOGVwYk1TQmtJOE5iL0FHT3h5akhMSnhtUXJiYmUrWHUvU3BUWGtPc282WE15V2x3TA0KaVc0aGVYa1l5czVCYU1zb1lqaVYrRTBwa2hBNCtRc1VCOG1Fc296Q3BIaGx4RWkrVy9SZERmV21teWFmYndUQzRTM3VQckYzT29QQg0KaTFFS0p5QVlxRVU3MDNyZ01ET3lSVmlnbU9hT014aURkU3NuN052Z2lvZFQwaGRmZUdTU3VqK2dscXNsQ2ZoaDR1cmNhVjNrVHc3NQ0KQTQ1K0hmOEFIZC9OdGpxTVl6VVQrN29SK1cvM3BkTHFuT3lsa1dRcGV2Zi9BRnRRSzFId3NlUU5LYk1jdEdMMWVYRFRqeTFGd0p2MQ0KY2ZFbVkxTFNwL3F3U1ZiWXkyOTZzNnNHNFJTM0VmSDlrTjhMTnVLZEJ0bFhoeUY5ZDQvWTVQajQ1VlI0YmpPL0l5Q1cyMGRwcDhycA0KSmVRM0VGNUU5dk0wQWtZeGdrTXJrT2tkYU1vTkJsc3JrT1JCRys3alE0Y1pveUJFZ1J0ZTNueURjY1ZucGNWeEtMdUs3dUo0WGdoag0KZzVrS0pSeGQzTHFsS0xVQWRhNGttWkFvZ0E5VkFqaUJQRUpFaWhYbjFLS092MnR2cUVNY1Z2Qk5aMnlyYkNka2IxR2g0OFpDRFVmYg0KNU1lbmZJZUFURWtrMmQvaTNmbkl4bUFBREdPMTlhNi9QZFN1YmJUYml5dFlFMUtHTmJOcDBZeUNYa3ltVWxXVUtqVnF1K0dNcEFrOA0KSjNwak9NSlJpQk1EaDR1L3Y5eUExYTZpdUpvVWhKYUcxaFMzamR0aXdTcExVN1ZaaWFaYmlpUURmTW0zRzFHUVNJQTVSRklIamxyUQ0KN2ppcmdsVFRGVnRvRE41LzhyV2tlN3gzUHJNUDhsYU4rcERsZXNOWXo3bkw3TkY1NCs5NzluT1BaT3hWMkt1eFYyS3V4VjJLdXhWMg0KS3V4VjJLdXhWNTcrZFBsaTQxWHk1RnFkaXBiVU5GYzNFWVhkakVhZXFCN2ppci9SbWJvYzNCT2p5THJPMU5NY21PeHpqK0M4L3dCSQ0KMVNEVmJGTGlNZ1NnQlpvKzZ0L1R3emZFVzhueVJmRTVXbDNIRlhjY1ZkeHhWM0hGWGNjVmR4eFYzSEZYY2NWZHh4VjNIRlhjY1ZkeA0KeFYzSEZYY2NWZHh4VnFXV0MxaGU0dUhFY1VZcXpIc01uR05ib0tZL2szbzF4ckhtTzg4M1hNWlMwdGxhMjA0TU9yc0tNUi9xcHNmZA0KdmJOWjJqbTI0UTc3c2JUR3prUHVEMmZOUTlDN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxOGg4NS9sRHFOcmZ5YTM1TVlKSg0KSVM5eHBURUtwSjNQcEUvRFEveU4wN0hvTTJtbTE5YlQrYm90YjJUeEV5eC9MOVREWmZNZDdwemVqcjJsWE5oT3V4SmpJVWtlSFBqdA0KOGljMmtjc1pjamJvc21DY1BxQkR2OGFhRC9OSi93QUFjbFFhcUx2OGFhRC9BRFNmOEFjYUMwWGY0MDBIK2FUL0FJQTQwRm91L3dBYQ0KYUQvTkovd0J4b0xSZC9qVFFmNXBQK0FPTkJhTHY4YWFEL05KL3dBQWNhQzBYZjQwMEgrYVQvZ0RqUVdpNy9HbWcvelNmOEFjYUMwWA0KZjQwMEgrYVQvZ0RqUVdpNy9HbWcvd0Ewbi9BSEdndEYzK05OQi9tay93Q0FPTkJhTHY4QUdtZy96U2Y4QWNhQzBYZjQwMEgrYVQvZw0KRGpRV2k3L0dtZy96U2Y4QUFIR2d0RnIvQUJqYVRQNlduMmx4ZTNCK3pHaWRmdTVOK0dKbEdMS09PVWpRRnA1b241WmViL05WekhjZQ0KWVZiU05IUmd3dEtVbmNEd1E3cWY4cCtuWmN3TlJyNGphTzUreDIyazdKbkkzUDB4KzM5ajJ6VGRPc2ROc1liQ3hoVzN0TGRlRU1TZA0KQVA2bnFUM3pUU2taR3p6ZWxoQVJGRFlCRTVGazdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWA0KWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWQ0KcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcQ0KN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxNw0KRlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3Rg0KWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWA0KWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlhZcTdGWFlxN0ZYWXE3RlgvL1o8L3htcEdJbWc6aW1hZ2U+DQoJCQkJCTwvcmRmOmxpPg0KCQkJCTwvcmRmOkFsdD4NCgkJCTwveG1wOlRodW1ibmFpbHM+DQoJCTwvcmRmOkRlc2NyaXB0aW9uPg0KCQk8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiPg0KCQkJPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDoyM0E1MUNFOTkyM0NFNDExQkQ5NkIyNTdDQkQzN0NEQzwveG1wTU06SW5zdGFuY2VJRD4NCgkJCTx4bXBNTTpEb2N1bWVudElEPnhtcC5kaWQ6MjNBNTFDRTk5MjNDRTQxMUJEOTZCMjU3Q0JEMzdDREM8L3htcE1NOkRvY3VtZW50SUQ+DQoJCQk8eG1wTU06T3JpZ2luYWxEb2N1bWVudElEPnV1aWQ6NUQyMDg5MjQ5M0JGREIxMTkxNEE4NTkwRDMxNTA4Qzg8L3htcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD4NCgkJCTx4bXBNTTpSZW5kaXRpb25DbGFzcz5wcm9vZjpwZGY8L3htcE1NOlJlbmRpdGlvbkNsYXNzPg0KCQkJPHhtcE1NOkRlcml2ZWRGcm9tIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4NCgkJCQk8c3RSZWY6aW5zdGFuY2VJRD51dWlkOmZmMDFiYWU4LThhY2UtNDEyOS04YmRkLWFhMWNmMWRkZmQ3YTwvc3RSZWY6aW5zdGFuY2VJRD4NCgkJCQk8c3RSZWY6ZG9jdW1lbnRJRD54bXAuZGlkOjE4RTRFOEZGOEUzQ0U0MTFCQjEyODJDQkNGM0I5RTY0PC9zdFJlZjpkb2N1bWVudElEPg0KCQkJCTxzdFJlZjpvcmlnaW5hbERvY3VtZW50SUQ+dXVpZDo1RDIwODkyNDkzQkZEQjExOTE0QTg1OTBEMzE1MDhDODwvc3RSZWY6b3JpZ2luYWxEb2N1bWVudElEPg0KCQkJCTxzdFJlZjpyZW5kaXRpb25DbGFzcz5wcm9vZjpwZGY8L3N0UmVmOnJlbmRpdGlvbkNsYXNzPg0KCQkJPC94bXBNTTpEZXJpdmVkRnJvbT4NCgkJCTx4bXBNTTpIaXN0b3J5Pg0KCQkJCTxyZGY6U2VxPg0KCQkJCQk8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4NCgkJCQkJCTxzdEV2dDphY3Rpb24+c2F2ZWQ8L3N0RXZ0OmFjdGlvbj4NCgkJCQkJCTxzdEV2dDppbnN0YW5jZUlEPnhtcC5paWQ6MThFNEU4RkY4RTNDRTQxMUJCMTI4MkNCQ0YzQjlFNjQ8L3N0RXZ0Omluc3RhbmNlSUQ+DQoJCQkJCQk8c3RFdnQ6d2hlbj4yMDE0LTA5LTE1VDEyOjE2KzA4OjAwPC9zdEV2dDp3aGVuPg0KCQkJCQkJPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgSWxsdXN0cmF0b3IgQ1M2IChXaW5kb3dzKTwvc3RFdnQ6c29mdHdhcmVBZ2VudD4NCgkJCQkJCTxzdEV2dDpjaGFuZ2VkPi88L3N0RXZ0OmNoYW5nZWQ+DQoJCQkJCTwvcmRmOmxpPg0KCQkJCQk8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4NCgkJCQkJCTxzdEV2dDphY3Rpb24+c2F2ZWQ8L3N0RXZ0OmFjdGlvbj4NCgkJCQkJCTxzdEV2dDppbnN0YW5jZUlEPnhtcC5paWQ6MjNBNTFDRTk5MjNDRTQxMUJEOTZCMjU3Q0JEMzdDREM8L3N0RXZ0Omluc3RhbmNlSUQ+DQoJCQkJCQk8c3RFdnQ6d2hlbj4yMDE0LTA5LTE1VDEyOjQ1OjE1KzA4OjAwPC9zdEV2dDp3aGVuPg0KCQkJCQkJPHN0RXZ0OnNvZnR3YXJlQWdlbnQ+QWRvYmUgSWxsdXN0cmF0b3IgQ1M2IChXaW5kb3dzKTwvc3RFdnQ6c29mdHdhcmVBZ2VudD4NCgkJCQkJCTxzdEV2dDpjaGFuZ2VkPi88L3N0RXZ0OmNoYW5nZWQ+DQoJCQkJCTwvcmRmOmxpPg0KCQkJCTwvcmRmOlNlcT4NCgkJCTwveG1wTU06SGlzdG9yeT4NCgkJPC9yZGY6RGVzY3JpcHRpb24+DQoJCTxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOmlsbHVzdHJhdG9yPSJodHRwOi8vbnMuYWRvYmUuY29tL2lsbHVzdHJhdG9yLzEuMC8iPg0KCQkJPGlsbHVzdHJhdG9yOlN0YXJ0dXBQcm9maWxlPlByaW50PC9pbGx1c3RyYXRvcjpTdGFydHVwUHJvZmlsZT4NCgkJPC9yZGY6RGVzY3JpcHRpb24+DQoJCTxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnBkZj0iaHR0cDovL25zLmFkb2JlLmNvbS9wZGYvMS4zLyI+DQoJCQk8cGRmOlByb2R1Y2VyPkFkb2JlIFBERiBsaWJyYXJ5IDEwLjAxPC9wZGY6UHJvZHVjZXI+DQoJCTwvcmRmOkRlc2NyaXB0aW9uPg0KCTwvcmRmOlJERj4NCjwveDp4bXBtZXRhPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg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" alt="更新"></img>
+					</a>
+				</div>
 			</div>
-			<div class="input">
-				<textarea ng-model="wbText" ng-change="wbtxtChanged()" class="input_detail" placeholder="���������ģ���΢�粻���ȥ�������������ɣ�2014����ȥ�ĳ����ǣ�"></textarea>
-				<div ng-show="P.showPicUpload" class="layer_send_pic content pb10" style="border-bottom:1px solid #e3e3e1;margin: 0 -10px;padding-left: 10px;">								
-					<ul class="drag_pic_list">
-						<li ng-repeat="url in tmpPicUrls track by $index">
-							<a href="javascript:void(0);" target="_blank"><img ng-src="{{url}}" width="72" alt=""/></a>
-						</li>
-						<li>
-							<div class="drag_pic_more">
-								<div class="drag_pic_more_btn">
-									<img src="images/141020_img05.jpg" width="72" alt=""/>
-								</div>
-								<input onchange="angular.element($('#fileName')).scope().fileSelected(this.files)" type="file" multiple id="fileName" accept="image/*" class="inputstyle"></input>
-							</div>
-						</li>
-						<div class="clearfix"></div>
-					</ul>								
-				</div>
-				<div ng-show="P.sentOK" class="send_succpic">
-					<p class="icon_succB"></p><p class="txt">�����ɹ�</p>
+		</div>
+	</div>
+</div>
+<div class="wrap_max">
+	<div class="wrap_min">
+		<div class="unauth_callout">
+			<div class="intro"></div>
+			<div class="login">
+				<a ui-sref="root.chat.history" class="comment_icon"></a>
+				<a ui-sref="root.personal.allPosts({bid:myUserInfo.bid})" class="user_icon"></a>
+				<a href="javascript:void(0)" class="set_icon" id="set_icon"></a>
+				<div class="with-line">{{myUserInfo.nickName}}</div>				
+			</div>
+			<div class="clearfix"></div>
+
+ 			<div id="floating" style="display:none">
+				<div class="smooth-notification" style="margin-left:-90px;"><a ui-sref="root.main.allPosts" class="notification">我雷个趣</a></div>
+				<div class="title f14">我要这天，再遮不住我的眼，要这地，再也埋不了我心 </div>
+				<div class="sub-title f16">　　要这众生，都明白我的意，要那诸佛，都烟硝云散</div>
+				<div class="floating-login">
+					<span class="words">{{myUserInfo.nickName}}</span>
+					<a href="javascript:void(0);" class="comment_icon01"></a>
+					<a href="javascript:void(0);" class="user_icon01"></a>
+					<a href="javascript:void(0);" class="set_icon01"></a>
 				</div>
 			</div>
-			<div class="func_area">
-				<div class="func">
-					<span class="btn_30px"><input ng-class="P.submitStyle" type="submit" value="����" ng-disabled="weiboForm.$invalid"></input></span>
-				</div>
-				<div class="kind_v2">
-					<span class="kind_detail">
-						<a ng-click="P.showPicUpload = !P.showPicUpload" title="ͼƬ" href="javascript:void(0);" class="btnWeek"><i class="W_ico15 icon_sw_img"></i>ͼƬ</a>
-						<a title="��΢��" href="javascript:void(0);" id="btnMonth"><i class="W_ico15 icon_sw_chang"></i>��΢��</a>
-					</span>
-				</div>
-				<div class="clearfix"></div>
-			</div>
-		</form>			
+			<div class="smooth-notification"><a ui-sref="root.main.allPosts" class="notification">我雷个趣</a></div>
+		</div>
 	</div>
 </div>
 
+<div class="plc_main">
+	<div ui-view></div>
+</div>
+
+<div id="myChatBox" ng-controller="chatController">
+	<div class="online_info" id="online_info" style="display:none;">
+		<div class="online_head">
+			<a href="javascript:void(0)" class="online_close" onclick="slideToggle()"></a>			
+		</div>
+		<div class="online_seach"></div>
+		<div class="online_tab">
+			<a href="#"><i></i><span>我的好友</span></a>
+			<a href="#"><i></i><span>在线用户</span></a>
+		</div>
+		<div class="online_list" style="display:block;">
+			<ul class="online_friend">
+				<li ng-repeat="(bid, fri) in myUserInfo.friends" ng-dblClick="startChat(fri);">
+					<div class="webim_list_head webim_head_30">
+						<span class="head_pic">
+							<img title="{{bid}}" class="webim_user_item_img" width="30" height="30" ng-src="{{fri.headPicUrl}}"/>
+						</span>
+					</div>
+					<div class="webim_list_name">
+						<span class="user_name">{{fri.nickName}}</span>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="online_list">
+			<ul class="online_user">
+				<li ng-repeat="(bid, usr) in usrList" ng-dblClick="openRequest(usr);">
+					<span class="fr">{{usr.nickName}}</span>
+					<span class="head_pic">
+						<img class="webim_user_item_img" width="30" height="30" ng-src="{{usr.headPicUrl}}"/>
+					</span>
+				</li>
+			</ul>
+		</div>
+		
+		<div class="online_cate">
+			<ul>
+				<li><a ui-sref="root.chat.history"><i class="cate_icon01"></i><span>私信</span></a></li>
+				<li><a href="javascript:void(0);" ng-click="getOnlineUsers()"><i class="cate_icon02"></i><span>刷新</span></a></li>
+				<li><a href="javascript:void(0);"><i class="cate_icon03"></i><span>节点</span></a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="online" onclick="slideToggle()">
+		<div class="online_count">
+			<div class="online_num">{{myUserInfo.friendCount}}</div>
+		</div>
+	</div>
+
+<!-- display full size picture from chatbox -->
+<div class="from_wrapper" id="big_picture" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
+	<div style="height: 385px; width: 580px">
+		<img ng-src="{{bigPicUrl}}" alt="loading"/>
+	</div>
+	<div class="clearfix"></div>
+</div>
+
+	<div class="online_sms" id="online_sms" style="display:none;">
+		<div class="wbim_tit2">
+			<div class="wbim_tit2_lf">
+				<p class="tit2_lf_con">
+					<a class="webim_list_head" ui-sref="root.chat.detail({bid:chatFriend.bid})">
+						<span class="head_pic"><img alt="avatar" ng-src="{{chatFriend.headPicUrl}}"/></span>
+					</a>
+					<span class="chat_name"><a ui-sref="root.chat.detail({bid:chatFriend.bid})" class="f0a8cd2">{{chatFriend.nickName}}</a></span>
+				</p>
+			</div>
+			<div class="wbim_tit2_rt">
+				<a href="javascript:void(0);" class="rt_icon icon_closeY" title="关闭" onclick="hideChat()"></a>
+			</div>			
+		</div>
+		<div id="myChatBox1" class="wbim_tit3">
+			<div ng-repeat="m in chatSessions[chatFriend.bid].messages track by $index" ng-class="getMsgClass(m.bid, 1)">
+				<div class="msg_bubble_time">{{m.timeStamp | chatTime}}</div>
+				<div class="bubble_cont">
+					<div class="bubble_arrow">
+						<div ng-class="getMsgClass(m.bid, 2)"><i></i><em></em></div>
+					</div>
+					<div class="bubble_main">
+						<div ng-show="m.contentType===0" class="cont_sms"><p class="page">{{m | message}}</p></div>
+						<img ng-show="m.contentType===1" ng-click="showBigPic(m)" ng-src="{{m.dataURI}}" alt="image loading" style="max-height:120px; max-width:120px;"></img>
+						<a href="javascript:void(0);" ng-show="m.contentType===2" ng-click="saveFile(m)">{{m | message}}</a>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+			
+		<form name="chatForm" ng-submit="sendSMS(chatFriend.bid)" novalidate>
+			<div ng-show="picFile" class="pr">
+				<div class="private_file_mod wbim_tit4">
+					<a class="links" href="javascript:void(0);" ng-click="unselectFile();">删除</a>
+					<span class="mes_acc_icon acc_icon_photo"></span> {{picFile.name}}
+				</div>
+			</div>
+			<div ng-show="fileSent" class="pr">
+				<div class="private_file_mod wbim_tit4">
+					<a class="links" href="javascript:void(0);" ng-click="unselectFile();">删除</a>
+					<span class="mes_acc_icon acc_icon_photo"></span> {{fileSent.name}}
+				</div>
+			</div>
+			<div class="wbim_tit4">
+				<a ui-sref="root.chat.detail({bid:chatFriend.bid})" class="fr" style="line-height:30px; margin-right:20px;color:#808080;">聊天记录</a>
+				<div class="sendbox_menu">
+					<a href="javascript:void(0);" class="icon_face"></a>
+					<a href="javascript:void(0);" ng-click="sendFile('uploadChatPic')" class="icon_image">
+						<input type="file" onchange="angular.element(this).scope().picSelected(this.files)" id="uploadChatPic" accept="image/*" class="inputstyle"></input>
+					</a>
+					<a href="javascript:void(0);" ng-click="sendFile('uploadChatFile')" class="icon_file">
+						<input type="file" onchange="angular.element(this).scope().fileSelected(this.files)" id="uploadChatFile" class="inputstyle"></input>
+					</a>
+				</div>
+			</div>
+			<div class="wbim_tit5">
+				<textarea id="myChatArea" ng-model="txtChat"></textarea>
+			</div>
+			<div class="wbim_tit4 tr pr15 pt5 pb5">
+				<input ng-disabled="chatForm.$invalid" type="submit" value="发送" class="send_btn W_btn_v" style="margin-top:2px;border-color:#ff9b01;background:#ffa00a;"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script type="text/ng-template" id="floating.html">
+<!-- floating stuff  -->
+<div class="from_wrapper" id="pic_slider" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
+	<div class="account_set">
+		<div class="member_info">
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr><td>
+						<carousel interval="2000">
+							<slide ng-repeat="slide in slides" active="slide.active">
+								<img ng-src="{{slide.image}}"/>
+								<div class="carousel-caption">
+									<h4>Slide {{$index}}</h4>
+									<p>{{slide.text}}</p>
+								</div>
+							</slide>
+						</carousel>
+ 				</td></tr>
+			</table>
+		</div>
+	<div class="clearfix"></div>
+	</div>
+</div>
+
+<div ng-controller="accountController" class="from_wrapper" id="user_set" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>账号设置</h4>
+	<div class="account_set">
+		<form name="accountForm" novalidate>
+			<div class="pf_head">
+				<p class="mb10"><img id="myUserIcon" ng-src="{{myUserInfo.headPicUrl}}"/></p>
+				<p class="tc mb10 pr">					
+					<a href="javascript:void(0);" class="up_file_img"></a>
+					<input onchange="uploadMyIcon()" type="file" id="myUploadIcon" accept="image/*" class="up_file_input"></input>
+				</p>
+				<p class="f12">仅支持jpg、gif、png格式文件小于5M</p>
+			</div>
+			<div class="member_info">
+				<table border="0" cellspacing="0" cellpadding="0" width="360">
+					<tr>
+						<td width="80" align="right"><b>登录名：</b></td>
+						<td width="280">火速死死按</td>
+					</tr>
+					<tr>
+						<td align="right"><b>密码：</b></td>
+						<td>
+							<input type="password" ng-model="myUserInfo.passwd" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>手机号：</b></td>
+						<td>
+							<input type="text" ng-model="myUserInfo.mobile" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>昵称：</b></td>
+						<td>
+							<input type="text" ng-model="myUserInfo.nickName" class="input_text" style="width:150px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"><b>收货地址：</b></td>
+						<td>
+							<input type="text" ng-model="myUserInfo.location" class="input_text" style="width:270px" />
+						</td>
+					</tr>
+					<tr>
+						<td align="right"></td>
+						<td>
+							<div class="p10">
+								<a ng-click="saveAccount()" class="send_btn W_btn_c" href="javascript:void(0);"><span class="btn_30px">保存</span></a>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td colspan='2'>
+							<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="clearfix"></div>
+		</form>
+	</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="chatdetail.html">
+	<div class="from_wrapper" id="big_picture2" style="display:none;">
+		<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>图片</h4>
+		<div>
+			<img ng-src="{{bigPicUrl}}" alt="loading"/>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="border_all p10 mb15">
+		<div class="replycontent p10">
+			<textarea id="myChatArea2" ng-model="txtChat"
+				ng-change="txtChanged();" class="input_text" style="width: 560px;"></textarea>
+		</div>
+		<div>
+			<div class="wbpm_left fl">
+				插入： <span class="wbpmimgname"> <a href="javascript:void(0);"
+					ng-click="sendFile('uploadChatPic2')" class="ico_letterdel">图片</a>
+					<input type="file"
+					onchange="angular.element(this).scope().picSelected(this.files)"
+					id="uploadChatPic2" accept="image/*" class="inputstyle"></input> <span>|</span>
+					<a href="javascript:void(0);"
+					ng-click="sendFile('uploadChatFile2')" class="ico_letterdel">文件</a>
+					<input type="file"
+					onchange="angular.element(this).scope().fileSelected(this.files)"
+					id="uploadChatFile2" class="inputstyle"></input>
+				</span>
+				<div ng-show="picFile">
+					<ul>
+						<li><img style="max-height: 120px; max-width: 120px"
+							ng-src="{{picUrl}}" alt="loading" tooltip="{{picFile.name}}" /></li>
+						<div class="clearfix"></div>
+					</ul>
+				</div>
+				<div ng-show="picFile">
+					<a href="javascript:void(0);" ng-click="unselectFile()">删除</a>
+				</div>
+				<div ng-show="fileSent">
+					<h2 tooltip="{{fileSent.name}}">
+						{{fileSent.name | fileName}} <a href="javascript:void(0);"
+							ng-click="unselectFile()">删除</a>
+					</h2>
+				</div>
+			</div>
+			<div class="fr" style="padding: 10px 20px 20px 10px; width: 205px;">
+				<span ng-show="C.chCounter<=30" class="S_textb f14 mr10">还可以输入
+					<em>{{C.chCounter}}</em> 字
+				</span> <a class="send_btn W_btn_c" href="javascript:void(0);"
+					ng-click="sendSMS(inPageBid)"><span class="btn_30px">发布</span></a>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="wbpmlist">
+		<div class="talk-main border_all mb15 pr">
+			<div ng-repeat="m in inPageMsgs track by $index">
+				<div ng-show="showTimeLine($index)">
+					<div class="talk-line mt15"></div>
+					<div class="talk-time">{{m.timeStamp | chatTime}}</div>
+				</div>
+				<div class="talk-left">
+					<div
+						ng-class="m.bid===myUserInfo.bid ? 'left-img fr' : 'left-img fl'">
+						<a ui-sref="root.personal.allPosts({bid:m.bid})" title=""><img
+							ng-src="{{myUserInfo.friends[m.bid].headPicUrl || myUserInfo.headPicUrl}}" /></a>
+					</div>
+					<div
+						ng-class="m.bid===myUserInfo.bid ? 'qipao qipao-right right-more fr' : 'qipao qipao-left left-more fl'">
+						<p ng-show="m.contentType===0" class="qipao-color">{{m | message}}</p>
+						<p ng-show="m.contentType===1" class="talk-pics">
+							<img ng-click="showBigPic(m)" ng-src="{{m.dataURI}}" alt="loading image" />
+						</p>
+						<p ng-show="m.contentType===2">
+							<a href="javascript:void(0)" ng-click="saveFile(m)">{{m | message}}</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/ng-template" id="chathistory.html">
+		<div class="border_all mb15">
+			<div class="tab_radious pr">
+				<ul>
+					<li class="t_itm current">
+						<span class="f666">私信</span>
+					</li>
+					<div class="clearfix"></div>
+				</ul>
+				<a href="javascript:;" class="btn-Attention btn_compose">&nbsp;发私信&nbsp;</a>
+			</div>
+		</div>
+		<div ng-repeat="(bid, ui) in myUserInfo.friends" class="wbpmlist">
+			<div ng-show="ui.lastSMS" class="wbpmunit border_all mb15 pr">
+				<div class="userPic">
+					<p><a ui-sref="root.chat.detail({bid:bid})" title=""><img ng-src="{{ui.headPicUrl}}" title="" width="48" height="48"></a></p>
+				</div>
+				<div class="wbpmcontent">
+					<p class="mb10"><b><a ui-sref="root.chat.detail({bid:bid})" title="" class="f10a2c7">{{ui.nickName}}</a></b></p>
+					<div class="message">
+						<span ng-show="ui.lastSMS.contentType===0">{{ui.lastSMS | message}}</span>
+						<img style="max-height:120px; max-width:120px;" ng-show="ui.lastSMS.contentType===1" ng-src="{{ui.lastSMS.dataURI}}"></img>
+						<a href="javascript:void(0);" ng-show="ui.lastSMS.contentType===2">{{ui.lastSMS | message}}</a>
+					</div>
+					<div class="pubtime">最后对话: {{ui.lastSMS.timeStamp | chatTime}}</div>
+				</div>
+				<div class="wbpmallreaddiv">
+					<a ui-sref="root.chat.detail({bid:bid})" class="btn_reply">回复</a>
+					<a href="javascript:void(0);" ng-click="delChat(ui.bid)">删除</a>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+</script>
+
+<script type="text/ng-template" id="chat.html">
+<div class="waterfall">
+	<div ui-view>chat</div>
+	<ng-include src="'floating.html'"></ng-include>
+</div>
+<div class="side">
+	<ng-include src="'upperSidebar.html'"></ng-include>
+	<ng-include src="'lowerSidebar.html'"></ng-include>
+</div>
+</script>
+
+<script type="text/ng-template" id="friends.html">
+<div class="waterfall">
+		<div class="WB_feed">
+			<ul>
+				<li ng-repeat="(bid, ui) in currUserInfo.friends" class="border_all WB_feed_type pr">
+					<div class="userPic">
+						<p><a ui-sref="root.personal.allPosts({bid:bid})" title=""><img ng-src="{{ui.headPicUrl}}" title=""  width="78"></a></p>
+						
+					</div>
+					<div class="userName">
+						<p class="mb10"><b><a ui-sref="root.personal.allPosts({bid:bid})" title="">{{ui.nickName}}</a></b></p>
+						<p class="mb10 wb_newest_time">最新微博：{{ui.lastPost.timeStamp | chatTime}}</p>
+						<p class="mb10 wb_newest_info">{{ui.lastPost.body}}</p>
+						<p class="user_nums"><span>好友<em class="f2ea0cd">{{ui.friendCount}}</em>人</p>
+					</div>
+					<div class="wb_att_box">
+						<div class="foStatus">
+							<span class="followEach"></span><a href="javascript:void(0)" ng-click="delFriend(bid)" class="btn-Attention">取消</a>
+						</div>
+						
+					</div>
+					<div class="clearfix"></div>
+					
+				</li>
+			</ul>
+		</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="main.html">
+<div class="waterfall">
+	<ng-include src="'post.html'"></ng-include>
 	<div class="border_all mb15">
 		<div class="tab_radious">
     		<ul>
-				<li class="t_itm" ng-class="tabStyle(0)">
-       		       	<a class="S_txt1" href="javascripe:void(0);" ng-click="getAllPosts()">΢��</a>
+				<li class="t_itm" ui-sref-active="current">
+       		       	<a class="S_txt1" ui-sref="root.main.allPosts">微博</a>
 				</li>
               	<li class="S_txt3">|</li>
-				<li class="t_itm " ng-class="tabStyle(1)">
-					<a href="javascripe:void(0);" ng-click="getPosts(bid)" class="S_txt1">ԭ��</a>
+				<li class="t_itm " ui-sref-active="current">
+					<a ui-sref="root.main.original" class="S_txt1">原创</a>
 				</li>
 				<li class="S_txt3">|</li>
-				<li class="t_itm" ng-class="tabStyle(2)">
-					<a class="S_txt1" href="#picture">ͼƬ</a>
+				<li class="t_itm " ui-sref-active="current">
+					<a ui-sref="root.main.favorite" class="S_txt1">收藏</a>
+				</li>
+				<li class="S_txt3">|</li>
+				<li class="t_itm" ui-sref-active="current">
+					<a ui-sref="root.main.pictureGrid" class="S_txt1">图片</a>
 				</li>
 				<div class="clearfix"></div>
 			</ul>
 		</div>
 	</div>
+	<div ui-view><h1>weibo list</h1></div>
+	<ng-include src="'floating.html'"></ng-include>
+</div>
+<div class="side">
+	<ng-include src="'upperSidebar.html'"></ng-include>
+	<ng-include src="'lowerSidebar.html'"></ng-include>
+</div>
+</script>
+
+<script type="text/ng-template" id="allPics.html">
+<div class="waterfall">
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm current">
+       		       	<span class="f666">全部图片展示</span>
+				</li>
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div id="container">
+		<div ng-repeat="pic in myPicUrls track by $index" class="grid">
+			<div class="imgholder" ng-click="showFullPic(pic)"><img ng-src="{{pic.dataURI}}" width="120" height="120"/></div>
+			<div class="actions">
+				<a href="javascript:void(0)">
+				</a>
+			</div>
+		</div>
+	</div>	
+</div>
+</script>
+<script type="text/ng-template" id="personal.html">
+<div class="waterfall">
+	<div class="border_all mb15 p10">
+		<div class="profile_top">
+			<div>
+				<div class="pf_head">
+					<img ng-src="{{currUserInfo.headPicUrl}}" width="148"/>
+				</div>
+				<div class="pf_info">				
+					<div class="pf_name">
+						<div class="name f22">{{currUserInfo.nickName}}</div>
+						<span class="f14">id({{currUserInfo.bid}})</span>
+					</div>
+					<ul class="user_atten f18">
+						<li">
+							<a ui-sref="root.personal.allPosts({bid:currUserInfo.bid})">							
+								<span>微博 </span><strong>{{currUserInfo.weiboCount}}</strong>
+							</a>
+						</li>
+						<li">
+							<a ui-sref="root.personal.friends({bid:currUserInfo.bid})">							
+								<span>好友 </span><strong>{{currUserInfo.friendCount}}</strong>
+							</a>
+						</li>
+						<li">
+							<a ui-sref="root.personal.favorite({bid:currUserInfo.bid})">							
+								<span>收藏 </span><strong>{{currUserInfo.favoriteCount}}</strong>
+							</a>
+						</li>
+						<div class="clearfix"></div>
+					</ul>
+					
+					<div class="pf_do f16">
+						{{currUserInfo.location}} <a href="#" class="f12 f2ea0cd">【更多资料】</a>
+					</div>
+					
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			<div class="imgModList">
+				<ul>
+					<li ng-repeat="pic in curPics track by $index">
+						<a href="javascript:void(0);"><img width="80" height="80" ng-src="{{pic.dataURI}}" alt=""></a>
+					</li>
+					<div class="clearfix"></div>
+				</ul>
+			</div>					
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="border_all mb15">
+		<div class="tab_radious">
+    		<ul>
+				<li class="t_itm" ui-sref-active="current">
+       		       	<a class="S_txt1" ui-sref="root.personal.allPosts({bid:currUserInfo.bid})">微博</a>
+				</li>
+              	<li class="S_txt3">|</li>
+				<li class="t_itm " ui-sref-active="current">
+					<a ui-sref="root.personal.original({bid:currUserInfo.bid})" class="S_txt1">原创</a>
+				</li>
+				<li class="S_txt3">|</li>
+				<li class="t_itm " ui-sref-active="current">
+					<a ui-sref="root.personal.favorite({bid:currUserInfo.bid})" class="S_txt1">收藏</a>
+				</li>
+              	<li class="S_txt3">|</li>
+				<li class="t_itm" ui-sref-active="current">
+					<a ui-sref="root.personal.pictureGrid({bid:currUserInfo.bid})" class="S_txt1">图片</a>
+				</li>
+				<div class="clearfix"></div>
+			</ul>
+		</div>
+	</div>
+	<div ui-view><h1>peresonal page</h1></div>
+	<ng-include src="'floating.html'"></ng-include>
+</div>
+<div class="side">
+	<ng-include src="'lowerSidebar.html'"></ng-include>
+</div>
+</script>
+
+<script type="text/ng-template" id="post.html">
+<div ng-controller="postController" class="publisherTop border_all mb15 p10">
+	<div class="send_weibo">
+	<form name="weiboForm" ng-submit="(!P.txtInvalid) && addNewPost()" novalidate>  
+	<div class="title_area">
+		<div class="title fl f16">让信息没有障碍的实时传播！</div>
+		<div ng-show="P.chCounter<=30" class="S_textb fr f14">
+		   还可以输入 <em>{{P.chCounter}}</em> 字
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="input">
+		<textarea ng-model="wbText" ng-change="wbtxtChanged()" class="input_detail" placeholder="趁阳光明媚，趁微风不燥，多去看看外面的世界吧，2014你想去的城市是？">
+		</textarea>
+		<div ng-show="P.showPicUpload" class="layer_send_pic content pb10" style="border-bottom:1px solid #e3e3e1;margin: 0 -10px;padding-left: 10px;">								
+			<ul class="drag_pic_list">
+				<li ng-repeat="url in tmpPicUrls track by $index">
+					<a href="javascript:void(0);"><img ng-src="{{url}}" width="72" alt=""/></a>
+				</li>
+				<li>
+					<div class="drag_pic_more">
+						<div class="drag_pic_more_btn">
+							<img src="data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QN1aHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YzI4ZGRkMWEtM2EwZS0xODRlLWIzM2YtYjdkNDE0ZmI3ZDgzIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjM2M0FFNURENTlCMTExRTQ5QTU3RkRDMjg5QzlEMjM4IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjM2M0FFNURDNTlCMTExRTQ5QTU3RkRDMjg5QzlEMjM4IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgV2luZG93cyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMwQzNGMERFMDI1OUU0MTFCMDVGOUE1NkI2NDg1OTg5IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOmMyOGRkZDFhLTNhMGUtMTg0ZS1iMzNmLWI3ZDQxNGZiN2Q4MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pv/uAA5BZG9iZQBkwAAAAAH/2wCEAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHB8fHx8fHx8fHx8BBwcHDQwNGBAQGBoVERUaHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fH//AABEIAGYAZgMBEQACEQEDEQH/xABvAAEAAwEBAQAAAAAAAAAAAAAAAQMEAgUIAQEAAAAAAAAAAAAAAAAAAAAAEAADAAECAwIKCwAAAAAAAAAAAQIDEQQhMRJRFNEykrLSE3OzVAVBcYGRoSJCY5MkNBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A+mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHOTLixT1ZLmJ5dVNJfiBV3/AGPxOLy58IF0XFyqilUvlSeqf2oCQAAAAAAAAAABXb03e0f7le6sD0OsDzdr4uT22b3tAXAAAAAAAAAOcuScWK8leLEuq07EtQKu8Zvhcv34vTA56s+Tcbd+ovHOO3VVTjTToqf01T5sDd1gYMV58SuHtsla5MlKpePRqrdLnafJgTe8vHFXe2yzEp1Va43olxb4WBpAAAAAAAAo3/8Ah3Psr81gWquADqAdQDqAo39f0dx7K/NYGkAAAAAAACLibiopazSapdqfBgUdw2/bk/ly+kBVlwRhzbd46v8ANbmlWS6TXRT5U2voA0gZdttseXHV5KyOnkyLhkyJaK2lwVJcgLX8v2zWlespPmnlyNP606A0gAAAAAAAAAGXfXEVt7tqYnI+qnwS1ilxYEd/2PxGPy58IHXy9p7fqXFVkyOX2p5KaYGkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//2Q==" width="72" alt=""/>
+						</div>
+						<input onchange="angular.element(this).scope().fileSelected(this.files)" type="file" id="wbPicUpload" multiple accept="image/*" class="inputstyle"></input>
+					</div>
+				</li>
+				<div class="clearfix"></div>
+			</ul>								
+		</div>
+		<div id="wbSubmitOK" class="send_succpic" style="display:none">
+			<p class="icon_succB"></p><p class="txt">微博发布成功</p>
+		</div>
+	</div>
+	<div class="func_area">
+		<div class="func">
+			<span class="btn_30px"><input ng-class="P.submitStyle" type="submit" value="发布" ng-disabled="weiboForm.$invalid"></input></span>
+		</div>
+		<div class="kind_v2">
+			<span class="kind_detail">
+				<a ng-click="selectPics()" title="图片" href="javascript:void(0);" class="btnWeek"><i class="W_ico15 icon_sw_img"></i>图片</a>
+				<a title="长微博" href="javascript:void(0);" id="btnMonth"><i class="W_ico15 icon_sw_chang"></i>长微博</a>
+			</span>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	</form>			
+	</div>
+</div>
+
+<div id="dlgSend" class="from_wrapper" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>长微博</h4>
+	<div class="wb_chang_info p10">
+		<table border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td width="70" align="right">标题：</td>
+				<td>
+					<input type="text" class="input_text input_text_tit" value="请输入标题，最多30字(选填)" maxlength="30"/>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top" align="right">文字：</td>
+				<td>
+					<div style="height:300px;">
+						<img src="data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QMpaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgV2luZG93cyIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpDMzc5NzUxMDU5QjYxMUU0QTZEMUVDOTVBRDgwRDI0RiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpDMzc5NzUxMTU5QjYxMUU0QTZEMUVDOTVBRDgwRDI0RiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMzNzk3NTBFNTlCNjExRTRBNkQxRUM5NUFEODBEMjRGIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkMzNzk3NTBGNTlCNjExRTRBNkQxRUM5NUFEODBEMjRGIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+/+4ADkFkb2JlAGTAAAAAAf/bAIQABgQEBAUEBgUFBgkGBQYJCwgGBggL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" width="487" height="26" />
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="tc p10">		
+		<a class="send_btn W_btn_v" href="javascript:void(0);"><span class="btn_30px">发布</span></a>
+	</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="weiboList.html">
 	<div class="WB_feed">
 		<ul>
-			<li ng-repeat="wb in weiboList track by $index" class="border_all WB_feed_type">
+			<li ng-repeat="wb in currentList track by $index" class="border_all WB_feed_type">
 				<div class="userPic">
-					<p><a href="#" title=""><img ng-src="{{wb.headPicURL}}" title=""  width="78"/></a></p>
+					<p><a ui-sref="root.personal.allPosts({bid:wb.authorID})" title="">
+					<img ng-src="{{myUserInfo.friends[wb.authorID].headPicUrl || myUserInfo.headPicUrl}}" width="78"></img></a></p>
 				</div>
 				<div class="userName">
-					<b><a href="#" title="" target="_blank">{{wb.author}}: </a></b>
+					<b><a ui-sref="root.personal.allPosts({bid:wb.authorID})" title="">{{wb.author}}: </a></b>
 					<span class="msgCnt">{{wb.body}}</span>
 					
-					<div ng-repeat="p in wb.parentWeibo track by $index" class="WB_media_expand mt15">
-						<div class="WB_arrow">						
-						</div>
+					<div ng-if="wb.parentID!==null && wb.parentWeibo!==null" class="WB_media_expand mt15">
+						<div class="WB_arrow"></div>
 						<div class="WB_info mb5">
-							<a href="#">@{{p.author}}</a>
+							<a ui-sref="root.personal.allPosts({bid:wb.parentWeibo.authorID})">@{{wb.parentWeibo.author}}</a>
 						</div>
 						<div class="WB_text">
-                			{{p.body}}
+                			{{wb.parentWeibo.body}}
 						</div>
 						<div class="lotspic_list">
 							<ul>
-								<li ng-repeat="uri in p.tmpPicUrls track by $index">
-								<img ng-src="{{uri}}" alt=""/>
+								<li ng-repeat="pic in wb.parentWeibo.pictures track by $index">
+									<a href="{{pic.dataURI}}" class="img-group">
+									<img ng-src="{{pic.dataURI}}"></img></a>
 								</li>
 								<div class="clearfix"></div>
 							</ul>
 						</div>
+
+						<span class="funBox fr">
+							<a href="javascript:void(0);" ng-click="" class="btn-relay">转播{{wb.parentWeibo.relays.length | bracket}}</a>
+							<span>|</span>
+							<a href="javascript:void(0);" ng-click="" class="btn-comt">评论{{wb.parentWeibo.reviews.length | bracket}}</a>
+						</span>
+						<div class="clearfix"></div>					
+					</div>
+					<div ng-if="wb.parentID!==null && wb.parentWeibo===null" class="WB_media_expand mt15">
+						<div class="WB_arrow"></div>
+						<div class="WB_text">
+                			The original post is deleted
+						</div>
+						<div class="clearfix"></div>					
 					</div>
 
 					<div class="lotspic_list">
 						<ul>
-							<li ng-repeat="uri in wb.tmpPicUrls track by $index">
-								<img ng-src="{{uri}}" alt=""/>
+							<li ng-repeat="pic in wb.pictures track by $index">
+								<a href="javascript:void(0);" ng-click="showPicSlider(wb)">
+									<img ng-src="{{pic.dataURI}}"></img></a>
 							</li>
 							<div class="clearfix"></div>
 						</ul>
 					</div>
 				</div>
 				<div class="clearfix"></div>
-				<div ng-controller="reviewController" class="msgBox pr">
+				<div class="msgBox pr">
                 	<span class="time fl">{{wb.timeStamp | timePassed}}</span>
 					<span class="funBox fr">
-						<a href="javascript:void(0);" ng-click="checkFavorite(wb)" class="btn-fav"><i ng-show="wb.isFavorite" class="fav_icon"></i><span ng-hide="wb.isFavorite">�ղ�</span></a><span>|</span>
-						<a href="javascript:void(0);" ng-click="showRelay(wb)" class="btn-relay">ת��{{wb.relays.length | bracket}}</a><span>|</span>
-						<a href="javascript:void(0);" ng-click="showReview(wb)" class="btn-comt">����{{wb.reviews.length | bracket}}</a>
-						
-						<a href="#" class="feed_opt"><i class="btn_ldrop"></i></a>
-						
+						<a href='javascript:void(0);' ng-click='myUserInfo.toggleFavorite(wb)' class='btn-fav'>
+							<i ng-show='wb.isFavorite' class='fav_icon'></i><span ng-hide='wb.isFavorite'>收藏</span>
+						</a><span>|</span>
+						<a href="javascript:void(0);" ng-click="showRelay(wb)" class="btn-relay">转播{{wb.relays.length | bracket}}</a><span>|</span>
+						<a href="javascript:void(0);" ng-click="showReview(wb)" class="btn-comt">评论{{wb.reviews.length | bracket}}</a>
+						<a href="javascript:void(0);" ng-click="deleteWeibo(wb)" class="feed_opt"><i class="btn_ldrop"></i></a>
 						<div class="mFun">
 							<div class="bg">
 								<div class="mFunDrop">							
-									<p><a href="#" class="detail line" target="_blank">��ע</a></p>
-									<p><a href="#" class="alarm">ɾ��</a></p>
+									<p><a href="javascript:void(0);" class="detail line">关注</a></p>
+									<p><a href="javascript:void(0);" class="alarm">删除</a></p>
 								</div>
 							</div>
 						</div>
-												
 					</span>
 					<div class="clearfix"></div>					
-					<div class="zfWrap" id="relay-box" ng-show="wb.wbID === R.relayedWeibo">
-						<div class="top c_tx5">
-							<span class="left">
-								<span class="number cNote">ת������΢��</span>
-							</span>
-							<a href="javascript:void(0);" class="W_close fr" title="�ر�"></a>
-						</div>
-						
-						<div class="cont">
-							<textarea ng-model="relay.body" ng-change="relayChanged()" class="inputTxt" style="overflow-y: hidden; height: 37px;"></textarea>							
-						</div>
-						<div class="bot">
-							<div class="fr">
-								<span ng-show="R.chCounter<=30" class="countTxt">��������<em>{{R.chCounter}}</em>��</span>
-								<a ng-click="(!R.txtInvalid) && addRelay(wb)" class="w_btn_a"><span class="btn_30px">ת��</span></a>
-							</div>
-							<div class="clearfix"></div>
-						</div>
-						<div class="relayList">
-							<div class="tabStyle1">
-								<b class="line"></b>
-							</div>
-							<div class="">
-								<ul>
-									<li ng-repeat="r in relayList track by $index" class="nobor">										
-										<div class="msgCnt">
-											<strong><a href="#" target="_blank" class="f10a2c7">{{r.author}}</a>:</strong>
-											<span class="content">{{r.body}}</span>
-										</div>
-										<div class="pubInfo">
-											<span class="cNote">{{r.timeStamp | timePassed}}</span>
-											<a href="#" class="alarm">ɾ��</a>
-											<a href="#" class="replyCite">����</a>
-										</div>
-									</li>
-								</ul>
-							</div>
-							<div class="pages">
-								<a href="#" class="pageBtn">��һҳ</a>
-								<a href="#">1</a>
-								<b> 2</b>
-								<a href="#">3</a>
-								<a href="#">4</a>
-								<a href="#" class="pageBtn">��һҳ</a>
-							</div>
-						</div>
-					</div>
-					
-					<div class="zfWrap comt-box" ng-show="wb.wbID === R.reviewedWeibo">
-					<form name="reviewForm" novalidate>
-						<div class="top c_tx5">
-							<span class="left">
-								<span class="number cNote">���۱���΢��</span>
-							</span>
-							<a href="javascript:void(0);" class="W_close fr" title="�ر�"></a>
-						</div>
-						
-						<div class="cont">
-							<textarea ng-model="review.body" ng-change="reviewChanged()" class="inputTxt" style="overflow-y: hidden; height: 37px;"></textarea>							
-						</div>
-						<div class="bot">
-							<div class="fr">								
-								<span ng-show="R.chCounter<=30" class="countTxt">��������<em>{{R.chCounter}}</em>��</span>
-								<a ng-click="(!R.txtInvalid) && addReview(wb)" class="w_btn_a"><span class="btn_30px">����</span></a>
-							</div>
-							<div class="clearfix"></div>
-						</div>
-						</form>
-						<div class="relayList">
-							<div class="tabStyle1">
-								<b class="line"></b>
-							</div>
-							<div class="">
-								<ul>
-									<li ng-repeat="r in reviewList track by $index" class="nobor">										
-										<div class="msgCnt">
-											<strong><a href="#" target="_blank" class="f10a2c7">{{r.author}}</a>:</strong>
-											<span class="content">{{r.body}}</span>
-										</div>
-										<div class="pubInfo">
-											<span class="cNote">{{r.timeStamp | timePassed}}</span>
-											<a href="#" class="alarm">ɾ��</a>
-											<a href="#" class="replyCite">����</a>
-										</div>
-									</li>
-								</ul>
-							</div>
-							<div class="pages">
-								<a href="#" class="pageBtn">��һҳ</a>
-								<a href="#">1</a>
-								<b> 2</b>
-								<a href="#">3</a>
-								<a href="#">4</a>
-								<a href="#" class="pageBtn">��һҳ</a>
-							</div>
-						</div>
-					</div>
+					<le-relay add="relayPost" author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" show-relay="{{wb.wbID===R.relayedWeibo}}">
+						<span class='number cNote'>转播本条微博</span>
+						<a href='javascript:void(0);' ng-click='showRelay(wb)' class='W_close fr' title='关闭'></a>
+					</le-relay>
+
+					<le-review author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" display="{{wb.wbID===R.reviewedWeibo}}">
+						<span class='number cNote'>评论本条微博</span>
+						<a href='javascript:void(0);' ng-click="showReview(wb)" class='W_close fr' title='关闭'></a>
+					</le-review>
 					<div class="clearfix"></div>
 					
 				</div>
 			</li>
 		</ul>
+		<pager total-items="totalItems" items-per-page="global.itemsPerPage" ng-model="global.currentPage" ng-change="pageChanged()"></pager>
 	</div>
+</script>
+
+<script type="text/ng-template" id="upperSidebar.html">
+<div class="WB_right_module mb10">
+	<div class="p10">
+		<div class="userPic">
+			<p><a ui-sref="root.personal.allPosts({bid:currUserInfo.bid})" title="">
+				<img ng-src="{{currUserInfo.headPicUrl}}" title="" width="78"/></a></p>				
+		</div>
+		<div class="namebox">
+			<p><b><a ui-sref="root.personal.allPosts({bid:currUserInfo.bid})" title="" class="f10a2c7">{{currUserInfo.nickName}}</a></b></p>
+			<p class="f12">用户等级:新手</p>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="m_profile_data">
+		<ul class="list">
+			<li>
+				<a ui-sref="root.personal.allPosts({bid:currUserInfo.bid})"><span class="text_count">{{currUserInfo.weiboCount}}</span><span class="text_atr">广播</span></a>
+			</li>
+			<li>
+				<a ui-sref="root.personal.friends({bid:currUserInfo.bid})"><span class="text_count">{{currUserInfo.friendCount}}</span><span class="text_atr">好友</span></a>
+			</li>
+			<li>
+				<a ui-sref="root.personal.favorite({bid:currUserInfo.bid})"><span class="text_count">{{currUserInfo.favoriteCount}}</span><span class="text_atr">收藏</span></a>
+			</li>
+		</ul>
+		<div class="clearfix"></div>
+	</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="lowerSidebar.html">
+<!--used when displaying personal weibo, there is no personal infor on sidebar-->
+<div class="WB_right_module mb10">
+	<div class="WB_cardtitle_b">
+		<h4>
+			<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+			<span class="main_title">可能感兴趣的人</span>
+		</h4>
+	</div>
+	<div class="WB_innerwrap">
+		<ul class="person_list">
+			<li>
+				<div class="pic">
+					<a href="javascript:void(0);"><img src="data:image/jpeg;base64,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" class="W_face_radius"></a>
+				</div>
+				<div class="con">
+					<p class="name">
+						<a href="javascript:void(0);" class="S_txt1">夏滟or大刀...</a>
+					</p>
+					<span>
+						<a class="w_btn_b" href="javascript:void(0);"><span class="btn_30px">关注</span></a>
+					</span>
+					<div class="change">
+						<a href="javascript:void(0)" class="W_ficon ficon_close S_ficon">X</a>
+					</div>
+				</div>
+				<div class="WB_right_expand">
+					<p class="S_txt2">24小时热点</p>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="WB_right_module">
+	<div class="WB_cardtitle_b S_line2">
+		<h4>
+			<a href="javascript:void(0);" class="opt_change fr"><em class="ficon_rotate"></em><span class="va-m">换一换</span></a>
+			<span class="main_title">热门话题</span>
+		</h4>
+	</div>
+	<div class="WB_innerwrap">
+		<ul class="hot_topic">
+			<li>
+				<p>
+					<span class="total S_txt2" title="阅读量">784万</span>
+					<a class="S_txt1" href="javascript:void(0);" title="#马路吊瓶#">#马路吊瓶#</a>
+				</p>
+			</li>
+		</ul>
+	</div>
+</div>
+<div class="clearfix"></div>
+</script>
+</body>
+</html>

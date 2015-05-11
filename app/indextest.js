@@ -7,7 +7,7 @@ function ScorePair() { }
 function Message() {}
 var hosturl = "112.124.113.235:30003";
 //hosturl = "97.74.126.127:4800";
-var client = new hprose.HttpClient("http://" + hosturl + "/webapi/", ["login","register",
+var client = new hprose.Client.create("http://" + hosturl + "/webapi/", ["login","register",
     "getvar", "begin", "commit", "rollback", "setdata", "set", "get", "hset", "hget","hlen","hkeys",
      "hgetall", "hmset","hmget","exit", "lpush", "lpop", "rpush", "rpop", "lrange", "zadd", "zrange",
      "sendmsg", "readmsg", "invite", "accept", "test", "veni", "sethostip","proxyget","del","hdel","hmclear"])
@@ -114,8 +114,8 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
         $scope.imgtext = '';
         var r = new FileReader();
         r.onloadend = function (e) {           
-            console.log(e.target.result.byteLength);           
-            client.set($scope.sid, $scope.bid, "upgrade-file-location", e.target.result, function () {
+            //console.log(e.target.result.byteLength);           
+            client.set($scope.sid, $scope.bid, "upgrade-file-location", r.result, function () {
                 $scope.appstatus = "upload ok;";
                 $scope.imgtext = "upgrade-file-location";
                 $scope.$apply()
@@ -127,6 +127,7 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
             })           
         }
         r.readAsArrayBuffer(x);
+        //r.readAsText(x);
         console.log("good");
     };
     

@@ -2,9 +2,76 @@
  *  definition of global data structures, constructors
  */
 "use strict";
+var G_VARS = {
+	bidPath : window.location.pathname + "/appID/userID/",
+	IPList : [ "112.124.113.235:30003", "97.74.126.127:4800", "218.74.25.10:8100" ], // api for IP lists
+	IPNum : 0,
+	sid : '4d01b26c7a5128f718871221ad6456bfd505779b',
+	dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U', // from which JS, css, template code are read
+	leither : 'vq-uYGXEf6yzbXV0_Th3SqzHBWyxuGJjryxVDUMY5f0', // leither-cloud.js
+	angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw', // angular.js
+	spinner : null, // spinning image while loading
+	httpClient : null,
+	weiboApp : null, // ["ui.bootstrap", "ui.router"]
+	MaxWeiboLength : 40,
+	idxDB : null, // handle of indexedDB
+	idxDBVersion : 3,
+	objStore : {
+		picture : "_picture_store",
+	},
+	MaxHeight : 800, // max height and width of pictures uploaded
+	MaxWidth : 800,
+
+	// define global variables used as KEY
+	Posts : "_array_of_all_weibo_keys", // keys for all the posts by user, post
+										// date is used as Field in hset()
+	PostPics : "_pictures_of_all_posts", // SET: [keys]
+	Favorites : "_favorite_posts_array", // favorites are stored by user as
+											// Post. HSET: Key, bid, key of the
+											// favorite post
+	UserInfo : "_app_user_information", // user information for weibo app
+	Reviews : "_array_of_review_keys", // all of the reviews send by user, post
+										// date is used as Field
+	Request : "_request_to_become_friends",
+	Friends : "_friends_in_weibo_app",
+	UnreadSMS : "_tmp_unread_sms_message",
+	Version : "_database_version_in_DB", // where database version number is
+											// stored
+	Upgrade : "_upgrade_file_location",
+
+	// create a shallow copy of an array of objects
+	slice : function(src, target, start, end) {
+		// clear target array without creating a shadow
+		target.length = 0;
+		for (var i = start; i < end && i < src.length; i++) {
+			target.push(src[i]);
+		};
+	},
+	// search items by weibo ID
+	search : function(items, value) {
+		for (var i = 0; i < items.length; i++) {
+			if (items[i].wbID == value.wbID) {
+				return i;
+			};
+		};
+		return -1;
+	},
+	// resize a photo propotionally
+	scaleSize : function(maxW, maxH, currW, currH) {
+		var ratio = currH / currW;
+		if (currW >= maxW && ratio <= 1) {
+			currW = maxW;
+			currH = currW * ratio;
+		} else if (currH >= maxH) {
+			currH = maxH;
+			currW = currH / ratio;
+		};
+		return [ currW, currH ];
+	},
+};
 
 function UIBase() {
-	this.bid = null;			//block ID
+	this.bid = null;			// block ID
 	this.nickName = "";
 	this.intro = null;		//a brief self-introduction
 	this.mobile = null;		//cellular number used for verifying user's authenticity

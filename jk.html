@@ -9,11 +9,11 @@
 var IPList = ["112.124.113.235:30003","218.74.25.10:8100"];		//api for IP lists
 var IPNum = 0;
 var sid = '0f24d8d2956508cc571e67da23ee75ae47c1879c';
-var dataBid = 'gVQXZWd0RgNuB-5R5tX1gxhOb200TdwEVs-LHbLXpLo';
+var dataBid = '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U';
 
 //Both check server availability and load hprose
 function loadHprose(ip, callback) {
-	var hproseKey = '-l1PnT32Vi5FEf-tGRQTStUPe1bNXZZN9H26ib0q50o';
+	var leither = 'vq-uYGXEf6yzbXV0_Th3SqzHBWyxuGJjryxVDUMY5f0';
 	var appsKey = 'appstore-datalist-json';
 	var script = document.createElement("script");
 	script.type = "text/javascript";
@@ -27,7 +27,6 @@ function loadHprose(ip, callback) {
 		};
 	} else { //Others
 		script.onload = function() {
-			console.log(appStoreEntries);
 			callback(ip);
 		};
 	};
@@ -37,7 +36,7 @@ function loadHprose(ip, callback) {
 		checkServer(IPList[IPNum++]);
 	});
 	//here is a problem with illegitimate sid
-	script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+sid+'&bid='+dataBid+'&key='+appsKey;
+	script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+sid+'&bid='+dataBid+'&key='+leither;
 	console.log(script);
 	document.getElementsByTagName("head")[0].appendChild(script);		//load hprose first
 };
@@ -47,18 +46,22 @@ function checkServer(ip) {
 		console.log("no server available");
 		return;
 	};
-	//try to load hprose from potential server
+	//try to load leither from potential server
 	loadHprose(ip, function(ip) {
-		//the server is live, hprose loaded from it	
-		var ul = document.getElementById("appList");
-		var li = document.createElement("li");
-		var a = document.createElement("a");
-		a.download = "release.html";
-		//a.target = "_blank";
-		a.textContent = "Weibo";
-		a.href = 'http://'+ip+'/getres?type=text/html&sid='+sid+'&bid='+dataBid+'&key='+appStoreEntries[0]["Weibo"];
-		li.appendChild(a);
-		ul.appendChild(li);
+		//the server is live, leither loaded successfully	
+		var div = document.getElementById("loadZone");
+		var leClient = leither.client(ip);
+		var appID = "upgrade-file-location";
+		leClient.get(sid, dataBid, appID, function(data) {
+			var r = new FileReader();
+			r.onload = function(e) {
+				console.log(r.result);
+				div.innerHTML = r.result;
+			};
+			r.readAsText(new Blob([data[1]], {type : "html/text"}));
+		}, function(name, err) {
+			console.error(err);
+		});
 	});
 };
 
@@ -66,7 +69,7 @@ checkServer(IPList[IPNum++]);
 </script>
 </head>
 
-<body ng-controller="appController">
-	<ul id="appList"></ul>
+<body>
+	<div id="loadZone"></div>
 </body>
 </html>

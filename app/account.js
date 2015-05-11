@@ -21,6 +21,7 @@
 					sessionStorage.sid = sid;
 					
 					//get system user object, which is different from Weibo user object
+					debug.log(G_VARS)
 					G_VARS.httpClient.getvar(sid, 'self', function(usr) {
 						deferredUser.resolve(usr);
 					}, function(name, err) {
@@ -35,11 +36,11 @@
 						deferredVer.reject("Failed to obtain version #");
 					});
 					
-					G_VARS.httpClient.getvar(sid, 'ppt', function(ppt) {
-						debug.log('ppt=' +ppt);
-					}, function(name, err) {
-						debug.error(err);
-					});
+//					G_VARS.httpClient.getvar(sid, 'ppt', function(ppt) {
+//						debug.log('ppt=' +ppt);
+//					}, function(name, err) {
+//						debug.error(err);
+//					});
 				}, function(reason) {
 					// handle error
 					debug.error("getSysUser err3=" +reason);
