@@ -171,13 +171,23 @@
 					var newImg = new Image();
 					newImg.onload = function(e) {
 						var maxWidth = 200, maxHeight = 200;
-						var newSize = G_VARS.scaleSize(maxWidth, maxHeight, newImg.width, newImg.height);
-						var imageWidth = newSize[0], imageHeight = newSize[1];
-						debug.info(imageWidth, imageHeight);
-						
+						var imageWidth, imageHeight;
+						//crop the largest square from input image first
+						if (newImg.width > newImg.height) {
+							imageHeight = newImg.height;
+							imageWidth = imageHeight;
+						} else {
+							imageWidth = newImg.width;
+							imageHeight = imageWidth;
+						};
+						//debug.info(imageWidth, imageHeight);
 						var tmpCanvas = document.createElement("canvas");
-						tmpCanvas.width = imageWidth, tmpCanvas.height = imageHeight;
-						tmpCanvas.getContext("2d").drawImage(newImg, 0, 0, imageWidth, imageHeight);
+						tmpCanvas.width = maxWidth, tmpCanvas.height = maxHeight;
+						var sx = parseInt((newImg.width-imageWidth)/2), sy = parseInt((newImg.height-imageHeight)/2);
+						if (newImg.height > newImg.width)
+							sy = 0;		//assume vertical image's important info is on top
+						tmpCanvas.getContext("2d").drawImage(newImg,
+								sx, sy, imageWidth, imageHeight, 0, 0, maxWidth, maxHeight);
 						img.setAttribute("src", tmpCanvas.toDataURL());
 					};
 					newImg.src = r.result;

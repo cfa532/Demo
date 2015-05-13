@@ -260,7 +260,7 @@
 
 		$scope.showFullPic = function(wb, picKey) {
 			var p = new WeiboPicture(picKey, wb.authorID);
-			p.get(function(uri) {
+			p.get(1, function(uri) {
 				window.open(uri, "_self");
 			});
 		};
@@ -352,8 +352,9 @@
 							//debug.log(wb[1]);
 							angular.forEach(wb[1].pictures, function(picKey) {
 								var p = new WeiboPicture(picKey, bid);
-								p.get(function(uri) {
+								p.get(1, function(uri) {
 									//do nothing other than get the picture
+									p.dataURI = uri;
 									$scope.myPicUrls.push(p);
 									$timeout(function() {G_VARS.spinner.stop()});
 								});

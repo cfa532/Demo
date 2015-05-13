@@ -13,7 +13,7 @@ var fs = require('fs');
 var bid = "4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U";
 //bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
 var sid = "9f25eb605c1c0ef865c5dd5ade7621c66be5b244";
-var version = "1.0.8";
+var version = "1.0.9";
 var ps = [];		//queue to hold all the promises
 
 function loadFile(i, o) {
@@ -35,7 +35,7 @@ function loadFile(i, o) {
 fs.readFile("makefile.json", "utf-8", function(err, text) {
 	if (err) throw(err);
 	var mf = JSON.parse(text)[version];		//everything under this version
-	//console.log(mf.css);
+	//console.log(mf);
 	mf.js.forEach(function(o) {
 		for(var i in o) {
 			(function(i, o) {
@@ -63,7 +63,7 @@ fs.readFile("makefile.json", "utf-8", function(err, text) {
 		var o = {};
 		o[version] = mf;
 		var t = JSON.stringify(o);
-		proxy.set(sid, bid, "_makefile.json", t, function() {
+		proxy.set(sid, bid, "_makefile.json"+"_"+version, t, function() {
 			console.log(t);
 		}, function(name, err) {
 			console.error(err);

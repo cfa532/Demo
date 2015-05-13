@@ -19,8 +19,8 @@ var G_VARS = {
 	objStore : {
 		picture : "_picture_store",
 	},
-	MaxHeight : 800, // max height and width of pictures uploaded
-	MaxWidth : 800,
+	MaxHeight : 768, // max height and width of pictures uploaded
+	MaxWidth : 1024,
 
 	// define global variables used as KEY
 	Posts : "_array_of_all_weibo_keys", // keys for all the posts by user, post
@@ -66,7 +66,7 @@ var G_VARS = {
 			currH = maxH;
 			currW = currH / ratio;
 		};
-		return [ currW, currH ];
+		return [ parseInt(currW), parseInt(currH) ];
 	},
 };
 
@@ -163,7 +163,7 @@ function UserInfo(bid) {
 			self.friendCount = self.b.friends.length;
 			
 			//debug.log(self);
-			new WeiboPicture(self.headPicKey, self.bid).get(function(uri) {
+			new WeiboPicture(self.headPicKey, self.bid).get(1, function(uri) {
 				//it is possible a new UI has no pic key
 				if (uri)
 					self.headPicUrl = uri;
@@ -413,7 +413,7 @@ function WeiboPicture(picID, authorID) {
 	};
 	var self = this;
 	
-	this.get = function(callback) {
+	this.get = function(ratio, callback) {
 		//first check if the pic is available locally
 		if (!self.id) {			//a null id will cause idxDB.request.get() to throw uncaught error
 			callback(null);
@@ -436,7 +436,9 @@ function WeiboPicture(picID, authorID) {
 		request.onsuccess = function(e) {
 			if (e.target.result) {
 				self.dataURI = e.target.result.dataURI;
-				callback(e.target.result.dataURI);		//return the picture data
+//				callback(e.target.result.dataURI);		//return the picture data
+//				return;
+				cropImage(ratio, callback);
 			}
 			else {
 				G_VARS.httpClient.get(G_VARS.sid, self.authorID, self.id, function(data) {
@@ -444,7 +446,8 @@ function WeiboPicture(picID, authorID) {
 						var r = new FileReader();
 						r.onloadend = function(e) {
 							self.dataURI = r.result;
-							callback(r.result);
+							//callback(r.result);
+							cropImage(ratio, callback);
 
 							//save the picture in local DB
 							var trans = G_VARS.idxDB.transaction([G_VARS.objStore.picture], "readwrite");
@@ -472,6 +475,33 @@ function WeiboPicture(picID, authorID) {
 				});
 			};
 		};
+		
+		function cropImage(ratio, callback) {
+			//ratio is height/width of desired image size
+			if (!ratio || ratio<=0)
+				callback(self.dataURI);
+
+			var imgWidth, imgHeight, img = new Image();
+			img.onload = function(e) {
+				//var ratio = dimH / dimW;
+				if (img.height/img.width < ratio) {			//image is more horizontal, use height to get proper width
+					imgHeight = img.height;
+					imgWidth = imgHeight / ratio;
+				} else {
+					imgWidth = img.width;
+					imgHeight = imgWidth * ratio;
+				};
+				var tmpCanvas = document.createElement("canvas");
+				tmpCanvas.width = imgWidth, tmpCanvas.height = imgHeight;
+				var sx = parseInt((img.width-imgWidth)/2), sy = parseInt((img.height-imgHeight)/2);
+				if (img.height > img.width)
+					sy = 0;
+				//debug.log(img.height, img.width, imgHeight, imgWidth, sx, sy);
+				tmpCanvas.getContext("2d").drawImage(img, sx, sy, imgWidth, imgHeight, 0, 0, imgWidth, imgHeight);
+				callback(tmpCanvas.toDataURL());
+			};
+			img.src = self.dataURI;
+		};
 	};
 	
 	//save the image in both LeitherOS and indexedDB
@@ -480,13 +510,21 @@ function WeiboPicture(picID, authorID) {
 		//resize the image first
 		var img = new Image();
 		img.onload = function(e) {
-			var maxWidth = 200, maxHeight = 200;
-			var newSize = G_VARS.scaleSize(maxWidth, maxHeight, img.width, img.height);		//resize the pic propotionally
+			var maxWidth = 1024, maxHeight = 768;
+			//scale the image and return new size under system limits
+			var newSize;
+			if (img.width > img.height)
+				newSize = G_VARS.scaleSize(maxWidth, maxHeight, img.width, img.height);		//horizontal image
+			else
+				newSize = G_VARS.scaleSize(maxHeight, maxWidth, img.width, img.height);		//vertical image
+			//debug.info(newSize);
+			//crop it to propotionally
 			var imageWidth = newSize[0], imageHeight = newSize[1];
 			var tmpCanvas = document.createElement("canvas");
-			tmpCanvas.width = imageWidth, tmpCanvas.height = imageHeight;
-			tmpCanvas.getContext("2d").drawImage(img, 0, 0, imageWidth, imageHeight);
+			tmpCanvas.width = imageWidth, tmpCanvas.height = imageHeight;	//largest possible image size
+			tmpCanvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, imageWidth, imageHeight);
 			self.dataURI = tmpCanvas.toDataURL();
+			debug.info(self.dataURI);
 			
 			//save the pic as binary array on Leither to save bandwidth
 			G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, dataURLToBlob(self.dataURI), function(picKey) {
@@ -618,7 +656,7 @@ function WeiboPost(wbID, authorID, original, scope)
 			self.pictures = [];
 			angular.forEach(data[1].pictures, function(picID) {
 				var wp = new WeiboPicture(picID, self.authorID);
-				wp.get(function(uri) {
+				wp.get(1, function(uri) {
 					wp.dataURI = uri;
 					self.pictures.push(wp);
 					if (self.scope) self.scope.$apply();	//show the pic right away

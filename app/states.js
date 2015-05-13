@@ -126,7 +126,7 @@
 							G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
 								ui.lastSMS = m[1];
 								if (m[1].contentType === 1) {
-									new WeiboPicture(m[1].content, m[1].bid).get(function(uri) {
+									new WeiboPicture(m[1].content, m[1].bid).get(1, function(uri) {
 										m[1].dataURI = uri;
 									});
 								};
@@ -188,7 +188,7 @@
 
 				var getMsgPic = function(m) {
 					if (m.contentType === 1) {
-						new WeiboPicture(m.content, m.bid).get(function(uri) {
+						new WeiboPicture(m.content, m.bid).get(1, function(uri) {
 							m.dataURI = uri;
 							$scope.$apply();
 						});
@@ -472,7 +472,7 @@
 								//debug.log(wb[1]);
 								angular.forEach(wb[1].pictures, function(picKey) {
 									var p = new WeiboPicture(picKey, $rootScope.currUserInfo.bid);
-									p.get(function(uri) {
+									p.get(1, function(uri) {
 										//remove duplicated pics
 //										for (var j=0; j<$scope.curPics.length; j++) {
 //											debug.info(j, p.id);

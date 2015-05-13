@@ -17,8 +17,8 @@ var G = {
 		dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U',	//from which JS data are read
 		leither : 'vq-uYGXEf6yzbXV0_Th3SqzHBWyxuGJjryxVDUMY5f0', 	//leither-cloud.js has to be loaded on server
 		angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',	//angular.js
-		makefile	: "_makefile.json",		//where K-V of js and css code stored
-		myVersion	: "1.0.8",			//current html version
+		myVersion	: "1.0.9",			//current html version
+		makefile	: "_makefile.json_1.0.9",		//where K-V of js and css code stored
 		//xiaoxie
 //		ppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzRfNk1ma1BnSjAzVFNycnRsRWF3R2YyOTlQWXpVTHU0MmcybTQ5eFFsOFUA",
 //sibao
@@ -138,7 +138,7 @@ var G = {
 	
 	function loadExternalJS() {
 		G.httpClient.get(G.sid, G.dataBid, G.makefile, function(data) {
-			//console.log(data)
+			console.log(G.makefile)
 			var mf = JSON.parse(data[1])[G.myVersion];
 			console.log(mf);
 			
