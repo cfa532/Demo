@@ -29,7 +29,7 @@
 		
 		var getMsgPic = function(m) {
 			if (m.contentType === 1) {
-				new WeiboPicture(m.content, m.bid).get(function(uri) {
+				new WeiboPicture(m.content, m.bid).get(0, function(uri) {
 					m.dataURI = uri;
 					$scope.$apply();
 				});

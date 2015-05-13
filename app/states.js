@@ -124,14 +124,19 @@
 						if (data.length > 0) {
 							data.sort(function(a, b) {return b-a});
 							G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
-								ui.lastSMS = m[1];
 								if (m[1].contentType === 1) {
-									new WeiboPicture(m[1].content, m[1].bid).get(1, function(uri) {
+									var p = new WeiboPicture(m[1].content, m[1].bid);
+									p.get(0, function(uri) {
 										m[1].dataURI = uri;
+										ui.lastSMS = m[1];
+										$scope.$apply();
+										G_VARS.spinner.stop();
 									});
+								} else {
+									ui.lastSMS = m[1];
+									$scope.$apply();
+									G_VARS.spinner.stop();
 								};
-								$scope.$apply();
-								G_VARS.spinner.stop();
 							}, function(name, err) {
 								debug.error(err);
 							});
@@ -186,15 +191,6 @@
 					return false;
 				};
 
-				var getMsgPic = function(m) {
-					if (m.contentType === 1) {
-						new WeiboPicture(m.content, m.bid).get(1, function(uri) {
-							m.dataURI = uri;
-							$scope.$apply();
-						});
-					};
-				};
-				
 				//take the chatting friend's bid as parameter
 				$scope.sendSMS = function(bid) {
 					if ($scope.txtChat && $scope.txtChat.toString().replace(/\s+/g,"") !== '') {
@@ -342,6 +338,17 @@
 					};
 				};
 
+				var getMsgPic = function(m) {
+					if (m.contentType === 1) {
+						m.dataURI = null;		//prevent browse show an illegal dataURI error
+						var p = new WeiboPicture(m.content, m.bid);
+						p.get(0, function(uri) {	//show original pic
+							m.dataURI = uri;
+							$scope.$apply();
+						});
+					};
+				};
+				
 				var getChatDetail = function(bid) {
 					$scope.inPageMsgs.length = 0;
 					if ($scope.chatSessions[bid]) {
@@ -379,15 +386,13 @@
 										ts.sort(function(a,b) {return b-a});
 										for (var i=0; i<ts.length && i<50; i++) {
 											G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, ts[i], function(msg) {
-												if (msg[1]) {
-													getMsgPic(msg[1]);
-													$scope.chatSessions[bid].messages.push(msg[1]);
-													$scope.inPageMsgs.push(msg[1]);
-													$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
-													G_VARS.spinner.stop();
-													$scope.$apply();
-													//$timeout(function() {$scope.$apply();});
-												}
+												getMsgPic(msg[1]);
+												$scope.chatSessions[bid].messages.push(msg[1]);
+												$scope.inPageMsgs.push(msg[1]);
+												$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
+												G_VARS.spinner.stop();
+												$scope.$apply();
+												//$timeout(function() {$scope.$apply();});
 											}, function(name, err) {
 												debug.error(err);
 											});

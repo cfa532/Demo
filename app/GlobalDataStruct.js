@@ -111,34 +111,33 @@ function UserInfo(bid) {
 
 	//save UI obj into DB
 	this.set = function(callback) {
-			self.b.bid = self.bid;
-			self.b.nickName = self.nickName;
-			self.b.intro = self.intro;
-			self.b.mobile = self.mobile;
-			self.b.email = self.email;
-			self.b.location = self.location;
-			self.b.version = self.version;
-			self.b.timeStamp = new Date().getTime();	//last time the UI is changed
-			self.b.headPicKey = self.headPicKey;
-			self.b.passwd = self.passwd;
-			self.b.favoriteCount = self.favoriteCount;
-			self.b.weiboCount = self.weiboCount;
-			//self.b.friends is maintained by other functions
-			
-			var t = new UIBase();
-			angular.copy(self.b, t);
-			t.friends.length = 0;
-			for (var i=0; i<self.b.friends.length; i++) {
-				var f = new Friend();
-				angular.copy(self.b.friends[i], f);
-				t.friends.push(f);
-			};
-			G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.UserInfo, G_VARS.bid, t, function() {
-				debug.log("UserInfo set ok", t);
-				if (callback) callback();
-			}, function(name, err) {
-				debug.warn(err);
-			});
+		var t = new UIBase();
+		t.bid = self.bid;
+		t.nickName = self.nickName;
+		t.intro = self.intro;
+		t.mobile = self.mobile;
+		t.email = self.email;
+		t.location = self.location;
+		t.version = self.version;
+		t.timeStamp = new Date().getTime();	//last time the UI is changed
+		t.headPicKey = self.headPicKey;
+		t.passwd = self.passwd;
+		t.favoriteCount = self.favoriteCount;
+		t.weiboCount = self.weiboCount;
+		
+		//self.b.friends is maintained by other functions
+		//angular.copy(self.b, t);
+		for (var i=0; i<self.b.friends.length; i++) {
+			var f = new Friend();
+			angular.copy(self.b.friends[i], f);
+			t.friends.push(f);
+		};
+		G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.UserInfo, G_VARS.bid, t, function() {
+			debug.log("UserInfo set", t);
+			if (callback) callback();
+		}, function(name, err) {
+			debug.warn(err);
+		});
 	};
 	
 	//populate UI object with data of given userid (bid)
@@ -190,7 +189,7 @@ function UserInfo(bid) {
 				G_VARS.httpClient.hgetall(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, function(data) {
 					//data[i].field is author id of favorites
 					//data[i].value is array of wbID by the author
-					debug.info("my favorites", data)
+					//debug.info("my favorites", data)
 					for(var i=0; i<data.length; i++) {
 						self.favorites[data[i].field] = data[i].value;
 					}
@@ -405,7 +404,8 @@ function Friend() {
 	
 function WeiboPicture(picID, authorID) {
 	this.id = picID;			//key of the image file
-	this.dataURI = null;		//dataURI of full image, for display only
+	this.dataURI = null;		//dataURI of full image
+//	this.thumbnail = null;		//for display list
 	this.wbID = null;			//weibo to which this pic belongs to
 	this.authorID = authorID;	//owner of the pic file
 	if (!authorID) {
@@ -436,16 +436,14 @@ function WeiboPicture(picID, authorID) {
 		request.onsuccess = function(e) {
 			if (e.target.result) {
 				self.dataURI = e.target.result.dataURI;
-//				callback(e.target.result.dataURI);		//return the picture data
-//				return;
 				cropImage(ratio, callback);
 			}
 			else {
 				G_VARS.httpClient.get(G_VARS.sid, self.authorID, self.id, function(data) {
 					if (data[1]) {
 						var r = new FileReader();
-						r.onloadend = function(e) {
-							self.dataURI = r.result;
+						r.onloadend = function(event) {
+							self.dataURI = event.target.result;
 							//callback(r.result);
 							cropImage(ratio, callback);
 
@@ -478,9 +476,10 @@ function WeiboPicture(picID, authorID) {
 		
 		function cropImage(ratio, callback) {
 			//ratio is height/width of desired image size
-			if (!ratio || ratio<=0)
+			if (!ratio || ratio<=0) {
 				callback(self.dataURI);
-
+				return;
+			};
 			var imgWidth, imgHeight, img = new Image();
 			img.onload = function(e) {
 				//var ratio = dimH / dimW;
@@ -498,6 +497,7 @@ function WeiboPicture(picID, authorID) {
 					sy = 0;
 				//debug.log(img.height, img.width, imgHeight, imgWidth, sx, sy);
 				tmpCanvas.getContext("2d").drawImage(img, sx, sy, imgWidth, imgHeight, 0, 0, imgWidth, imgHeight);
+				//debug.log(tmpCanvas.toDataURL());
 				callback(tmpCanvas.toDataURL());
 			};
 			img.src = self.dataURI;
@@ -507,24 +507,24 @@ function WeiboPicture(picID, authorID) {
 	//save the image in both LeitherOS and indexedDB
 	//img is an ArrayBuffer
 	this.set = function(dataURL, callback) {
-		//resize the image first
+		self.dataURI = dataURL;
 		var img = new Image();
 		img.onload = function(e) {
-			var maxWidth = 1024, maxHeight = 768;
-			//scale the image and return new size under system limits
-			var newSize;
-			if (img.width > img.height)
-				newSize = G_VARS.scaleSize(maxWidth, maxHeight, img.width, img.height);		//horizontal image
-			else
-				newSize = G_VARS.scaleSize(maxHeight, maxWidth, img.width, img.height);		//vertical image
-			//debug.info(newSize);
-			//crop it to propotionally
-			var imageWidth = newSize[0], imageHeight = newSize[1];
-			var tmpCanvas = document.createElement("canvas");
-			tmpCanvas.width = imageWidth, tmpCanvas.height = imageHeight;	//largest possible image size
-			tmpCanvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, imageWidth, imageHeight);
-			self.dataURI = tmpCanvas.toDataURL();
-			debug.info(self.dataURI);
+			var maxWidth = 512, maxHeight = 384;
+			if (maxWidth*maxHeight < img.width*img.height) {
+				//scale large image and return new size under system limits
+				var newSize;
+				if (img.width > img.height)
+					newSize = G_VARS.scaleSize(maxWidth, maxHeight, img.width, img.height);		//horizontal image
+				else
+					newSize = G_VARS.scaleSize(maxHeight, maxWidth, img.width, img.height);		//vertical image
+				debug.info(self.dataURI, newSize, img.width, img.height);				
+				//crop it to propotionally
+				var tmpCanvas = document.createElement("canvas");
+				tmpCanvas.width = newSize[0], tmpCanvas.height = newSize[1];	//largest possible image size
+				tmpCanvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, newSize[0], newSize[1]);
+				self.dataURI = tmpCanvas.toDataURL();
+			};
 			
 			//save the pic as binary array on Leither to save bandwidth
 			G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, dataURLToBlob(self.dataURI), function(picKey) {
@@ -691,7 +691,7 @@ function WeiboPost(wbID, authorID, original, scope)
 		G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function(keylist) {
 			if (keylist[1]) {
 				//remove wbID from Posts keylist
-				//debug.log("keys before del() ", keylist[1]);
+				debug.log("keys before del() ", keylist[1], self.wbID);
 				keylist[1].splice(keylist[1].indexOf(self.wbID), 1);
 				if (keylist[1].length === 0) {
 					//remove the whole list
@@ -715,23 +715,21 @@ function WeiboPost(wbID, authorID, original, scope)
 		
 		//update PostPics if this weibo has picture
 		if (self.pictures.length > 0) {
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function(picKeys) {
-				if (picKeys[1]) {
+			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function(wbKeys) {
+				if (wbKeys[1]) {
 					//remove wbID from Posts keylist
-					debug.log(picKeys[1]);
-					picKeys[1].splice(picKeys[1].indexOf(self.wbID), 1);
-					
-					if (picKeys[1].length === 0) {
+					wbKeys[1].splice(wbKeys[1].indexOf(self.wbID), 1);					
+					if (wbKeys[1].length === 0) {
 						//remove the whole list
 						G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function() {
-							debug.log("keylist of post removed", picKeys[1]);
+							debug.log("keylist of post removed", wbKeys[1]);
 						}, function(name, err) {
 							debug.warn("keylist cannot be removed", err);
 						});
 					} else {
 						// weibo is indexed by the day of its posting. Update keylist
-						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, picKeys[1], function() {
-							debug.log("PostPics removed", picKeys[1]);
+						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, wbKeys[1], function() {
+							debug.log("PostPics removed", wbKeys[1]);
 						}, function(name, err) {
 							debug.error(err);
 						});

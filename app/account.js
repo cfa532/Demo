@@ -128,7 +128,10 @@
 				var np = new WeiboPicture();
 				np.set(f.result, function(setOK) {
 					if (setOK) {
-						$scope.myUserInfo.headPicUrl = np.dataURI;
+						//$scope.myUserInfo.headPicUrl = np.dataURI;
+						np.get(1, function(uri) {
+							$scope.myUserInfo.headPicUrl = uri;
+						});
 						$scope.myUserInfo.headPicKey = np.id;
 						$scope.myUserInfo.set(function() {
 							//my icon pic is changed, has to update the corresponding page

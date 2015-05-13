@@ -80,7 +80,6 @@
 		
 		$scope.deleteWeibo = function(wb) {
 			if (G_VARS.bid !== wb.authorID) return;
-			debug.info(wb);
 			wb.del(function() {
 				var i = G_VARS.search($scope.weiboList, wb);
 				if (i !== -1) {
@@ -99,12 +98,15 @@
 		$scope.showPicSlider = function(wb) {
 			if (wb.pictures.length === 0)
 				return;
-			//G_VARS.spinner.spin(document.getElementById("pic_slider"));
 			$rootScope.slides = [];
 			angular.forEach(wb.pictures, function(pic, i) {
-				$rootScope.slides.push({
-					image : pic.dataURI,
-					text : i
+				var p = new WeiboPicture(pic.id, wb.authorID);
+				p.get(0, function(uri) {	//get the original pic, not cropped one
+					$rootScope.slides.push({
+						image : p.dataURI,
+						text : i
+					});	
+					$scope.$apply();
 				});
 			});
 
@@ -459,15 +461,19 @@
 
 			//upload attached pictures
 			var ds = [];
+			debug.info("number of tmppictures ="+tmpPicFiles.length);
 			angular.forEach(tmpPicFiles, function(picFile) {
 				var df = $q.defer();
 				var r = new FileReader();
 				r.onloadend = function(e) {
 					var p = new WeiboPicture();
-					p.set(e.target.result, function(setOK) {
+					p.set(r.result, function(setOK) {
 						if (setOK) {
-							wb.pictures.push(p);
-							df.resolve();
+							p.get(1, function(uri) {
+								p.dataURI = uri;
+								wb.pictures.push(p);								
+								df.resolve();
+							});
 						} else {
 							df.reject();
 						};
@@ -502,26 +508,6 @@
 					$scope.global.currentPage = 1;
 					$scope.$apply();
 					G_VARS.spinner.stop();
-					
-					//save id of weibo that have pictures in a global list. The same pic will generate the same Key
-					if (wb.pictures.length > 0) {
-						var day = parseInt(wb.timeStamp/86400000);
-						G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, function(keys) {
-							//debug.log(keys[1], wb)
-							if (keys[1])
-								keys[1].push(wb.wbID);
-							else
-								keys[1] = [wb.wbID];
-							G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, day, keys[1], function() {
-								debug.log("wbID with pic added to global list =" + keys[1]);
-							}, function(name, err) {
-								debug.error(err);
-							});
-						}, function(name, err) {
-							debug.error(err);
-						});
-					} else {
-					};
 				}, function(reason) {
 					debug.error(reason);
 					G_VARS.spinner.stop();
