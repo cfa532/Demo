@@ -96,7 +96,8 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
     $scope.appstatus    = "idle"
     $scope.sid = ""
     $scope.bid = ""
-    $scope.resid = ""
+    $scope.resid = "";
+    console.log("here in app UserInfo")
     Login($scope);
 
     $scope.publishApp = function() {

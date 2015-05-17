@@ -31,6 +31,9 @@
 			"master" : { "fileKey" : "css/master.css" },
 			"addition" : { "fileKey" : "css/addition.css" },
 			"bootstrap" : { "fileKey" : "css/bootstrap.min.css" }
+		},
+		"html" : {
+			"main" : { "fileKey" : "templates/main.html" }
 		}
 	},
 "1.0.8" : {

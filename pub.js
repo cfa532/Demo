@@ -13,7 +13,7 @@ var fs = require('fs');
 var bid = "4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U";
 //bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
 var sid = "9f25eb605c1c0ef865c5dd5ade7621c66be5b244";
-var version = "1.0.8";
+var version = "1.0.9";
 var ps = [];		//queue to hold all the promises
 
 function loadFile(i, o) {
@@ -58,6 +58,15 @@ fs.readFile("makefile.json", "utf-8", function(err, text) {
 			};
 		})(i, mf.css);
 	};
+	//upload main.html
+//	fs.readFile("templates/main.html", "utf-8", function(err, text) {
+//		if (err) throw(err);
+//		proxy.set(sid, bid, "upgrade-file-location", text, function() {
+//			console.log("main.html uploaded");
+//		}, function(name, err) {
+//			console.error(err);
+//		});
+//	});
 	
 	Promise.all(ps).then(function(res) {
 		var o = {};
