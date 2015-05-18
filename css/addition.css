@@ -464,3 +464,28 @@ margin-left:68px; background-color:#f2e3cf; margin-right:16px;
 .qipao-color{ color:#666;}
 .talk-pics{ width:105px; margin-top:8px; max-height:160px; overflow:hidden;}
 .talk-pics img{ width:100%;}
+
+
+/*ÐÂ¼Ó´úÂë*/
+.sy-main{ width:100%; height:100%; background:url(../images/sy-bg.png) repeat-x top left #594f55;}
+.sy-content{ width:960px; margin:0 auto; background:url(../images/sy-info.png) no-repeat; padding-top:18px; overflow:hidden; padding-bottom:50px;}
+.sy-left{ margin-right:45px; width:435px;}
+.sy-left img{ width:435px; height:568px;}
+.sy-right{ width:480px; padding-top:40px;}
+.sy-text{ color:#fff; line-height:20px;}
+.sy-wbg{ background:#000;-moz-opacity: 0.12; opacity:.10; filter: alpha(opacity=15); height:120px; border:1px solid #fff;-khtml-border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; border:1px solid #afad98;}
+.sy-wz{ top:22px; color:#fff; z-index:555; left:15px;}
+.sy-wzm{ top:55px; background:#81806b; color:#fff; left:15px; padding:5px 8px;-khtml-border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px; border:1px solid #afad98;}
+.mt30{ margin-top:30px;}
+.ml15{ margin-left:15px;}
+.sy-down{ color:#fff; line-height:25px;}
+.siyu-info{ width:500px; overflow:hidden;}
+.siyu-alert{ background:#fc6a85; color:#fff; padding:8px; display:none;}
+.siyu-textarea{ width:390px; height:82px; border:1px solid #ccc; padding:6px; overflow:auto;}
+.c-red{ color:#f00;}
+.c-999{ color:#999;}
+.siyu-sure{ width:130px; height:35px; display:inline-block; background:#ff8140; color:#fff; line-height:35px;-khtml-border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; margin:25px 0;}
+.siyu-sure:hover{ background:#f7661c; color:#fff; text-decoration:none;}
+.siyu-con{ padding:20px; background:#fff; width:510px;}
+.siyu-input{ width:165px; height:22px; border:1px solid #e6e5e3; margin-right:5px; padding:0 3px;}
+.siyu-person td{ padding:5px 2px;}

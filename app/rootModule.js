@@ -2,6 +2,18 @@
 "use strict";
 (function() {
 	G_VARS.weiboApp
+	.controller("inviteController", function($scope) {
+		$scope.inviteFriend = function() {
+			debug.log("invite friends");
+			G_VARS.httpClient.createinvcode(G_VARS.sid, G_VARS.bid, 24 * 3600, 20, 40, function (invcode) {
+				debug.log("invite code="+invcode);
+				G_VARS.httpClient.invite(G_VARS.sid, invcode, function(txt) {
+					var ip = "http://"+G_VARS.IPList[G_VARS.IPNum];
+					$scope.invContent = "点击这个链接注册登录下。http://192.168.0.11/index.php?pid=xxxxx";
+				});
+			});
+		};
+	})
 	.controller("appController", function($scope, $rootScope, $window) {
 		console.log("In app controller");	//the very root of this app
 		
