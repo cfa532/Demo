@@ -4,7 +4,7 @@
 //handle review, relay and favorite
 (function() {
 	//angular.module("reviewModule", [])
-	G_VARS.weiboApp
+	G.weiboApp
 	.controller("reviewController", ['$rootScope','$scope', '$http',
 	                                 function($rootScope, $scope, $http) {
 		//console.log("Here in review module")
@@ -24,7 +24,7 @@
 			//Last parameter ht is a hashtable with 2 keys: reviews and relays
 			//corresponding value is array of reviews or relays. Save each of them
 			var wb = new WeiboPost();
-			wb.get(wbID, G_VARS.bid, false, function() {
+			wb.get(wbID, G.bid, false, function() {
 				var ds = [];
 				var r = new WeiboReview();
 				//store all reviews and relays in db and put corresponding keys in Weibo obj
@@ -39,7 +39,7 @@
 							
 							//save review and relay one by one, and put their keys
 							//into each Weibo's reviews and relays
-							G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, r, function(key) {
+							G.leClient.setdata(G.sid, G.bid, r, function(key) {
 								if (wb[k] === null) {
 									wb[k] = [key];
 								} else {
@@ -59,7 +59,7 @@
 					wb.update(function() {
 						console.log("key="+wbID+"\n"+keys.length + " messages accepted");
 						for (var i=0; i<$rootScope.weiboList.length; i++) {
-							if ($rootScope.weiboList[i].wbID===wbID && $rootScope.weiboList[i].authorID===G_VARS.bid) {
+							if ($rootScope.weiboList[i].wbID===wbID && $rootScope.weiboList[i].authorID===G.bid) {
 								$rootScope.weiboList[i].reviews = wb.reviews;
 								$rootScope.weiboList[i].relays = wb.relays;
 							};

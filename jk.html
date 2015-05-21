@@ -2,74 +2,92 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>APP store</title>
+<title>APP</title>
 <script type="text/javascript">
-"use strict";
+	"use strict";
+	//define some globals
+	var G = {
+			IPList :["112.124.113.235:30003","97.74.126.127:4800","218.74.25.10:8100"],		//api for IP lists
+			IPNum : 0,
+			leClient : null,
+			sid : '4d01b26c7a5128f718871221ad6456bfd505779b',
+			dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U',	//from which JS data are read
+			leither : '1TU1vLrmO9sZNju2KbOBMrey-wd-R_06yQuImEs_IIw', 	//leither-cloud.js has to be loaded on server
+			angular : 'bFcyw56WDR-zuJEP79_SkchXM5nJvnIvVzjtXgjX-hA',	//angular.js
+	};
 
-var IPList = ["112.124.113.235:30003","218.74.25.10:8100"];		//api for IP lists
-var IPNum = 0;
-var sid = '0f24d8d2956508cc571e67da23ee75ae47c1879c';
-var dataBid = '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U';
-
-//Both check server availability and load hprose
-function loadHprose(ip, callback) {
-	var leither = 'vq-uYGXEf6yzbXV0_Th3SqzHBWyxuGJjryxVDUMY5f0';
-	var appsKey = 'appstore-datalist-json';
-	var script = document.createElement("script");
-	script.type = "text/javascript";
-	script.async = "async";
-	if (script.readyState) { //IE
-		script.onreadystatechange = function() {
-			if (script.readyState == "loaded" || script.readyState == "complete") {
-				script.onreadystatechange = null;
+	//Both check server availability and load Leither
+	function loadLeither(ip, callback) {
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.async = "async";
+		if (script.readyState) { //IE
+			script.onreadystatechange = function() {
+				if (script.readyState == "loaded" || script.readyState == "complete") {
+					script.onreadystatechange = null;
+					callback(ip);
+				};
+			};
+		} else { //Others
+			script.onload = function() {
 				callback(ip);
 			};
 		};
-	} else { //Others
-		script.onload = function() {
-			callback(ip);
-		};
-	};
-	script.addEventListener("error", function() {
-		//try next server IP in a predefined list
-		console.log("check next server=" + IPList[IPNum])
-		checkServer(IPList[IPNum++]);
-	});
-	//here is a problem with illegitimate sid
-	script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+sid+'&bid='+dataBid+'&key='+leither;
-	console.log(script);
-	document.getElementsByTagName("head")[0].appendChild(script);		//load hprose first
-};
-
-function checkServer(ip) {
-	if (ip===null || typeof(ip)==='undefined') {
-		console.log("no server available");
-		return;
-	};
-	//try to load leither from potential server
-	loadHprose(ip, function(ip) {
-		//the server is live, leither loaded successfully	
-		var div = document.getElementById("loadZone");
-		var leClient = leither.client(ip);
-		var appID = "upgrade-file-location";
-		leClient.get(sid, dataBid, appID, function(data) {
-			var r = new FileReader();
-			r.onload = function(e) {
-				console.log(r.result);
-				div.innerHTML = r.result;
-			};
-			r.readAsText(new Blob([data[1]], {type : "html/text"}));
-		}, function(name, err) {
-			console.error(err);
+		script.addEventListener("error", function() {
+			//try next server IP in a predefined list
+			debug.log("check next server=" + G.IPList[G.IPNum])
+			checkServer(G.IPList[G.IPNum++]);
 		});
-	});
-};
+		//here is a problem with illegitimate sid
+		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G.sid+'&bid='+G.dataBid+'&key='+G.leither;
+		document.getElementsByTagName("head")[0].appendChild(script);		//load Leither first
+	};
 
-checkServer(IPList[IPNum++]);
+	function checkServer(ip) {
+		if (ip===null || typeof(ip)==='undefined') {
+			debug.log("no server available");
+			return;
+		};
+		//try to load Leither from potential server
+		loadLeither(ip, function(ip) {
+			//the server is live, Leither loaded from it
+			G.leClient = leither.client(ip);
+			
+			//get bid, sid, file key and invcode from url
+			function getURLParameter(name) {
+				return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+			};
+			var sid = getURLParameter('sid');
+			var bid = getURLParameter('bid');
+			var invcode = getURLParameter('invcode');
+			var senderId = getURLParameter('sender');
+			console.log(sid, bid, invcode);
+			G.leClient.getappdownloadkey(sid, senderId, invcode, function(key) {
+				var url = 'http://'+ip+'/getres?sid='+sid+'&bid='+senderId+'&key='+key;
+				console.log(url);
+				document.getElementById("loadZone").href = url;
+
+				G.leClient.getinvcodeinfo(sid, senderId, invcode, function(info) {
+					console.log(info);
+					document.getElementById("invInfo").innerHTML = "还剩"+info.friendCount+"名邀请名额，有效时间"+(parseInt(info.validity/3600)+1)+"小时";
+// 					$scope.friendCount = info.friendCount+1;
+// 					$scope.hourCounter = parseInt(info.validity/3600)+1;
+// 					$scope.$apply();
+				}, function(name, err) {
+					console.warn(err);
+				});
+			}, function(name, err) {
+				console.warn(err);
+			});
+		});
+	};
+
+	//look for live server in the IP list
+	checkServer(G.IPList[G.IPNum++]);
 </script>
 </head>
-
 <body>
-	<div id="loadZone"></div>
+	<a id="loadZone" href="#">点击下载你的微语</a><p></p>
+	<div id="invInfo">邀请</div>
 </body>
 </html>

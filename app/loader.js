@@ -2,7 +2,7 @@
 "use strict";
 
 (function() {
-	G_VARS.loader
+	G.loader
 	.run(function($state, $rootScope) {
 		//$state.go("root")
 		function message(to, toP, from, fromP) { return from.name  + angular.toJson(fromP) + " -> " + to.name + angular.toJson(toP); }
@@ -22,7 +22,7 @@
 					return localStorage[appID];
 				} else {
 					//load it from Leither
-					G_VARS.client.get(G_VARS.sid, G_VARS.bid, appID, function(data) {
+					G.client.get(G.sid, G.bid, appID, function(data) {
 						return data[1];
 					}, function(name, err) {
 						console.error(err);

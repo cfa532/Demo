@@ -2,7 +2,7 @@
 "use strict";
 
 (function() {	
-	G_VARS.weiboApp
+	G.weiboApp
 	.run(function($state, $rootScope) {
 		//$state.go("root")
 		function message(to, toP, from, fromP) { return from.name  + angular.toJson(fromP) + " -> " + to.name + angular.toJson(toP); }
@@ -26,8 +26,8 @@
 					var deferredStart = $q.defer();
 					debug.log("E<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<login done<<<<<<<<<<<<<<<<<<<<<<<<<<<<E")
 					//login succeed, read owner's data
-					debug.log("login bid="+G_VARS.bid);
-					$rootScope.myUserInfo = new UserInfo(G_VARS.bid);
+					debug.log("login bid="+G.bid);
+					$rootScope.myUserInfo = new UserInfo(G.bid);
 					$rootScope.myUserInfo.get(function(readOK) {
 						if (!readOK) {
 							//UserInfo does not exit, create a default one
@@ -47,13 +47,13 @@
 //						var bidPath = window.location.pathname+"/appID/userID";
 //						$rootScope.user = sysdata[0];
 //						$rootScope.ver = sysdata[1];
-//						G_VARS.sid = sessionStorage.sid;
-//						G_VARS.bid = $rootScope.user.id;
-//						localStorage[bidPath] = G_VARS.bid;
+//						G.sid = sessionStorage.sid;
+//						G.bid = $rootScope.user.id;
+//						localStorage[bidPath] = G.bid;
 //						debug.log("E<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<login done<<<<<<<<<<<<<<<<<<<<<<<<<<<<E")
 //						//login succeed, read owner's data
-//						debug.log("login bid="+G_VARS.bid);
-//						$rootScope.myUserInfo = new UserInfo(G_VARS.bid);
+//						debug.log("login bid="+G.bid);
+//						$rootScope.myUserInfo = new UserInfo(G.bid);
 //						$rootScope.myUserInfo.get(function(readOK) {
 //							if (!readOK) {
 //								//UserInfo does not exit, create a default one
@@ -82,7 +82,7 @@
 				msgService.readMsg();
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
 				myChatBox.getOnlineUsers();		//unknown user may cause a problem
-				G_VARS.spinner = new Spinner(	// show the onload spinner
+				G.spinner = new Spinner(	// show the onload spinner
 				{
 					lines: 15,				// The number of lines to draw
 					length: 20,				// The length of each line
@@ -101,7 +101,7 @@
 					top: '50%',				// Top position relative to parent
 					left: '50%'				// Left position relative to parent
 				}).spin(document.getElementById('myAppRoot'));
-				$timeout(function() {G_VARS.spinner.stop();}, 30000);		//stop the spinner after 30s nonetheless
+				$timeout(function() {G.spinner.stop();}, 30000);		//stop the spinner after 30s nonetheless
 			}
 		})
 		.state("root.chat", {
@@ -119,29 +119,29 @@
 				$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
 
 				angular.forEach($scope.myUserInfo.friends, function(ui, bid) {
-					G_VARS.spinner.spin(document.getElementById('myAppRoot'));
-					G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(data) {
+					G.spinner.spin(document.getElementById('myAppRoot'));
+					G.leClient.hkeys(G.sid, G.bid, bid, function(data) {
 						if (data.length > 0) {
 							data.sort(function(a, b) {return b-a});
-							G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, data[0], function(m) {
+							G.leClient.hget(G.sid, G.bid, bid, data[0], function(m) {
 								if (m[1].contentType === 1) {
 									var p = new WeiboPicture(m[1].content, m[1].bid);
 									p.get(0, function(uri) {
 										m[1].dataURI = uri;
 										ui.lastSMS = m[1];
 										$scope.$apply();
-										G_VARS.spinner.stop();
+										G.spinner.stop();
 									});
 								} else {
 									ui.lastSMS = m[1];
 									$scope.$apply();
-									G_VARS.spinner.stop();
+									G.spinner.stop();
 								};
 							}, function(name, err) {
 								debug.error(err);
 							});
 						} else {
-							G_VARS.spinner.stop();
+							G.spinner.stop();
 						};
 					}, function(name, err) {
 						debug.error(err);
@@ -154,7 +154,7 @@
 			templateUrl : "chatdetail.html",
 			controller : function($scope, $rootScope, $stateParams, msgService, SMSService, $timeout) {
 				//set current UI to the user I am chatting to
-				G_VARS.spinner.spin(document.getElementById('myAppRoot'));
+				G.spinner.spin(document.getElementById('myAppRoot'));
 				
 				$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
 				debug.log($rootScope.myUserInfo.friends[$stateParams.bid]);
@@ -163,7 +163,7 @@
 				$scope.C = {
 						sentOK			: false,
 						txtInvalid		: true,
-						chCounter		: G_VARS.MaxWeiboLength,
+						chCounter		: G.MaxWeiboLength,
 				};
 				
 				//register this function with SMS service to sort inPage message display
@@ -195,7 +195,7 @@
 				$scope.sendSMS = function(bid) {
 					if ($scope.txtChat && $scope.txtChat.toString().replace(/\s+/g,"") !== '') {
 						var m = new WeiboMessage();
-						m.bid = G_VARS.bid;
+						m.bid = G.bid;
 						m.type = 1;				//SMS
 						m.contentType = 0;		//text
 						m.content = $scope.txtChat;
@@ -213,9 +213,9 @@
 					if ($scope.picFile) {
 						var r = new FileReader();
 						r.onloadend = function(e) {
-							G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
+							G.leClient.setdata(G.sid, G.bid, e.target.result, function(picKey) {
 								var m = new WeiboMessage();
-								m.bid = G_VARS.bid;
+								m.bid = G.bid;
 								m.type = 1;				//SMS
 								m.contentType = 1;		//picture
 								m.content = picKey;
@@ -239,9 +239,9 @@
 					if ($scope.fileSent) {
 						var r = new FileReader();
 						r.onloadend = function(e) {
-							G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(fileKey) {
+							G.leClient.setdata(G.sid, G.bid, e.target.result, function(fileKey) {
 								var m = new WeiboMessage();
-								m.bid = G_VARS.bid;
+								m.bid = G.bid;
 								m.type = 1;				//SMS
 								m.contentType = 2;		//file
 								console.log($scope.fileSent)
@@ -312,7 +312,7 @@
 				//download received file
 				$scope.saveFile = function(m) {
 					var arr = m.content.toString().split("\t");
-					G_VARS.httpClient.get(G_VARS.sid, m.bid, arr[2], function(data) {
+					G.leClient.get(G.sid, m.bid, arr[2], function(data) {
 						if (data[1]) {
 							saveAs(new Blob([data[1]], {type: arr[1]}), arr[0]);
 						};
@@ -326,15 +326,15 @@
 					//debug.log($scope.txtChat)
 					if ($scope.txtChat.replace(/\s+/g,"") !== '') {
 						$scope.C.txtInvalid = false;
-						if ($scope.txtChat.toString().length > G_VARS.MaxWeiboLength) {
+						if ($scope.txtChat.toString().length > G.MaxWeiboLength) {
 							//no more, remove the last char input
-							$scope.txtChat = $scope.txtChat.toString().slice(0, G_VARS.MaxWeiboLength);
+							$scope.txtChat = $scope.txtChat.toString().slice(0, G.MaxWeiboLength);
 						} else {
-							$scope.C.chCounter = G_VARS.MaxWeiboLength - $scope.txtChat.toString().length;
+							$scope.C.chCounter = G.MaxWeiboLength - $scope.txtChat.toString().length;
 						}
 					} else {
 						$scope.C.txtInvalid = true;
-						$scope.C.chCounter = G_VARS.MaxWeiboLength;
+						$scope.C.chCounter = G.MaxWeiboLength;
 					};
 				};
 
@@ -357,7 +357,7 @@
 							$scope.inPageMsgs.push($scope.chatSessions[bid].messages[i]);
 						};
 						$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp})
-						G_VARS.spinner.stop();
+						G.spinner.stop();
 						//$scope.$apply();
 					} else {
 						//no existing chat session, open one. Clean unread msgs only when user opened a new chat session
@@ -368,7 +368,7 @@
 						$scope.chatSessions[bid] = cs;
 
 						//first check if there are unread msgs in SMSUnread db
-						G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, function(data) {
+						G.leClient.hget(G.sid, G.bid, G.UnreadSMS, bid, function(data) {
 							if (data[1]) {
 								//there are unread msgs
 								cs.messages = cs.messages.concat(data[1]);
@@ -378,19 +378,19 @@
 									$scope.$apply();
 								};
 								$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
-								G_VARS.spinner.stop();
+								G.spinner.stop();
 							} else {
 								//no unread msgs, load most recent 50 msgs
-								G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, bid, function(ts) {
+								G.leClient.hkeys(G.sid, G.bid, bid, function(ts) {
 									if (ts.length>0) {
 										ts.sort(function(a,b) {return b-a});
 										for (var i=0; i<ts.length && i<50; i++) {
-											G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, ts[i], function(msg) {
+											G.leClient.hget(G.sid, G.bid, bid, ts[i], function(msg) {
 												getMsgPic(msg[1]);
 												$scope.chatSessions[bid].messages.push(msg[1]);
 												$scope.inPageMsgs.push(msg[1]);
 												$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
-												G_VARS.spinner.stop();
+												G.spinner.stop();
 												$scope.$apply();
 												//$timeout(function() {$scope.$apply();});
 											}, function(name, err) {
@@ -404,7 +404,7 @@
 							};
 							
 							//delete unread msgs record
-							G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, function() {
+							G.leClient.hdel(G.sid, G.bid, G.UnreadSMS, bid, function() {
 								debug.log("unread msgs deleted");
 							}, function(name, err) {
 								debug.error(err);
@@ -460,7 +460,7 @@
 				$scope.curPics = [];
 
 				//get current UserInfo object
-				if (!$stateParams.bid || $stateParams.bid===G_VARS.bid) {
+				if (!$stateParams.bid || $stateParams.bid===G.bid) {
 					$rootScope.currUserInfo = $rootScope.myUserInfo;
 				} else {
 					$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
@@ -471,7 +471,7 @@
 					if (i>5 || i>=arr.length)
 						return;
 					angular.forEach(arr[i].value, function(wbID) {
-						G_VARS.httpClient.get(G_VARS.sid, $rootScope.currUserInfo.bid, wbID, function(wb) {
+						G.leClient.get(G.sid, $rootScope.currUserInfo.bid, wbID, function(wb) {
 							//wb[1] is a WBASE object
 							if (wb[1]) {
 								//debug.log(wb[1]);
@@ -503,7 +503,7 @@
 					});							
 				};
 				
-				G_VARS.httpClient.hgetall(G_VARS.sid, $scope.currUserInfo.bid, G_VARS.PostPics, function(data) {					
+				G.leClient.hgetall(G.sid, $scope.currUserInfo.bid, G.PostPics, function(data) {					
 					if (data) {
 						//data[i].field is date in which picture is posted
 						//data[i].value is array of wbID which has picture by at the day
@@ -520,7 +520,7 @@
 			templateUrl : "friends.html",
 			controller : function($scope, $timeout) {
 				debug.log("root.personal.friends state")
-				$timeout(function() {G_VARS.spinner.stop();});		//stop the spinner after 30s nonetheless
+				$timeout(function() {G.spinner.stop();});		//stop the spinner after 30s nonetheless
 			},
 		})
 		.state("root.personal.allPosts", {

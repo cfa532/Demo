@@ -1,17 +1,53 @@
 //rootModule.js
 "use strict";
 (function() {
-	G_VARS.weiboApp
+	G.weiboApp
 	.controller("inviteController", function($scope) {
+		var htmlTemplate = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> \
+			<html xmlns="http://www.w3.org/1999/xhtml"> \
+		<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> \
+		<title>APP</title> \
+		<script type="text/javascript"> \
+		"use strict"; \
+		var userid, userppt; \
+		userid="%%userid%%";userppt="%%ppt%%"; \
+		//document.getElementById("loadZone").innerHTML = userid; \
+		</script></head> \
+		<body><div id="loadZone">Hello</div></body></html>';
+
 		$scope.inviteFriend = function() {
 			debug.log("invite friends");
-			G_VARS.httpClient.createinvcode(G_VARS.sid, G_VARS.bid, 24 * 3600, 20, 40, function (invcode) {
-				debug.log("invite code="+invcode);
-				G_VARS.httpClient.invite(G_VARS.sid, invcode, function(txt) {
-					var ip = "http://"+G_VARS.IPList[G_VARS.IPNum];
-					$scope.invContent = "点击这个链接注册登录下。http://192.168.0.11/index.php?pid=xxxxx";
-				});
+			G.leClient.createinvcode(G.sid, G.bid, 24 * 3600, 20, 40, function (invcode) {
+					//set template with invcode
+					G.leClient.setinvtemplate(G.sid, G.bid, invcode, htmlTemplate, function() {
+						debug.info("template set ok", invcode);
+						var filekey = G.inviteFileKey;
+						$scope.invCode = "http://"+G.currentIP+"/getres?key="+G.inviteFileKey+"&bid="+G.dataBid+"&sid="+G.sid+"&invcode="+invcode+"&sender="+G.bid;
+						$scope.$apply();
+						
+						G.leClient.getinvcodeinfo(G.sid, G.bid, invcode, function(info) {
+							debug.info(info);
+							$scope.friendCount = info.friendCount;
+							$scope.hourCounter = parseInt(info.validity/3600)+1;
+							$scope.$apply();
+						}, function(name, err) {
+							debug.warn(err);
+						});
+					}, function(name, err) {
+						debug.warn(err);
+					});
+			}, function(name, err) {
+				debug.warn(err);
 			});
+		};
+		
+		$scope.copyLink = function() {
+			//copy the invite link into clipboard
+			//window.clipboardData.setData("Text", $scope.invContent);	//works only in IE
+			if (navigator.userAgent.indexOf('Macintosh') !== -1)
+				window.prompt("复制到剪贴板按住Command+C, 然后按回车键", $scope.invCode);
+			else
+				window.prompt("复制到剪贴板按住Ctrl+C, 然后按回车键", $scope.invCode);
 		};
 	})
 	.controller("appController", function($scope, $rootScope, $window) {
@@ -28,13 +64,13 @@
 			itemsPerPage : 10,
 		};
 
-		var request = window.indexedDB.open("weiboDB", G_VARS.idxDBVersion);
+		var request = window.indexedDB.open("weiboDB", G.idxDBVersion);
 		request.onerror = function(event) {
 			debug.error("open indexedDB error", event.target.errorCode);
 		};
 		request.onsuccess = function(event) {
-			G_VARS.idxDB = request.result;		//event.target.result;		//IDBDatabase object
-			G_VARS.idxDB.onerror = function(e) {
+			G.idxDB = request.result;		//event.target.result;		//IDBDatabase object
+			G.idxDB.onerror = function(e) {
 				//generic handler for all error in this db
 				debug.warn("weiboDB error, errorCode=" + e.target.errorCode);
 			};
@@ -42,15 +78,15 @@
 		};
 		request.onupgradeneeded = function(event) {
 			debug.info("here is db upgrade")
-			G_VARS.idxDB = request.result;
-			G_VARS.idxDB.createObjectStore(G_VARS.objStore.picture, {keyPath : "id"});
+			G.idxDB = request.result;
+			G.idxDB.createObjectStore(G.objStore.picture, {keyPath : "id"});
 		};
 	})
 	//get weibo list and display them nicely
 	.controller("weiboController", ["$state", "$stateParams", "$scope", "$rootScope", "$timeout",
 	                                function($state, $stateParams, $scope, $rootScope, $timeout) {
 		debug.log("in weibo controller")
-		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
+		G.spinner.spin(document.getElementById('myAppRoot'));
 
 		//state switch
 		var iDay = 0;			//index of the most recent day, used by getPosts() to read single user's posts
@@ -91,13 +127,13 @@
 		};
 		
 		$scope.deleteWeibo = function(wb) {
-			if (G_VARS.bid !== wb.authorID) return;
+			if (G.bid !== wb.authorID) return;
 			wb.del(function() {
-				var i = G_VARS.search($scope.weiboList, wb);
+				var i = G.search($scope.weiboList, wb);
 				if (i !== -1) {
 					$scope.weiboList.splice(i, 1);
 				};
-				i = G_VARS.search($scope.currentList, wb);
+				i = G.search($scope.currentList, wb);
 				if (i !== -1)
 					$scope.currentList.splice(i, 1);
 				$scope.myUserInfo.weiboCount--;
@@ -139,7 +175,7 @@
 				getAllPosts(wbDay, true);
 			}
 			else if ($state.is("root.main.favorite")) {
-				showFavorites(G_VARS.bid);
+				showFavorites(G.bid);
 			}
 			else if ($state.is("root.personal.allPosts")) {
 				getPosts($stateParams.bid, iDay, false);
@@ -157,11 +193,11 @@
 		var getAllPosts = function(currentDay, original) {
 			//debug.log("in getAllPosts(), page num=" +$scope.global.currentPage+" current date="+currentDay+ " wbLen="+wbListLen);
 			$scope.totalItems = wbListLen + $scope.global.itemsPerPage;
-			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+			G.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 
 			if (wbListLen < $scope.global.currentPage * $scope.global.itemsPerPage) {
 				//read my own weibo
-				getPostPerDay(G_VARS.bid, currentDay, original);
+				getPostPerDay(G.bid, currentDay, original);
 				for (var i=0; i<$scope.myUserInfo.b.friends.length; i++) {
 					//read weibo of a certain friend on a given day		
 					getPostPerDay($scope.myUserInfo.b.friends[i].bid, currentDay, original);
@@ -183,7 +219,7 @@
 		};
 		
 		var getPostPerDay = function(bid, day, original) {
-			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, day, function(keys) {
+			G.leClient.hget(G.sid, bid, G.Posts, day, function(keys) {
 				if (keys[1]) {
 					wbListLen += keys[1].length;
 					$scope.totalItems = wbListLen + $scope.global.itemsPerPage;
@@ -206,16 +242,16 @@
 				$scope.weiboList.push(wb);
 				//sort array in descending order, worked like a charm
 				$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
-				G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+				G.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 				$scope.$apply();
-				$timeout(function() {G_VARS.spinner.stop();});		//stop loading sign
+				$timeout(function() {G.spinner.stop();});		//stop loading sign
 			});
 		};
 		
 		//var wbCount = 0;	//weibo already read into memory
 		var getWeiboOfDay = function(bid, days, i, original) {
 			if (i >= days.length) return;
-			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.Posts, days[i], function(keys) {
+			G.leClient.hget(G.sid, bid, G.Posts, days[i], function(keys) {
 				debug.log("in getWeiboOfDay(), pagenum=" +$scope.global.currentPage+" iDay="+days[i]);
 				//debug.log(keys[1]);
 				for (var j=0; j<keys[1].length; j++) {
@@ -235,9 +271,9 @@
 		//read all the post of a certain friend
 		var getPosts = function(bid, iDay, original) {
 			//debug.log("in getPosts(), pagenum=" +$scope.global.currentPage+" iDay="+iDay);
-			G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+			G.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 			$scope.totalItems = $scope.currUserInfo.weiboCount;
-			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.Posts, function(days) {
+			G.leClient.hkeys(G.sid, bid, G.Posts, function(days) {
 				//get list of date on which there are posts
 				days.sort(function(a,b) {return b-a});
 				//debug.log(days);
@@ -248,12 +284,12 @@
 			});
 		};
 
-		//show all my favorites. key=G_VARS.Favorites, field=authorID, value=[wbIDs,....]
+		//show all my favorites. key=G.Favorites, field=authorID, value=[wbIDs,....]
 		var showFavorites = function(bid) {
 			debug.log("in showFavorites");
 			$scope.totalItems = 0;
 
-			G_VARS.httpClient.hgetall(G_VARS.sid, bid, G_VARS.Favorites, function(data) {
+			G.leClient.hgetall(G.sid, bid, G.Favorites, function(data) {
 				if (data === null) {
 					return;
 				};
@@ -296,14 +332,14 @@
 				wb.parentAuthorID = parentWB.authorID;
 				wb.parentWeibo = parentWB;
 			}
-			wb.body = wb.body.toString().slice(0, G_VARS.MaxWeiboLength);
+			wb.body = wb.body.toString().slice(0, G.MaxWeiboLength);
 			wb.timeStamp = new Date().getTime();
-			wb.authorID = G_VARS.bid;
+			wb.authorID = G.bid;
 			wb.author = $scope.myUserInfo.nickName;
 			
 			wb.set(function() {
 				$scope.weiboList.unshift(wb);
-				G_VARS.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+				G.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 				$scope.myUserInfo.weiboCount++;
 				$scope.myUserInfo.setLastWeibo(wb);
 				
@@ -325,7 +361,7 @@
 		}
 		else if ($state.is("root.main.favorite")) {
 			debug.log("state is favorite");
-			showFavorites(G_VARS.bid);
+			showFavorites(G.bid);
 		}
 		else if ($state.is("root.personal.allPosts")) {
 			debug.log("state is personal.allposts");
@@ -346,9 +382,9 @@
 	.controller("pictureController", ["$state", "$stateParams", "$scope", "$timeout",
 	                                  function($state, $stateParams, $scope, $timeout) {
 		debug.log("in picture controller");
-		G_VARS.spinner.spin(document.getElementById('myAppRoot'));
+		G.spinner.spin(document.getElementById('myAppRoot'));
 		
-		//pic keys are saved in G_VARS.PostPics, indexed by weibo date
+		//pic keys are saved in G.PostPics, indexed by weibo date
 		//for now, read all pics into the following list without pagination.
 		$scope.myPicUrls = [];
 		
@@ -357,20 +393,20 @@
 		};
 		
 		var getPicsOfDay = function(day, bid) {
-			G_VARS.httpClient.hget(G_VARS.sid, bid, G_VARS.PostPics, day, function(keys) {
+			G.leClient.hget(G.sid, bid, G.PostPics, day, function(keys) {
 				if (keys[1]) {
 					//keys is array of wbID whose weibo has picture
 					angular.forEach(keys[1], function(wbID) {
-						G_VARS.httpClient.get(G_VARS.sid, bid, wbID, function(wb) {
+						//debug.log(wbID);
+						G.leClient.get(G.sid, bid, wbID, function(wb) {
 							//wb[1] is a WBASE object
-							//debug.log(wb[1]);
 							angular.forEach(wb[1].pictures, function(picKey) {
 								var p = new WeiboPicture(picKey, bid);
 								p.get(1, function(uri) {
 									//do nothing other than get the picture
 									p.dataURI = uri;
 									$scope.myPicUrls.push(p);
-									$timeout(function() {G_VARS.spinner.stop()});
+									$timeout(function() {G.spinner.stop()});
 								});
 							});
 						}, function(name, err) {
@@ -378,7 +414,7 @@
 						});
 					});
 				} else {
-					G_VARS.spinner.stop();
+					G.spinner.stop();
 				};
 			}, function(name, err) {
 				debug.error(err);
@@ -388,7 +424,7 @@
 		//get all the pics of a user. Pic keys are saved in a global list
 		function getUserPics(bid) {
 			debug.log("in getUserPics", bid);
-			G_VARS.httpClient.hkeys(G_VARS.sid, bid, G_VARS.PostPics, function(wbDays) {
+			G.leClient.hkeys(G.sid, bid, G.PostPics, function(wbDays) {
 				debug.log(wbDays);
 				if (wbDays.length>0) {
 					wbDays.sort(function(a,b) {return b-a;});
@@ -396,7 +432,7 @@
 						getPicsOfDay(wbDays[i], bid);
 					};
 				} else {
-					G_VARS.spinner.stop();
+					G.spinner.stop();
 				};
 			}, function(name, err) {
 				debug.error("pic controller err= " + err);
@@ -404,7 +440,7 @@
 		};
 		
 		$scope.showFullPic = function(pic) {
-			G_VARS.httpClient.get(G_VARS.sid, pic.wb.authorID, pic.id, function(data) {
+			G.leClient.get(G.sid, pic.wb.authorID, pic.id, function(data) {
 				if (data[1]) {
 					var r = new FileReader();
 					r.onloadend = function(e) {
@@ -419,7 +455,7 @@
 
 		function getAllPics() {
 			//read all posts into a list, including self
-			getUserPics(G_VARS.bid);
+			getUserPics(G.bid);
 			for(var i=0; i< $scope.myUserInfo.b.friends.length; i++) {
 				getUserPics($scope.myUserInfo.b.friends[i].bid);
 			};
@@ -440,7 +476,7 @@
 		//var q = angular.injector(['ng']).get('$q');
 		$scope.P = {
 				txtInvalid		: true,
-				chCounter		: G_VARS.MaxWeiboLength,
+				chCounter		: G.MaxWeiboLength,
 				submitStyle		: "send_btn W_btn_v_disable",
 				showPicUpload	: false
 		};
@@ -463,12 +499,12 @@
 		$scope.addNewPost = function() {
 			//prevent duplicated submission
 			$scope.P.txtInvalid = true;
-			G_VARS.spinner.spin(document.getElementById('myAppRoot'));
+			G.spinner.spin(document.getElementById('myAppRoot'));
 			
 			var wb = new WeiboPost($scope);
 			wb.body = $scope.wbText;
 			wb.timeStamp = new Date().getTime();
-			wb.authorID = G_VARS.bid;
+			wb.authorID = G.bid;
 			wb.author = $scope.myUserInfo.nickName;
 
 			//upload attached pictures
@@ -516,13 +552,13 @@
 					//display the sent OK label for 5000 milliseconds
 					$("#wbSubmitOK").fadeIn('slow').delay(3000).fadeOut('slow');
 					$scope.weiboList.unshift(wb);
-					G_VARS.slice($scope.weiboList, $scope.currentList, 0, $scope.global.itemsPerPage);
+					G.slice($scope.weiboList, $scope.currentList, 0, $scope.global.itemsPerPage);
 					$scope.global.currentPage = 1;
 					$scope.$apply();
-					G_VARS.spinner.stop();
+					G.spinner.stop();
 				}, function(reason) {
 					debug.error(reason);
-					G_VARS.spinner.stop();
+					G.spinner.stop();
 				});
 			}, function(reason) {
 				debug.warn(reason);
@@ -554,18 +590,18 @@
 			if (angular.isUndefined($scope.wbText) || $scope.wbText.toString().replace(/\s+/g,"") === '') {
 				$scope.P.submitStyle = "send_btn W_btn_v_disable";
 				$scope.P.txtInvalid = true;
-				$scope.P.chCounter = G_VARS.MaxWeiboLength;
+				$scope.P.chCounter = G.MaxWeiboLength;
 			} else {
 				$scope.P.submitStyle = "send_btn W_btn_v";
 				$scope.P.txtInvalid = false;
-				if ($scope.wbText.toString().length > G_VARS.MaxWeiboLength) {
+				if ($scope.wbText.toString().length > G.MaxWeiboLength) {
 					//no more, remove the last char input
-					$scope.wbText = $scope.wbText.toString().slice(0, G_VARS.MaxWeiboLength);
+					$scope.wbText = $scope.wbText.toString().slice(0, G.MaxWeiboLength);
 					
 					//there is a problem of Chinese char input at end of weibo. The code checks for
 					//pinyin input instead of Kanji character.
 				} else {
-					$scope.P.chCounter = G_VARS.MaxWeiboLength - $scope.wbText.toString().length;
+					$scope.P.chCounter = G.MaxWeiboLength - $scope.wbText.toString().length;
 				}
 			};
 		};

@@ -2,7 +2,7 @@
 "use strict";
 (function() {
 	//angular.module("accountModule", [])
-	G_VARS.weiboApp
+	G.weiboApp
 	.provider("logonService", [function() {
 	    this.$get = ["$q", function($q) {
 	        return new logon($q);
@@ -22,21 +22,21 @@
 					
 					//get system user object, which is different from Weibo user object
 					debug.log(G_VARS)
-					G_VARS.httpClient.getvar(sid, 'self', function(usr) {
+					G.leClient.getvar(sid, 'self', function(usr) {
 						deferredUser.resolve(usr);
 					}, function(name, err) {
 						debug.log("getSysUser err=" + err);
 						deferredUser.reject("Failed to obtain system User object");
 					});
 					
-					G_VARS.httpClient.getvar(sid, 'ver', function(ver) {
+					G.leClient.getvar(sid, 'ver', function(ver) {
 						deferredVer.resolve(ver);
 					}, function(name, err) {
 						debug.log("getSysUser err2=" +err);
 						deferredVer.reject("Failed to obtain version #");
 					});
 					
-//					G_VARS.httpClient.getvar(sid, 'ppt', function(ppt) {
+//					G.leClient.getvar(sid, 'ppt', function(ppt) {
 //						debug.log('ppt=' +ppt);
 //					}, function(name, err) {
 //						debug.error(err);
@@ -52,13 +52,13 @@
 			//retrieve SessionID, sid, that will be used through out the app
 			var getSid = function() {
 				var sid = $q.defer();
-				sid.resolve(G_VARS.sid);
+				sid.resolve(G.sid);
 				return sid.promise;
 				
 				if (angular.isUndefined(localStorage[bidPath]) || localStorage[bidPath]===null) {
 					//invalid userid, need to create a new userid
 					//userid is same as bid (block ID)
-					G_VARS.httpClient.register(function(id) {
+					G.leClient.register(function(id) {
 						debug.log("New User created, id=" + id);
 						localStorage[bidPath] = id;
 						login().then(function(data) {
@@ -80,21 +80,21 @@
 			var login = function() {
 				return $q(function(resolve, reject) {
 					//get session id that will be used thorough out the app
-					G_VARS.httpClient.login(null, G_VARS.ppt, function(sid) {
+					G.leClient.login(null, G.ppt, function(sid) {
 						debug.log("login with ppt")
 						resolve(sid);
 					}, function(name, err) {
 						debug.log("Login err=" +err);
 						//delete old userid and try to login again
 						localStorage.removeItem(bidPath);
-						G_VARS.httpClient.register(function(newid) {
+						G.leClient.register(function(newid) {
 							debug.warn("Re-create Userid=" + newid);
 							localStorage[bidPath] = newid;
 							
 							//try again to get a sid
 							//test user cases
 							//data = "jLZLO7LwRS0I_aiFcnP8uZ5AJ14vUY_DIApwmDU4JZA"
-							G_VARS.httpClient.login(newid, "ppt", function(sid2) {
+							G.leClient.login(newid, "ppt", function(sid2) {
 								debug.warn("in getSid2="+sid2+" new userid="+localStorage[bidPath]);
 								resolve(sid2);
 							});
@@ -109,7 +109,7 @@
 			this.getNeighbours = function() {
 				//when this function is called, the login process should be done
 				var nl = $q.defer();
-				G_VARS.httpClient.getvar(sessionStorage.sid, "usernearby", function(data) {
+				G.leClient.getvar(sessionStorage.sid, "usernearby", function(data) {
 					//an array of userid strings
 					resolve();
 				});
@@ -136,7 +136,7 @@
 						$scope.myUserInfo.set(function() {
 							//my icon pic is changed, has to update the corresponding page
 							for (var i=0; i<$scope.weiboList.length; i++) {
-								if ($scope.weiboList[i].authorID === G_VARS.bid) {
+								if ($scope.weiboList[i].authorID === G.bid) {
 									$scope.weiboList[i].headPicUrl = np.dataURI;
 								};
 							};

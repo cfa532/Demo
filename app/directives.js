@@ -2,7 +2,7 @@
 "use strict";
 
 (function() {	
-	G_VARS.weiboApp
+	G.weiboApp
 	.directive("leRelay", ["msgService", function(msgService) {
 		debug.log("in le-relay constructor");
 		return {
@@ -62,7 +62,7 @@
 				scope.R = {
 					sentOK			: false,
 					txtInvalid		: true,
-					chCounter		: G_VARS.MaxWeiboLength,
+					chCounter		: G.MaxWeiboLength,
 				};
 				scope.relayList = [];
 				scope.currentPage = 1;
@@ -87,7 +87,7 @@
 					//debug.log(scope.weibo);
 					for(var j=(scope.currentPage-1)*scope.pageSize; j<scope.weibo.relays.length && j<scope.currentPage*scope.pageSize; j++) {
 						//iterate every review ID
-						G_VARS.httpClient.get(G_VARS.sid, scope.weibo.authorID, scope.weibo.relays[j], function(data) {
+						G.leClient.get(G.sid, scope.weibo.authorID, scope.weibo.relays[j], function(data) {
 							if (data[1] !== null) {
 								scope.relayList.push(data[1]);
 								//debug.log(data[1])
@@ -109,15 +109,15 @@
 				scope.txtChanged = function() {
 					if (scope.relay.replace(/\s+/g,"") !== '') {
 						scope.R.txtInvalid = false;
-						if (scope.relay.toString().length > G_VARS.MaxWeiboLength) {
+						if (scope.relay.toString().length > G.MaxWeiboLength) {
 							//no more, remove the last char input
-							scope.relay = scope.relay.toString().slice(0, G_VARS.MaxWeiboLength);
+							scope.relay = scope.relay.toString().slice(0, G.MaxWeiboLength);
 						} else {
-							scope.R.chCounter = G_VARS.MaxWeiboLength - scope.relay.toString().length;
+							scope.R.chCounter = G.MaxWeiboLength - scope.relay.toString().length;
 						}
 					} else {
 						scope.R.txtInvalid = true;
-						scope.R.chCounter = G_VARS.MaxWeiboLength;
+						scope.R.chCounter = G.MaxWeiboLength;
 					};
 				};
 				
@@ -131,18 +131,18 @@
 					r.body = scope.relay;
 					r.timeStamp = new Date().getTime();
 					r.parentID = scope.weibo.wbID;
-					r.authorID = G_VARS.bid;
+					r.authorID = G.bid;
 					r.author = scope.author;
 								
 					//add the relay to db and update the Weibo
-					G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, r, function(relayKey) {
+					G.leClient.setdata(G.sid, G.bid, r, function(relayKey) {
 						//commenting on my own weibo, update relay list directly
 						if (scope.weibo.relays === null)
 							scope.weibo.relays = [relayKey];
 						else
 							scope.weibo.relays.unshift(relayKey);
 
-						if (scope.weibo.authorID !== G_VARS.bid) {
+						if (scope.weibo.authorID !== G.bid) {
 							//commenting another's weibo
 							//send a message to the author of the Post reviewed
 							r.key = relayKey;
@@ -184,12 +184,12 @@
 				//update the global review's keylist
 				var updateMyReviewList = function(reviewKey) {
 					var currentDay = parseInt(new Date().getTime()/86400000);
-					G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Reviews, currentDay, function(data) {
+					G.leClient.hget(G.sid, G.bid, G.Reviews, currentDay, function(data) {
 						if (data[1])
 							data[1].unshift(reviewKey);
 						else
 							data[1] = [reviewKey];
-						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Reviews, currentDay, data[1], function() {
+						G.leClient.hset(G.sid, G.bid, G.Reviews, currentDay, data[1], function() {
 							debug.log("setRelayData: update review keys OK. " +reviewKey);
 						}, function(name, err) {
 							debug.error("setRelayData: update review keys failed, ", err);
@@ -261,7 +261,7 @@
 				scope.R = {
 					sentOK			: false,
 					txtInvalid		: true,
-					chCounter		: G_VARS.MaxWeiboLength,
+					chCounter		: G.MaxWeiboLength,
 				};
 				scope.reviewList = [];
 				scope.currentPage = 1;
@@ -287,7 +287,7 @@
 					
 					for(var j=(scope.currentPage-1)*scope.pageSize; j<scope.weibo.reviews.length && j<scope.currentPage*scope.pageSize; j++) {
 						//iterate every review ID
-						G_VARS.httpClient.get(G_VARS.sid, scope.weibo.authorID, scope.weibo.reviews[j], function(data) {
+						G.leClient.get(G.sid, scope.weibo.authorID, scope.weibo.reviews[j], function(data) {
 							if (data[1] !== null) {
 								scope.reviewList.push(data[1]);
 								//debug.log(data[1]);
@@ -309,18 +309,18 @@
 				scope.txtChanged = function() {
 					if (scope.retext.replace(/\s+/g,"") !== '') {
 						scope.R.txtInvalid = false;
-						if (scope.retext.toString().length > G_VARS.MaxWeiboLength) {
+						if (scope.retext.toString().length > G.MaxWeiboLength) {
 							//no more, remove the last char input
-							scope.retext = scope.retext.toString().slice(0, G_VARS.MaxWeiboLength);
+							scope.retext = scope.retext.toString().slice(0, G.MaxWeiboLength);
 							
 							//there is a problem of Chinese char input at end of weibo. The code checks for
 							//pinyin input instead of Kanji character.
 						} else {
-							scope.R.chCounter = G_VARS.MaxWeiboLength - scope.retext.toString().length;
+							scope.R.chCounter = G.MaxWeiboLength - scope.retext.toString().length;
 						}
 					} else {
 						scope.R.txtInvalid = true;
-						scope.R.chCounter = G_VARS.MaxWeiboLength;
+						scope.R.chCounter = G.MaxWeiboLength;
 					};
 				};
 
@@ -332,11 +332,11 @@
 					r.body = scope.retext;
 					r.timeStamp = new Date().getTime();
 					r.parentID = scope.weibo.wbID;
-					r.authorID = G_VARS.bid;	//commenting on other's post
+					r.authorID = G.bid;	//commenting on other's post
 					r.author = scope.author;
 					
-					G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, r, function(reviewKey) {	
-						if (scope.weibo.authorID !== G_VARS.bid) {
+					G.leClient.setdata(G.sid, G.bid, r, function(reviewKey) {	
+						if (scope.weibo.authorID !== G.bid) {
 							//now send a message to the author of the Post reviewed
 							r.key = reviewKey;
 							msgService.sendReview(r, scope.weibo.authorID);
@@ -371,12 +371,12 @@
 				var updateMyReviewList = function(reviewKey) {
 					var currentDay = parseInt(new Date().getTime()/86400000);
 					//now update the global review's keylist
-					G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Reviews, currentDay, function(data) {
+					G.leClient.hget(G.sid, G.bid, G.Reviews, currentDay, function(data) {
 						if (data[1] === null)
 							data[1] = [reviewKey];
 						else
 							data[1].unshift(reviewKey);
-						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Reviews, currentDay, data[1], function() {
+						G.leClient.hset(G.sid, G.bid, G.Reviews, currentDay, data[1], function() {
 							debug.log("setReviewData: update review keys OK. "+reviewKey);
 						}, function(name, err) {
 							debug.error("setReviewData: update review keys failed ", err);
@@ -405,8 +405,8 @@
 
 				var loadImg = function(bid, src) {
 					if (angular.isUndefined(bid) || bid===null)
-						bid = G_VARS.bid;
-					G_VARS.httpClient.get(G_VARS.sid, bid, src, function(data) {
+						bid = G.bid;
+					G.leClient.get(G.sid, bid, src, function(data) {
 						//data[1] is of Uint8Array typed array
 						var r = new FileReader();
 						r.onloadend = function(e) {
@@ -436,7 +436,7 @@
 				js.id = "js."+scope.src
 				//js.async = "async";
 				js.type = scope.type;
-				js.textContent = localStorage[G_VARS.bidPath+'js/'+scope.src];
+				js.textContent = localStorage[G.bidPath+'js/'+scope.src];
 				debug.log(js);
 				js.addEventListener("onload", function() {
 					//it seems without "src", there is no onload event
@@ -452,7 +452,7 @@
 			cs.id = "css."+scope.href
 			cs.rel = scope.rel;
 			cs.type = scope.type;
-			cs.textContent = localStorage[G_VARS.css[scope.href]];
+			cs.textContent = localStorage[G.css[scope.href]];
 			debug.log(cs);
 			document.getElementsByTagName("head")[0].appendChild(cs);
 		};
@@ -466,13 +466,13 @@
 				type : "@"
 			},
 			link : function(scope, element, attrs) {
-				//debug.log(G_VARS.css[scope.href]);
-				if (localStorage[G_VARS.css[scope.href]]===null || typeof(localStorage[G_VARS.css[scope.href]])==='undefined') {
-					G_VARS.httpClient.get(G_VARS.sid, G_VARS.dataBid, G_VARS.css[scope.href], function(data) {
+				//debug.log(G.css[scope.href]);
+				if (localStorage[G.css[scope.href]]===null || typeof(localStorage[G.css[scope.href]])==='undefined') {
+					G.leClient.get(G.sid, G.dataBid, G.css[scope.href], function(data) {
 						//debug.log(data[1])
 						var r = new FileReader();
 						r.onload = function(e) {
-							localStorage[G_VARS.css[scope.href]] = e.target.result;
+							localStorage[G.css[scope.href]] = e.target.result;
 							loadCSS(scope);
 						};
 						r.readAsText(new Blob([data[1]]));
@@ -480,7 +480,7 @@
 						debug.error(err);
 					});
 				} else {
-					//debug.log(localStorage[G_VARS.bidPath+"css."+scope.href]);
+					//debug.log(localStorage[G.bidPath+"css."+scope.href]);
 					loadCSS(scope);
 				};
 			}

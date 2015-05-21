@@ -3,7 +3,7 @@
 
 (function() {
 	//angular.module("msgModule", [])
-	G_VARS.weiboApp
+	G.weiboApp
 	.service("msgService", ["$q", "$rootScope", "reviewService", "SMSService",
 	                        function($q, $rootScope, reviewService, SMSService) {
 		//var q = angular.injector(['ng']).get('$q');
@@ -15,14 +15,14 @@
 			var r = new WeiboMessage();
 			r.type = 2;		//reviews
 			r.content = review;
-			r.authorID = G_VARS.bid;
+			r.authorID = G.bid;
 			
 			var msg = new Message();
 			msg.from = r.authorID;
 			msg.to = destID;
 			msg.data = r;
 			
-			G_VARS.httpClient.sendmsg(G_VARS.sid, msg, function() {
+			G.leClient.sendmsg(G.sid, msg, function() {
 				debug.log("In sendReview, msg sent OK", msg);
 			}, function(name, err) {
 				debug.error("In sendReview, err=" + err);
@@ -34,14 +34,14 @@
 			var r = new WeiboMessage();
 			r.type = 3;		//relays
 			r.content = relay;
-			r.authorID = G_VARS.bid;
+			r.authorID = G.bid;
 
 			var msg = new Message();
-			msg.from = G_VARS.bid;
+			msg.from = G.bid;
 			msg.to = destID;
 			msg.data = r;
 			
-			G_VARS.httpClient.sendmsg(G_VARS.sid, msg, function() {
+			G.leClient.sendmsg(G.sid, msg, function() {
 				debug.log("In sendRelay, msg sent OK", msg);
 			}, function(name, err) {
 				debug.error("In sendRelay, err=" + err);
@@ -51,16 +51,16 @@
 		//request to become friends
 		this.sendRequest = function(destID, text) {
 			var r = new WeiboMessage();
-			r.bid = G_VARS.bid;
+			r.bid = G.bid;
 			r.type = 0;				//request to add friends
 			r.content = text;
 
 			var msg = new Message();
-			msg.from = G_VARS.bid;
+			msg.from = G.bid;
 			msg.to = destID;
 			msg.data = r;
 			
-			G_VARS.httpClient.sendmsg(G_VARS.sid, msg, function() {
+			G.leClient.sendmsg(G.sid, msg, function() {
 				debug.log("In send request, msg sent OK", msg);
 			}, function(name, err) {
 				debug.error("In send request, err=" + err);
@@ -69,11 +69,11 @@
 		
 		this.sendSMS = function(destID, data) {
 			var msg = new Message();
-			msg.from = G_VARS.bid;
+			msg.from = G.bid;
 			msg.to = destID;
 			msg.data = data;
 
-			G_VARS.httpClient.sendmsg(G_VARS.sid, msg, function() {
+			G.leClient.sendmsg(G.sid, msg, function() {
 				debug.log("In sendSMS, msg sent OK", msg);
 			}, function(name, err) {
 				debug.error("In send request, err=" + err);
@@ -83,7 +83,7 @@
 		//read inbound message and process them accordingly
 		//take 2 call back functions as param to process reviews and SMS
 		this.readMsg = function() {
-			G_VARS.httpClient.readmsg(G_VARS.sid, function(msgs) {
+			G.leClient.readmsg(G.sid, function(msgs) {
 				//debug.log("readMsg: ", msgs);
 				
 				//iterate through msg list and combine msgs to the same Weibo into an array
@@ -100,7 +100,7 @@
 						msg.viewed = null;
 						var m = new WeiboMessage();
 						angular.copy(msg, m);
-						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Request, fromID, m, function() {
+						G.leClient.hset(G.sid, G.bid, G.Request, fromID, m, function() {
 							// only the newest request is saved
 							debug.log("saved request from "+fromID)
 							

@@ -2,45 +2,38 @@
  *  definition of global data structures, constructors
  */
 "use strict";
-var G_VARS = {
-	bidPath : window.location.pathname + "/appID/userID/",
-	IPList : [ "112.124.113.235:30003", "97.74.126.127:4800", "218.74.25.10:8100" ], // api for IP lists
-	IPNum : 0,
-	sid : '4d01b26c7a5128f718871221ad6456bfd505779b',
-	dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U', // from which JS, css, template code are read
-	leither : 'vq-uYGXEf6yzbXV0_Th3SqzHBWyxuGJjryxVDUMY5f0', // leither-cloud.js
-	angular : 'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw', // angular.js
-	spinner : null, // spinning image while loading
-	httpClient : null,
-	weiboApp : null, // ["ui.bootstrap", "ui.router"]
-	MaxWeiboLength : 40,
-	idxDB : null, // handle of indexedDB
-	idxDBVersion : 3,
-	objStore : {
+var G = (function(_g) {		//augument global variable G, defined in release.html
+	_g.bidPath = window.location.pathname + "/appID/userID/",
+	_g.spinner = null, // spinning image while loading
+	_g.weiboApp = null, // ["ui.bootstrap", "ui.router"]
+	_g.MaxWeiboLength = 40,
+	_g.idxDB = null, // handle of indexedDB
+	_g.idxDBVersion = 3,
+	_g.objStore = {
 		picture : "_picture_store",
 	},
-	MaxHeight : 768, // max height and width of pictures uploaded
-	MaxWidth : 1024,
+	_g.MaxHeight = 768, // max height and width of pictures uploaded
+	_g.MaxWidth = 1024,
 
 	// define global variables used as KEY
-	Posts : "_array_of_all_weibo_keys", // keys for all the posts by user, post
+	_g.Posts = "_array_of_all_weibo_keys", // keys for all the posts by user, post
 										// date is used as Field in hset()
-	PostPics : "_pictures_of_all_posts", // SET: [keys]
-	Favorites : "_favorite_posts_array", // favorites are stored by user as
-											// Post. HSET: Key, bid, key of the
+	_g.PostPics = "_pictures_of_all_posts", // SET= [keys]
+	_g.Favorites = "_favorite_posts_array", // favorites are stored by user as
+											// Post. HSET= Key, bid, key of the
 											// favorite post
-	UserInfo : "_app_user_information", // user information for weibo app
-	Reviews : "_array_of_review_keys", // all of the reviews send by user, post
+	_g.UserInfo = "_app_user_information", // user information for weibo app
+	_g.Reviews = "_array_of_review_keys", // all of the reviews send by user, post
 										// date is used as Field
-	Request : "_request_to_become_friends",
-	Friends : "_friends_in_weibo_app",
-	UnreadSMS : "_tmp_unread_sms_message",
-	Version : "_database_version_in_DB", // where database version number is
+	_g.Request = "_request_to_become_friends",
+	_g.Friends = "_friends_in_weibo_app",
+	_g.UnreadSMS = "_tmp_unread_sms_message",
+	_g.Version = "_database_version_in_DB", // where database version number is
 											// stored
-	Upgrade : "_upgrade_file_location",
+	_g.Upgrade = "_upgrade_file_location",
 
 	// create a shallow copy of an array of objects
-	slice : function(src, target, start, end) {
+	_g.slice = function(src, target, start, end) {
 		// clear target array without creating a shadow
 		target.length = 0;
 		for (var i = start; i < end && i < src.length; i++) {
@@ -48,7 +41,7 @@ var G_VARS = {
 		};
 	},
 	// search items by weibo ID
-	search : function(items, value) {
+	_g.search = function(items, value) {
 		for (var i = 0; i < items.length; i++) {
 			if (items[i].wbID == value.wbID) {
 				return i;
@@ -57,7 +50,7 @@ var G_VARS = {
 		return -1;
 	},
 	// resize a photo propotionally
-	scaleSize : function(maxW, maxH, currW, currH) {
+	_g.scaleSize = function(maxW, maxH, currW, currH) {
 		var ratio = currH / currW;
 		if (currW >= maxW && ratio <= 1) {
 			currW = maxW;
@@ -67,8 +60,9 @@ var G_VARS = {
 			currW = currH / ratio;
 		};
 		return [ parseInt(currW), parseInt(currH) ];
-	},
-};
+	};
+	return _g;
+}(G));
 
 function UIBase() {
 	this.bid = null;			// block ID
@@ -132,7 +126,7 @@ function UserInfo(bid) {
 			angular.copy(self.b.friends[i], f);
 			t.friends.push(f);
 		};
-		G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.UserInfo, G_VARS.bid, t, function() {
+		G.leClient.hset(G.sid, G.bid, G.UserInfo, G.bid, t, function() {
 			debug.log("UserInfo set", t);
 			if (callback) callback();
 		}, function(name, err) {
@@ -143,8 +137,8 @@ function UserInfo(bid) {
 	//populate UI object with data of given userid (bid)
 	this.get = function(callback) {
 		if (!self.bid)
-			self.bid = G_VARS.bid;
-		G_VARS.httpClient.hget(G_VARS.sid, self.bid, G_VARS.UserInfo, self.bid, function(data) {
+			self.bid = G.bid;
+		G.leClient.hget(G.sid, self.bid, G.UserInfo, self.bid, function(data) {
 			if (!data[1]) {
 				//debug.warn("cannot get user object, bid="+self.bid);
 				callback(false);
@@ -168,7 +162,7 @@ function UserInfo(bid) {
 					self.headPicUrl = uri;
 			});
 
-			if (self.bid === G_VARS.bid) {
+			if (self.bid === G.bid) {
 				//only read login user's weibo count
 				self.getFavoriteCount(function(count) {
 					self.favoriteCount = count;	
@@ -186,7 +180,7 @@ function UserInfo(bid) {
 				});
 				
 				//get a hash table of my favorites
-				G_VARS.httpClient.hgetall(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, function(data) {
+				G.leClient.hgetall(G.sid, G.bid, G.Favorites, function(data) {
 					//data[i].field is author id of favorites
 					//data[i].value is array of wbID by the author
 					//debug.info("my favorites", data)
@@ -262,7 +256,7 @@ function UserInfo(bid) {
 	//get number of weibo by me
 	this.getWeiboCount = function(callback) {
 		var count = 0;
-		G_VARS.httpClient.hgetall(G_VARS.sid, self.b.bid, G_VARS.Posts, function(data) {
+		G.leClient.hgetall(G.sid, self.b.bid, G.Posts, function(data) {
 			if (data) {
 				//data[i].field is date in which weibo is posted
 				//data[i].value is array of wbID by at the day
@@ -280,7 +274,7 @@ function UserInfo(bid) {
 	//get number of my favorites
 	this.getFavoriteCount = function(callback) {
 		var count = 0;
-		G_VARS.httpClient.hgetall(G_VARS.sid, self.b.bid, G_VARS.Favorites, function(data) {
+		G.leClient.hgetall(G.sid, self.b.bid, G.Favorites, function(data) {
 			if (data !== null) {
 				//data[i].field is author id of favorite post
 				//data[i].value is array of wbID by this author
@@ -307,11 +301,11 @@ function UserInfo(bid) {
 			//remove favorite
 			wb.isFavorite = false;
 			self.favoriteCount--;
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, wb.authorID, function(keys) {
+			G.leClient.hget(G.sid, G.bid, G.Favorites, wb.authorID, function(keys) {
 				if (keys[1]) {
 					//remove this wbID from favorite list
 					keys[1].splice(keys[1].indexOf(wb.wbID), 1);
-					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, wb.authorID, keys[1], function() {
+					G.leClient.hset(G.sid, G.bid, G.Favorites, wb.authorID, keys[1], function() {
 						debug.info("favorite removed", wb);
 					}, function(name, err) {
 						debug.error("Remove favorite err=" +err);
@@ -332,14 +326,14 @@ function UserInfo(bid) {
 			//add favorite
 			wb.isFavorite = true;
 			self.favoriteCount++;
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, wb.authorID, function(keys) {
+			G.leClient.hget(G.sid, G.bid, G.Favorites, wb.authorID, function(keys) {
 				if (keys[1]) {
 					//add this wbID to favorite list
 					keys[1].unshift(wb.wbID);
 				} else {
 					keys[1] = [wb.wbID];
 				};
-				G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, wb.authorID, keys[1], function() {
+				G.leClient.hset(G.sid, G.bid, G.Favorites, wb.authorID, keys[1], function() {
 					debug.info("favorite added", wb);
 				}, function(name, err) {
 					debug.error("Add favorite err=" +err);
@@ -360,7 +354,7 @@ function UserInfo(bid) {
 	this.getLastWeibo = function() {
 		//read the latest weibo of this user
 		if (self.b.lastPostKey) {
-			G_VARS.httpClient.get(G_VARS.sid, self.bid, self.b.lastPostKey, function(data) {
+			G.leClient.get(G.sid, self.bid, self.b.lastPostKey, function(data) {
 				if (data[1]) {
 					self.lastPost = data[1];
 				};
@@ -409,7 +403,7 @@ function WeiboPicture(picID, authorID) {
 	this.wbID = null;			//weibo to which this pic belongs to
 	this.authorID = authorID;	//owner of the pic file
 	if (!authorID) {
-		this.authorID = G_VARS.bid;
+		this.authorID = G.bid;
 	};
 	var self = this;
 	
@@ -419,7 +413,7 @@ function WeiboPicture(picID, authorID) {
 			callback(null);
 			return;
 		}
-		var trans = G_VARS.idxDB.transaction([G_VARS.objStore.picture], "readwrite");
+		var trans = G.idxDB.transaction([G.objStore.picture], "readwrite");
 		trans.oncomplete = function(e) {
 			//debug.log("Picture get() transaction ok");
 		};
@@ -428,7 +422,7 @@ function WeiboPicture(picID, authorID) {
 		};
 
 		//debug.info("WeiboPicture ", self.id);
-		var request = trans.objectStore(G_VARS.objStore.picture).get(self.id);
+		var request = trans.objectStore(G.objStore.picture).get(self.id);
 		request.onerror = function(e) {
 			//error will be fired if id is not found
 			debug.warn("Picture key not found, " + self.id);
@@ -439,7 +433,7 @@ function WeiboPicture(picID, authorID) {
 				cropImage(ratio, callback);
 			}
 			else {
-				G_VARS.httpClient.get(G_VARS.sid, self.authorID, self.id, function(data) {
+				G.leClient.get(G.sid, self.authorID, self.id, function(data) {
 					if (data[1]) {
 						var r = new FileReader();
 						r.onloadend = function(event) {
@@ -448,7 +442,7 @@ function WeiboPicture(picID, authorID) {
 							cropImage(ratio, callback);
 
 							//save the picture in local DB
-							var trans = G_VARS.idxDB.transaction([G_VARS.objStore.picture], "readwrite");
+							var trans = G.idxDB.transaction([G.objStore.picture], "readwrite");
 							trans.oncomplete = function(e) {
 								//debug.log("Picture set() transaction ok in get()");
 							};
@@ -458,7 +452,7 @@ function WeiboPicture(picID, authorID) {
 							var wp = {};
 							wp.id = self.id;
 							wp.dataURI = self.dataURI;
-							var request = trans.objectStore(G_VARS.objStore.picture).put(wp);
+							var request = trans.objectStore(G.objStore.picture).put(wp);
 							request.onsuccess = function(e) {
 								debug.log("pic save success in get()");
 							};
@@ -515,9 +509,9 @@ function WeiboPicture(picID, authorID) {
 				//scale large image and return new size under system limits
 				var newSize;
 				if (img.width > img.height)
-					newSize = G_VARS.scaleSize(maxWidth, maxHeight, img.width, img.height);		//horizontal image
+					newSize = G.scaleSize(maxWidth, maxHeight, img.width, img.height);		//horizontal image
 				else
-					newSize = G_VARS.scaleSize(maxHeight, maxWidth, img.width, img.height);		//vertical image
+					newSize = G.scaleSize(maxHeight, maxWidth, img.width, img.height);		//vertical image
 				debug.info(self.dataURI, newSize, img.width, img.height);				
 				//crop it to propotionally
 				var tmpCanvas = document.createElement("canvas");
@@ -527,12 +521,12 @@ function WeiboPicture(picID, authorID) {
 			};
 			
 			//save the pic as binary array on Leither to save bandwidth
-			G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, dataURLToBlob(self.dataURI), function(picKey) {
+			G.leClient.setdata(G.sid, G.bid, dataURLToBlob(self.dataURI), function(picKey) {
 				//now we have a scaled down picture, save it
 				debug.log("pic key=" + picKey);
 				self.id = picKey;
 				
-				var trans = G_VARS.idxDB.transaction([G_VARS.objStore.picture], "readwrite");
+				var trans = G.idxDB.transaction([G.objStore.picture], "readwrite");
 				trans.oncomplete = function(e) {
 					//debug.log("Picture set() transaction ok");
 				};
@@ -542,7 +536,7 @@ function WeiboPicture(picID, authorID) {
 				var wp = {};
 				wp.id = self.id;
 				wp.dataURI = self.dataURI;
-				var request = trans.objectStore(G_VARS.objStore.picture).put(wp);
+				var request = trans.objectStore(G.objStore.picture).put(wp);
 				request.onsuccess = function(e) {
 					debug.log("pic save success");
 					callback(true);
@@ -606,7 +600,7 @@ function WeiboPost(wbID, authorID, original, scope)
 	//update weibo record with new data, when new reviews are added
 	this.update = function(callback) {
 		var wb = new WBase();
-		wb.authorID = G_VARS.bid;		//if null, use login user ID
+		wb.authorID = G.bid;		//if null, use login user ID
 		wb.parentID = self.parentID;		//the post reviewed by this post, if any
 		wb.parentAuthorID = self.parentAuthorID;	//author of the parent post
 		wb.body = self.body;				//text of the post
@@ -623,7 +617,7 @@ function WeiboPost(wbID, authorID, original, scope)
 				wb.pictures.push(self.pictures[i].id);
 			};
 		};
-		G_VARS.httpClient.set(G_VARS.sid, G_VARS.bid, self.wbID, wb, function() {
+		G.leClient.set(G.sid, G.bid, self.wbID, wb, function() {
 			debug.info("update weibo ok");
 			callback();
 		}, function(name, err) {
@@ -633,8 +627,8 @@ function WeiboPost(wbID, authorID, original, scope)
 
 	this.get = function(callback) {
 		if (!authorID)
-			authorID = G_VARS.bid;		//default to current user bid
-		G_VARS.httpClient.get(G_VARS.sid, self.authorID, self.wbID, function(data) {
+			authorID = G.bid;		//default to current user bid
+		G.leClient.get(G.sid, self.authorID, self.wbID, function(data) {
 			if (!data[1]) {
 				debug.warn("no weibo data, bid="+self.authorID+" wbID="+self.wbID);
 				callback();
@@ -683,26 +677,26 @@ function WeiboPost(wbID, authorID, original, scope)
 	};
 	
 	this.del = function(callback) {
-		if (self.authorID !== G_VARS.bid)
+		if (self.authorID !== G.bid)
 			return;	//only delete one's own post
 		
 		//remove the post from key list of weibos for the day
 		var wbDay = parseInt(self.timeStamp/86400000);
-		G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function(keylist) {
+		G.leClient.hget(G.sid, G.bid, G.Posts, wbDay, function(keylist) {
 			if (keylist[1]) {
 				//remove wbID from Posts keylist
 				debug.log("keys before del() ", keylist[1], self.wbID);
 				keylist[1].splice(keylist[1].indexOf(self.wbID), 1);
 				if (keylist[1].length === 0) {
 					//remove the whole list
-					G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function() {
+					G.leClient.hdel(G.sid, G.bid, G.Posts, wbDay, function() {
 						callback();
 					}, function(name, err) {
 						debug.warn("keylist cannot be removed", err);
 					});
 				} else {
 					// weibo is indexed by the day of its posting. Update keylist
-					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, keylist[1], function() {
+					G.leClient.hset(G.sid, G.bid, G.Posts, wbDay, keylist[1], function() {
 						callback();
 					}, function(name, err) {
 						debug.warn(err);
@@ -715,20 +709,20 @@ function WeiboPost(wbID, authorID, original, scope)
 		
 		//update PostPics if this weibo has picture
 		if (self.pictures.length > 0) {
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function(wbKeys) {
+			G.leClient.hget(G.sid, G.bid, G.PostPics, wbDay, function(wbKeys) {
 				if (wbKeys[1]) {
 					//remove wbID from Posts keylist
 					wbKeys[1].splice(wbKeys[1].indexOf(self.wbID), 1);					
 					if (wbKeys[1].length === 0) {
 						//remove the whole list
-						G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function() {
+						G.leClient.hdel(G.sid, G.bid, G.PostPics, wbDay, function() {
 							debug.log("keylist of post removed", wbKeys[1]);
 						}, function(name, err) {
 							debug.warn("keylist cannot be removed", err);
 						});
 					} else {
 						// weibo is indexed by the day of its posting. Update keylist
-						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, wbKeys[1], function() {
+						G.leClient.hset(G.sid, G.bid, G.PostPics, wbDay, wbKeys[1], function() {
 							debug.log("PostPics removed", wbKeys[1]);
 						}, function(name, err) {
 							debug.error(err);
@@ -741,18 +735,18 @@ function WeiboPost(wbID, authorID, original, scope)
 		};
 		
 		if (self.isFavorite) {
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, self.authorID, function(keys) {
+			G.leClient.hget(G.sid, G.bid, G.Favorites, self.authorID, function(keys) {
 				if (keys[1]) {
 					//remove this wbID from favorite list
 					keys[1].splice(keys[1].indexOf(self.wbID), 1);
 					if (keys[1].length) {
-						G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, self.authorID, keys[1], function() {
+						G.leClient.hset(G.sid, G.bid, G.Favorites, self.authorID, keys[1], function() {
 							debug.log("a favorite removed for author", self);
 						}, function(name, err) {
 							debug.warn("Remove favorite err=" +err);
 						});
 					} else {
-						G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.Favorites, self.authorID, function() {
+						G.leClient.hdel(G.sid, G.bid, G.Favorites, self.authorID, function() {
 							debug.log("favorites removed for authorID="+self.authorID);
 						}, function(name, err) {
 							debug.warn("Remove favorite failed", err);
@@ -765,7 +759,7 @@ function WeiboPost(wbID, authorID, original, scope)
 		};
 		
 		//delete weibo object from LeitherOS
-		G_VARS.httpClient.del(G_VARS.sid, G_VARS.bid, self.wbID, function() {
+		G.leClient.del(G.sid, G.bid, self.wbID, function() {
 			debug.info("Weibo deleted", self);
 		}, function(name, err) {
 			debug.warn(err);
@@ -775,7 +769,7 @@ function WeiboPost(wbID, authorID, original, scope)
 	//save weibo object to LeitherOS
 	this.set = function(callback) {
 		var wb = new WBase();
-		wb.authorID = G_VARS.bid;			//if null, use login user ID
+		wb.authorID = G.bid;			//if null, use login user ID
 		wb.parentID = self.parentID;		//the post reviewed by this post, if any
 		wb.parentAuthorID = self.parentAuthorID;	//author of the parent post
 		wb.body = self.body;				//text of the post
@@ -792,10 +786,10 @@ function WeiboPost(wbID, authorID, original, scope)
 		wb.videos = self.videos;			//key list of videos
 		var wbDay = parseInt(self.timeStamp/86400000);
 		
-		G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, wb, function(wbKey) {
+		G.leClient.setdata(G.sid, G.bid, wb, function(wbKey) {
 			self.wbID = wbKey;
 			//add new Key to Weibo list, always add newest post to the front(left)
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, function(keylist) {
+			G.leClient.hget(G.sid, G.bid, G.Posts, wbDay, function(keylist) {
 				if (keylist[1]) {
 					if (keylist[1].indexOf(wbKey) === -1)
 						keylist[1].unshift(wbKey);	//add new key to the beginning of keylist
@@ -803,7 +797,7 @@ function WeiboPost(wbID, authorID, original, scope)
 					keylist[1] = [wbKey];
 				}
 				// weibo is indexed by the Day of posting.
-				G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.Posts, wbDay, keylist[1], function() {
+				G.leClient.hset(G.sid, G.bid, G.Posts, wbDay, keylist[1], function() {
 					callback();
 				}, function(name, err) {
 					debug.error(err);
@@ -817,7 +811,7 @@ function WeiboPost(wbID, authorID, original, scope)
 		
 		//if there is pic in weibo, add it to PostPics list
 		if (self.pictures.length > 0) {
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, function(keylist) {
+			G.leClient.hget(G.sid, G.bid, G.PostPics, wbDay, function(keylist) {
 				if (keylist[1] && keylist[1].length>0) {
 					//add wbID to PostPics keylist
 					if (keylist[1].indexOf(self.wbID) === -1)
@@ -826,7 +820,7 @@ function WeiboPost(wbID, authorID, original, scope)
 					keylist[1] = [self.wbID];
 				};
 				// weibo is indexed by the day of its posting. Update keylist
-				G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.PostPics, wbDay, keylist[1], function() {
+				G.leClient.hset(G.sid, G.bid, G.PostPics, wbDay, keylist[1], function() {
 					debug.log("PostPics added", keylist[1]);
 				}, function(name, err) {
 					debug.error(err);

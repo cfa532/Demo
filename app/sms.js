@@ -2,7 +2,7 @@
 "use strict";
 
 (function() {
-	G_VARS.weiboApp
+	G.weiboApp
 	.controller("chatController", ["$window", "$scope", "msgService", 'SMSService', '$timeout',
 	                               function($window, $scope, msgService, SMSService, $timeout) {
 		console.log("in SMS controller")
@@ -57,7 +57,7 @@
 				$scope.chatSessions[friend.bid] = cs;
 				
 				//first check if there are unread msgs in SMSUnread db
-				G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, friend.bid, function(data) {
+				G.leClient.hget(G.sid, G.bid, G.UnreadSMS, friend.bid, function(data) {
 					if (data[1]) {
 						//display unread messages
 						cs.messages = cs.messages.concat(data[1]);
@@ -71,12 +71,12 @@
 						//no unread msgs, load msgs from last day
 						//get all of them for now
 						debug.log("no unread msgs");
-						G_VARS.httpClient.hkeys(G_VARS.sid, G_VARS.bid, friend.bid, function(ts) {
+						G.leClient.hkeys(G.sid, G.bid, friend.bid, function(ts) {
 							if (ts.length>0) {
 								ts.sort(function(a,b) {return a-b});
 								//get the past 50 messages
 								for (var i=ts.length-1; i>=0 && ts.length-i<50; i--) {
-									G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, friend.bid, ts[i], function(msg) {
+									G.leClient.hget(G.sid, G.bid, friend.bid, ts[i], function(msg) {
 										if (msg[1]) {
 											getMsgPic(msg[1]);
 											cs.messages.unshift(msg[1]);
@@ -94,7 +94,7 @@
 					};
 					
 					//delete unread msgs record
-					G_VARS.httpClient.hdel(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, friend.bid, function() {
+					G.leClient.hdel(G.sid, G.bid, G.UnreadSMS, friend.bid, function() {
 						debug.log("unread msgs deleted");
 					}, function(name, err) {
 						debug.error(err);
@@ -150,7 +150,7 @@
 		//download received file
 		$scope.saveFile = function(m) {
 			var arr = m.content.toString().split("\t");
-			G_VARS.httpClient.get(G_VARS.sid, m.bid, arr[2], function(data) {
+			G.leClient.get(G.sid, m.bid, arr[2], function(data) {
 				if (data[1]) {
 					saveAs(new Blob([data[1]], {type: arr[1]}), arr[0]);
 				};
@@ -163,7 +163,7 @@
 		$scope.sendSMS = function(bid) {
 			if ($scope.txtChat && $scope.txtChat.toString().replace(/\s+/g,"") !== '') {
 				var m = new WeiboMessage();
-				m.bid = G_VARS.bid;
+				m.bid = G.bid;
 				m.type = 1;				//SMS
 				m.contentType = 0;		//text
 				m.content = $scope.txtChat;
@@ -182,9 +182,9 @@
 			if ($scope.picUrl) {
 				var r = new FileReader();
 				r.onloadend = function(e) {
-					G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(picKey) {
+					G.leClient.setdata(G.sid, G.bid, e.target.result, function(picKey) {
 						var m = new WeiboMessage();
-						m.bid = G_VARS.bid;
+						m.bid = G.bid;
 						m.type = 1;				//SMS
 						m.contentType = 1;		//picture
 						m.content = picKey;
@@ -214,9 +214,9 @@
 			if ($scope.fileSent) {
 				var r = new FileReader();
 				r.onloadend = function(e) {
-					G_VARS.httpClient.setdata(G_VARS.sid, G_VARS.bid, e.target.result, function(fileKey) {
+					G.leClient.setdata(G.sid, G.bid, e.target.result, function(fileKey) {
 						var m = new WeiboMessage();
-						m.bid = G_VARS.bid;
+						m.bid = G.bid;
 						m.type = 1;				//SMS
 						m.contentType = 2;		//file
 						console.log($scope.fileSent);
@@ -245,7 +245,7 @@
 		
 		//get the css class for each message
 		$scope.getMsgClass = function(bid, line) {
-			if (bid === G_VARS.bid) {
+			if (bid === G.bid) {
 				if (line === 1)
 					return "msg_bubble_list bubble_r";
 				else
@@ -259,18 +259,18 @@
 		};
 		
 		$scope.getOnlineNodes = function() {
-			G_VARS.httpClient.getvar(G_VARS.sid, "onlinehost", function(data) {
+			G.leClient.getvar(G.sid, "onlinehost", function(data) {
 			});
 		};
 
 		$scope.getOnlineUsers = function() {
 			//get nearby users those are not friends
-			G_VARS.httpClient.getvar(G_VARS.sid, "usernearby", function(data) {
+			G.leClient.getvar(G.sid, "usernearby", function(data) {
 				//an array of userid on the same node
 				//debug.log(data);
 				$scope.usrList = {};
 				angular.forEach(data, function(bid) {
-					if (bid!==G_VARS.bid && bid!==null && !$scope.myUserInfo.isFriend(bid)) {
+					if (bid!==G.bid && bid!==null && !$scope.myUserInfo.isFriend(bid)) {
 						(function(ht, bid) {
 							var ui = new UserInfo(bid);
 							ui.get(function(readOK) {
@@ -317,7 +317,7 @@
 				};
 				
 				//add new msgs in to unread msgs array
-				G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, function(data) {
+				G.leClient.hget(G.sid, G.bid, G.UnreadSMS, bid, function(data) {
 					if (data[1]) {
 						for (var i=0; i<data[1].length; i++) {
 							var m = new WeiboMessage();
@@ -327,7 +327,7 @@
 					};
 
 					//update unread msgs with both old and new ones
-					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, G_VARS.UnreadSMS, bid, htSMS[bid], function() {
+					G.leClient.hset(G.sid, G.bid, G.UnreadSMS, bid, htSMS[bid], function() {
 						//debug.log(htSMS[bid]);
 					}, function(name, err) {
 						debug.error(err);
@@ -346,13 +346,13 @@
 		//bid is the chatting friend's bid
 		this.saveSMS = function(bid, msg) {
 			//debug.log(msg);
-			G_VARS.httpClient.hget(G_VARS.sid, G_VARS.bid, bid, msg.timeStamp, function(data) {
+			G.leClient.hget(G.sid, G.bid, bid, msg.timeStamp, function(data) {
 				if (data[1]) {
 					//most unlikely, but 2 msgs happened at the same time
 					msg.timeStamp++;	//try a different timestamp by adding 1 millisecond
 					this.saveSMS(bid, msg);
 				} else {
-					G_VARS.httpClient.hset(G_VARS.sid, G_VARS.bid, bid, msg.timeStamp, msg, function() {
+					G.leClient.hset(G.sid, G.bid, bid, msg.timeStamp, msg, function() {
 						debug.log("msg saved in db", msg);
 
 						//make the new messages shown in chat box

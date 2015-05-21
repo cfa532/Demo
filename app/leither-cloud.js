@@ -10,8 +10,9 @@ var leither = (function() {
 	var le = {};
 	le.client = function(ip) {
 		return new hprose.Client.create("ws://"+ip+"/ws/", 
-				["register","login","getvar","begin","set","commit","rollback","get","setdata",
-				 "sendmsg","readmsg","lpush","lrange","hset","hget","hgetall","hlen","hdel","hkeys","del"]);
+				["register","login","getvar","begin","set","commit","rollback","get","setdata","createinvcode","invite",
+				 "sendmsg","readmsg","lpush","lrange","hset","hget","hgetall","hlen","hdel","hkeys","del","setinvtemplate",
+				 "getappdownloadkey","getinvcodeinfo"]);
 	};
 	return le;
 }());
