@@ -44,7 +44,8 @@
 							debug.warn(err);
 						});
 					};
-					r.readAsArrayBuffer(new Blob([tmp[1]]));
+					//r.readAsArrayBuffer(new Blob([tmp[1]]));
+					r.readAsText(new Blob([tmp[1]], {type : 'utf-8'}));
 				}, function(name, err) {
 					debug.warn(err);
 				});
