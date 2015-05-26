@@ -7,7 +7,7 @@
 			debug.log("invite friends");
 			G.leClient.createinvcode(G.sid, G.bid, 24 * 3600, 20, 40, function (invcode) {
 				//get template code
-				G.leClient.get(G.sid, G.dataBid, G.makefile.template.invite.fileKey, function(tmp) {
+				G.leClient.get(G.sid, G.dataBid, G.makefile.system.invite.fileKey, function(tmp) {
 					var r = new FileReader();
 					r.onloadend = function(e) {
 						var htmlTemplate = r.result;
@@ -15,7 +15,7 @@
 						//set template with invcode
 						G.leClient.setinvtemplate(G.sid, G.bid, invcode, htmlTemplate, function() {
 							debug.info("template set ok", invcode);
-							$scope.invCode = "http://"+G.currentIP+"/getres?key="+G.makefile.html.inviteFile.fileKey+"&bid="+G.dataBid+"&sid="+G.sid+"&invcode="+invcode+"&sender="+G.bid;
+							$scope.invCode = "http://"+G.currentIP+"/getres?key="+G.makefile.files.inviteFile.fileKey+"&bid="+G.dataBid+"&sid="+G.sid+"&invcode="+invcode+"&sender="+G.bid;
 							$scope.$apply();
 							
 							G.leClient.getinvcodeinfo(G.sid, G.bid, invcode, function(info) {
