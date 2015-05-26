@@ -3,33 +3,19 @@
 (function() {
 	G.weiboApp
 	.controller("inviteController", function($scope) {
-//		var htmlTemplate = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> \
-//			<html xmlns="http://www.w3.org/1999/xhtml"> \
-//		<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> \
-//		<title>APP</title> \
-//		<script type="text/javascript"> \
-//		"use strict"; \
-//		var userid, userppt; \
-//		userid="%%userid%%";userppt="%%ppt%%"; \
-//		//document.getElementById("loadZone").innerHTML = userid; \
-//		</script></head> \
-//		<body><div id="loadZone">Hello</div></body></html>';
-
-		var htmlTemplate;
 		$scope.inviteFriend = function() {
 			debug.log("invite friends");
 			G.leClient.createinvcode(G.sid, G.bid, 24 * 3600, 20, 40, function (invcode) {
 				//get template code
-				G.leClient.get(G.sid, G.dataBid, G.inviteTemplate, function(tmp) {
+				G.leClient.get(G.sid, G.dataBid, G.makefile.template.invite.fileKey, function(tmp) {
 					var r = new FileReader();
 					r.onloadend = function(e) {
-						htmlTemplate = r.result;
+						var htmlTemplate = r.result;
 						debug.log(htmlTemplate);
 						//set template with invcode
 						G.leClient.setinvtemplate(G.sid, G.bid, invcode, htmlTemplate, function() {
 							debug.info("template set ok", invcode);
-							var filekey = G.inviteFileKey;
-							$scope.invCode = "http://"+G.currentIP+"/getres?key="+G.inviteFileKey+"&bid="+G.dataBid+"&sid="+G.sid+"&invcode="+invcode+"&sender="+G.bid;
+							$scope.invCode = "http://"+G.currentIP+"/getres?key="+G.makefile.html.inviteFile.fileKey+"&bid="+G.dataBid+"&sid="+G.sid+"&invcode="+invcode+"&sender="+G.bid;
 							$scope.$apply();
 							
 							G.leClient.getinvcodeinfo(G.sid, G.bid, invcode, function(info) {
@@ -44,7 +30,6 @@
 							debug.warn(err);
 						});
 					};
-					//r.readAsArrayBuffer(new Blob([tmp[1]]));
 					r.readAsText(new Blob([tmp[1]], {type : 'utf-8'}));
 				}, function(name, err) {
 					debug.warn(err);

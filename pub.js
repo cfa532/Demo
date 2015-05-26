@@ -13,16 +13,16 @@ var fs = require('fs');
 var bid = "4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U";
 //bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
 var sid = "9f25eb605c1c0ef865c5dd5ade7621c66be5b244";
-var version = "1.0.9";
+var version = "release";
 var ps = [];		//queue to hold all the promises
 
-function loadFile(i, o) {
+function loadFile(o) {
 	return new Promise(function(resolve, reject) {
-		fs.readFile(o[i].fileKey, "utf-8", function(err, text) {
+		fs.readFile(o.fileKey, "utf-8", function(err, text) {
 			if (err) throw(err);
 			proxy.setdata(sid, bid, text, function(key) {
-				console.log(o[i].fileKey, key);
-				o[i].fileKey = key;
+				console.log(o.fileKey, key);
+				o.fileKey = key;
 				resolve(key);
 			}, function(name, err) {
 				console.error(err);
@@ -42,11 +42,11 @@ fs.readFile("makefile.json", "utf-8", function(err, text) {
 				if (o[i].deps) {
 					for(var d in o[i].deps) {
 						if (o[i].deps[d].fileKey)
-							ps.push(loadFile(d, o[i].deps));
+							ps.push(loadFile(o[i].deps[d]));
 					};
 				};
 				if (o[i].fileKey) {
-					ps.push(loadFile(i, o));
+					ps.push(loadFile(o[i]));
 				};
 			})(i, o);
 		};
@@ -54,24 +54,55 @@ fs.readFile("makefile.json", "utf-8", function(err, text) {
 	for(var i in mf.css) {
 		(function(i, o) {
 			if (o[i].fileKey) {
-				ps.push(loadFile(i, o));
+				ps.push(loadFile(o[i]));
 			};
 		})(i, mf.css);
 	};
-	//upload main.html
-//	fs.readFile("templates/main.html", "utf-8", function(err, text) {
-//		if (err) throw(err);
-//		proxy.set(sid, bid, "upgrade-file-location", text, function() {
-//			console.log("main.html uploaded");
-//		}, function(name, err) {
-//			console.error(err);
-//		});
-//	});
+	for(i in mf.files) {
+		(function(i, o) {
+			if (o[i].fileKey) {
+				//upload template files
+				ps.push(loadFile(o[i]));
+			};
+		})(i, mf.files);
+	};
+	
+	//template file for invite friend
+	var inv = mf.system.invite;
+	if (inv.fileKey) {
+		ps.push(new Promise(function(resolve, reject) {
+			fs.readFile(inv.fileKey, "utf-8", function(err, text) {
+				if (err) throw(err);
+				var key = "_template_to_create_entry_html";
+				proxy.set(sid, bid, key, text, function() {
+					console.log(inv.fileKey, key);
+					inv.fileKey = key;
+					resolve(key);
+				}, function(name, err) {
+					console.error(err);
+					reject();
+				});
+			});
+		}));
+	};
+	
+	var leither = mf.system.leither;
+	if (leither.fileKey) {
+		fs.readFile(leither.fileKey, "utf-8", function(err, text) {
+			if (err) throw(err);
+			var key = "_leither_cloud_js";
+			proxy.set(sid, bid, key, text, function() {
+				console.log(leither.fileKey, key);
+			}, function(name, err) {
+				console.error(err);
+			});
+		});
+	};
 	
 	Promise.all(ps).then(function(res) {
 		var o = {};
 		o[version] = mf;
-		var t = JSON.stringify(o);
+		var t = JSON.stringify(mf);
 		proxy.set(sid, bid, "_makefile.json"+"_"+version, t, function() {
 			console.log(t);
 		}, function(name, err) {

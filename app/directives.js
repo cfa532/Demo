@@ -92,7 +92,7 @@
 								scope.relayList.push(data[1]);
 								//debug.log(data[1])
 								scope.relayList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
-								//scope.$apply();
+								scope.$apply();
 							};
 						}, function(name, err) {
 							debug.error("In showRelay err=", err);
@@ -158,7 +158,7 @@
 							//update a global key list for all reviews by me
 							updateMyReviewList(relayKey);
 						} else {						
-							scope.weibo.update().then(function() {
+							scope.weibo.update(function() {
 								debug.log("addRelay OK, key="+relayKey);
 								scope.relay = '';
 								scope.currentPage = 1;
@@ -170,9 +170,6 @@
 
 								//update a global key list for all reviews by me
 								updateMyReviewList(relayKey);
-							}, function(name, err) {
-								debug.error("addRelay err1=", err);
-								scope.R.txtInvalid = false;
 							});
 						}
 					}, function(name,err) {
@@ -292,7 +289,7 @@
 								scope.reviewList.push(data[1]);
 								//debug.log(data[1]);
 								scope.reviewList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
-								//scope.$apply();
+								scope.$apply();
 							};
 						}, function(name, err) {
 							debug.error(err);
@@ -346,20 +343,16 @@
 							scope.retext = '';
 							scope.currentPage = 1;
 							getPage(r);
-							//scope.$apply();
 							updateMyReviewList(reviewKey);
 						} else {
 							//call this only when reviewing my own post
 							scope.weibo.reviews.unshift(reviewKey);
-							scope.weibo.update().then(function() {
+							scope.weibo.update(function() {
 								debug.log("Review added. key="+ reviewKey);
 								scope.retext = '';
 								scope.currentPage = 1;
 								getPage();
-								//scope.$apply();
 								updateMyReviewList(reviewKey);
-							}, function(reason) {
-								debug.warn(reason);
 							});
 						};
 					}, function(name, err) {

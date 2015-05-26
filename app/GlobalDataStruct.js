@@ -6,7 +6,7 @@ var G = (function(_g) {		//augument global variable G, defined in release.html
 	_g.bidPath = window.location.pathname + "/appID/userID/",
 	_g.spinner = null, // spinning image while loading
 	_g.weiboApp = null, // ["ui.bootstrap", "ui.router"]
-	_g.MaxWeiboLength = 40,
+	_g.MaxWeiboLength = 140,
 	_g.idxDB = null, // handle of indexedDB
 	_g.idxDBVersion = 3,
 	_g.objStore = {
@@ -67,8 +67,8 @@ var G = (function(_g) {		//augument global variable G, defined in release.html
 function UIBase() {
 	this.bid = null;			// block ID
 	this.nickName = "";
-	this.intro = null;		//a brief self-introduction
-	this.mobile = null;		//cellular number used for verifying user's authenticity
+	this.intro = null;			//a brief self-introduction
+	this.mobile = null;			//cellular number used for verifying user's authenticity
 	this.email = null;
 	this.location = null;
 	this.version = null;		//version number
@@ -77,8 +77,9 @@ function UIBase() {
 	this.passwd = null;
 	this.favoriteCount = 0;
 	this.weiboCount = 0;
-	this.lastPostKey = null;		//key of last weibo by this user
+	this.lastPostKey = null;	//key of last weibo by this user
 	this.friends = [];			//Friend array of my friends
+	this.oneLiner = "";			//brief self-intro
 };
 
 function UserInfo(bid) {
@@ -631,7 +632,7 @@ function WeiboPost(wbID, authorID, original, scope)
 		G.leClient.get(G.sid, self.authorID, self.wbID, function(data) {
 			if (!data[1]) {
 				debug.warn("no weibo data, bid="+self.authorID+" wbID="+self.wbID);
-				callback();
+				callback(false);
 				return;
 			};
 			self.parentID = data[1].parentID;		//the post reviewed by self post, if any
@@ -670,7 +671,7 @@ function WeiboPost(wbID, authorID, original, scope)
 					};
 				});
 			};
-			callback();
+			callback(true);
 		}, function(name, err) {
 			debug.warn(err);
 		});
