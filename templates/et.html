@@ -16,12 +16,9 @@ var G = {
 		httpClient : null,
 		sid : '4d01b26c7a5128f718871221ad6456bfd505779b',
 		dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U',	//from which JS data are read
-		leither : '1TU1vLrmO9sZNju2KbOBMrey-wd-R_06yQuImEs_IIw', 	//leither-cloud.js has to be loaded on server
-		angular : 'bFcyw56WDR-zuJEP79_SkchXM5nJvnIvVzjtXgjX-hA', //'URRihSJ3aaOn-qmmMMNzoIMZ_EZcWAWkuPuPzZtTAfw',	//angular.js
-		myVersion	: "1.0.10",			//current html version
-		makefile	: "_makefile.json_1.0.10",		//where K-V of js and css code stored
-		inviteFileKey : "",				//the file a friend used to accept invitation, jk.html
-		inviteTemplate : "",			//template used to create user app file, et.html
+		leither : '_leither_cloud_js', 	//leither-cloud.js has to be loaded on server
+		makefileKey	: "_makefile.json_release",		//where K-V of js, templates and css code stored
+		makefile : null,		//makefile object, store keys for js, css, templates
 //xiaoxie
 //		userppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzRfNk1ma1BnSjAzVFNycnRsRWF3R2YyOTlQWXpVTHU0MmcybTQ5eFFsOFUA",
 //sibao
@@ -89,50 +86,36 @@ var G = {
 			//the server is live, Leither loaded from it
 			G.leClient = leither.client(ip);
 			G.currentIP = ip;
-			
-			//load main html body
-			var div = document.getElementById("loadZone");
-			if (localStorage[G.appID]) {
-			//if (null) {
-				div.innerHTML = localStorage[G.appID];
-			} else {
-				G.leClient.get(G.sid, G.dataBid, G.appID, function(data) {
-					var r = new FileReader();
-					r.onload = function(e) {
-						localStorage[G.appID] = r.result;
-						div.innerHTML = localStorage[G.appID];
-					};
-					//the source file must be saved as utf-8 format
-					r.readAsText(new Blob([data[1]], {type : "utf-8"}));
-				}, function(name, err) {
-					console.error(err);
-				});
-			};
-
-			debug.log("userid", G.userid, G.userppt);
 			G.leClient.login(null, G.userppt, function(sid) {
-				debug.info("login with ppt, sid=" + sid);
 				G.sid = sid;
 				G.leClient.getvar(sid, 'self', function(usr) {
 					G.bid = usr.id;
-					if (localStorage[G.angular]) {
-						eval(localStorage[G.angular]);
-						debug.log("angular loaded from local storage")
-						loadExternalJS();
-					} else {
-						G.leClient.get(G.sid, G.dataBid, G.angular, function(data) {
-							var r = new FileReader();
-							r.onload = function(e) {
-								localStorage[G.angular] = e.target.result;
-								debug.log("angular saved in local storage and loaded");
-								eval(localStorage[G.angular]);	//it works because angular is defined as window.angular
-								loadExternalJS();
-							};
-							r.readAsText(new Blob([data[1]]));
-						}, function(name, err) {
-							debug.log(err);
-						});
-					};
+					debug.info("login with ppt, sid=" + G.sid, "bid="+G.bid);
+					G.leClient.get(G.sid, G.dataBid, G.makefileKey, function(data) {
+						G.makefile = JSON.parse(data[1]);		//makefile has all the keys of system resources
+						debug.log(G.makefile);
+
+						if (localStorage[G.makefile.files.angular.fileKey]) {
+							eval(localStorage[G.makefile.files.angular.fileKey]);
+							debug.log("angular loaded from local storage", angular);
+							loadMainHtml(G.makefile.files.main.fileKey);
+						} else {
+							G.leClient.get(G.sid, G.dataBid, G.makefile.files.angular.fileKey, function(data) {
+								var r = new FileReader();
+								r.onload = function(e) {
+									localStorage[G.makefile.files.angular.fileKey] = e.target.result;
+									eval(localStorage[G.makefile.files.angular.fileKey]);	//angular is defined as window.angular
+									debug.log("angular saved in local storage and loaded", angular);
+									loadMainHtml(G.makefile.files.main.fileKey);
+								};
+								r.readAsText(new Blob([data[1]]));
+							}, function(name, err) {
+								debug.error(err);
+							});
+						};
+					}, function(name, err) {
+						debug.error(err);
+					});
 				}, function(name, err) {
 					debug.error("getSysUser err=" + err);
 				});
@@ -145,9 +128,10 @@ var G = {
 	function loadMainHtml(fileKey) {
 		//load main html body
 		var div = document.getElementById("loadZone");
-		//debug.log(localStorage[mf.html.main.fileKey]);
+		//debug.log(localStorage[G.makefile.files.main.fileKey]);
 		if (localStorage[fileKey]) {
 			div.innerHTML = localStorage[fileKey];
+			loadResources();		//load all resources required by system
 		} else {
 			G.leClient.get(G.sid, G.dataBid, fileKey, function(data) {
 				debug.info("get main ok")
@@ -159,7 +143,7 @@ var G = {
 					//force a reload
 					location.reload(false);
 					//loadMainHtml(fileKey);
-					//div.innerHTML = localStorage[mf.html.main.fileKey];
+					//div.innerHTML = localStorage[G.makefile.html.main.fileKey];
 				};
 				//the source file must be saved as utf-8 format
 				r.readAsText(new Blob([data[1]], {type : "utf-8"}));
@@ -169,100 +153,86 @@ var G = {
 		};
 	};
 	
-	function loadExternalJS() {
-		G.leClient.get(G.sid, G.dataBid, G.makefile, function(data) {
-			console.log(G.makefile)
-			var mf = JSON.parse(data[1])[G.myVersion];
-			debug.log(mf);
-			loadMainHtml(mf.html.main.fileKey);
-			G.inviteTemplate = mf.template.invite.fileKey;	//template used to create app file for inviting new friend
-			G.inviteFileKey = mf.html.inviteFile.fileKey;
-
-			//load css code too
-			for (var k in mf.css) {
-				(function(o) {
-					var cs = document.createElement("style");
-					cs.rel = "stylesheet";
-					cs.type = "text/css";
-					if (localStorage[o.fileKey]) {
-						cs.textContent = localStorage[o.fileKey];
-						document.getElementsByTagName("head")[0].appendChild(cs);
-					} else {
-						G.leClient.get(G.sid, G.dataBid, o.fileKey, function(data) {
-							//debug.log(data[1])
-							var r = new FileReader();
-							r.onload = function(e) {
-								localStorage[o.fileKey] = e.target.result;
-								cs.textContent = e.target.result;
-								document.getElementsByTagName("head")[0].appendChild(cs);
-							};
-							r.readAsText(new Blob([data[1]]));
-						}, function(name, err) {
-							debug.error(err);
-						});
-					};									
-				})(mf.css[k]);
-			};
-			
-			//load JS files and save in localStorage
-			var q = angular.injector(['ng']).get('$q');
-			var ds = [];
-			for (var k in mf.js[0]) {
-				//dependencies need to be loaded and executed first
-				ds.push(loadScript(mf.js[0][k], q));
+    function otherJS() {
+		$("#siyu").click(function(){easyDialog.open({
+				container : 'siyu-main',
+				fixed : false,
+				drag : true,
+				overlay : true
+			});
+		});
+		
+		$(".sure").click(function(){easyDialog.open({
+				container : 'siyu-next',
+				fixed : false,
+				drag : true,
+				overlay : true
+			});
+		});
+		
+		$(".siyu-base").click(function(){easyDialog.open({
+				container : 'siyu-msg',
+				fixed : false,
+				drag : true,
+				overlay : true
+			});
+		});
+		$(".copy").click(function(){
+		  $(".siyu-alert").css("display","block")
+		})
+	};
+	
+	function loadResources() {		
+		//load css code too
+		for (var k in G.makefile.css) {
+			(function(o) {
+				var cs = document.createElement("style");
+				cs.rel = "stylesheet";
+				cs.type = "text/css";
+				if (localStorage[o.fileKey]) {
+					cs.textContent = localStorage[o.fileKey];
+					document.getElementsByTagName("head")[0].appendChild(cs);
+				} else {
+					G.leClient.get(G.sid, G.dataBid, o.fileKey, function(data) {
+						var r = new FileReader();
+						r.onload = function(e) {
+							localStorage[o.fileKey] = e.target.result;
+							cs.textContent = e.target.result;
+							document.getElementsByTagName("head")[0].appendChild(cs);
+						};
+						r.readAsText(new Blob([data[1]]));
+					}, function(name, err) {
+						debug.error(err);
+					});
+				};									
+			})(G.makefile.css[k]);
+		};
+		
+		//load JS files and save in localStorage
+		var q = angular.injector(['ng']).get('$q');
+		var ds = [];
+		for (var k in G.makefile.js[0]) {
+			//dependencies need to be loaded and executed first
+			ds.push(loadScript(G.makefile.js[0][k], q));
+		};
+		q.all(ds).then(function() {
+			//debug.info(G);
+			G.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"])
+			ds = [];
+			for (var k in G.makefile.js[1]) {
+				// exec JS that depends on previous ones
+				ds.push(loadScript(G.makefile.js[1][k], q));
 			};
 			q.all(ds).then(function() {
-				//debug.info(G);
-				G.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"])
-				ds = [];
-				for (var k in mf.js[1]) {
-					// exec JS that depends on previous ones
-					ds.push(loadScript(mf.js[1][k], q));
-				};
-				q.all(ds).then(function() {
-					//kick start the app. weiboApp needed for the following JS code
-					otherJS();
-					angular.bootstrap(document, ['appModule']);
-					debug.log("app started");
-				}, function(reason) {
-					debug.error(reason);
-				});
+				//kick start the app. weiboApp needed for the following JS code
+				otherJS();
+				angular.bootstrap(document, ['appModule']);
+				debug.log("app started");
 			}, function(reason) {
 				debug.error(reason);
 			});
-			
-            function otherJS() {
-
-				$("#siyu").click(function(){easyDialog.open({
-						container : 'siyu-main',
-						fixed : false,
-						drag : true,
-						overlay : true
-					});
-				});
-				
-				$(".sure").click(function(){easyDialog.open({
-						container : 'siyu-next',
-						fixed : false,
-						drag : true,
-						overlay : true
-					});
-				});
-				
-				$(".siyu-base").click(function(){easyDialog.open({
-						container : 'siyu-msg',
-						fixed : false,
-						drag : true,
-						overlay : true
-					});
-				});
-				$(".copy").click(function(){
-				  $(".siyu-alert").css("display","block")
-				})
-
-			};
-		}, function(name, err) {
-			debug.error(err);
+		}, function(reason) {
+			debug.error(reason);
 		});
 	};
 	
