@@ -469,8 +469,8 @@ function WeiboPicture(picID, authorID) {
 			};
 		};
 		
+		//ratio is height/width of desired image size
 		function cropImage(ratio, callback) {
-			//ratio is height/width of desired image size
 			if (!ratio || ratio<=0) {
 				callback(self.dataURI);
 				return;
@@ -577,7 +577,7 @@ function WeiboPicture(picID, authorID) {
 }
 
 // scope where post is displayed
-function WeiboPost(wbID, authorID, original, scope)
+function WeiboPost(wbID, authorID, scope)
 {
 	this.authorID = authorID;	//if null, use login user ID
 	this.wbID = wbID;
@@ -594,14 +594,14 @@ function WeiboPost(wbID, authorID, original, scope)
 	this.videos = [];			//key list of videos
 	this.parentWeibo = [];
 	this.isFavorite = false;
-	this.original = original;
+	this.original = null;
 	this.scope = scope;
 	var self = this;
 	
 	//update weibo record with new data, when new reviews are added
 	this.update = function(callback) {
 		var wb = new WBase();
-		wb.authorID = G.bid;		//if null, use login user ID
+		wb.authorID = G.bid;				//if null, use login user ID
 		wb.parentID = self.parentID;		//the post reviewed by this post, if any
 		wb.parentAuthorID = self.parentAuthorID;	//author of the parent post
 		wb.body = self.body;				//text of the post
@@ -626,9 +626,10 @@ function WeiboPost(wbID, authorID, original, scope)
 		});
 	};
 
-	this.get = function(callback) {
+	this.get = function(original, callback) {
 		if (!authorID)
 			authorID = G.bid;		//default to current user bid
+		//debug.log(self);
 		G.leClient.get(G.sid, self.authorID, self.wbID, function(data) {
 			if (!data[1]) {
 				debug.warn("no weibo data, bid="+self.authorID+" wbID="+self.wbID);
@@ -636,6 +637,12 @@ function WeiboPost(wbID, authorID, original, scope)
 				return;
 			};
 			self.parentID = data[1].parentID;		//the post reviewed by self post, if any
+			if (self.parentID) {
+				//there is a parent weibo
+				self.original = false;
+			} else {
+				self.original = true;
+			};
 			self.parentAuthorID = data[1].parentAuthorID;	//author of the parent post
 			self.body = data[1].body;				//text of the post
 			self.tags = data[1].tags;				//array of tags
@@ -647,31 +654,38 @@ function WeiboPost(wbID, authorID, original, scope)
 			//self.pictures = data[1].pictures;		//key list of pictures
 			self.videos = data[1].videos;			//key list of videos;
 			self.isFavorite = false;
-			
 			self.pictures = [];
+			
+			//looking for original post
+			if (original) {
+				if (self.original) {
+					callback(true);
+				};
+			} else {
+				if (!self.original) {
+					//there is a parent weibo, load it.
+					//Notice: make sure only to read one direct parent weibo
+					//a weibo that can be a parentWeibo must be original itself
+					var pw = new WeiboPost(self.parentID, self.parentAuthorID, self.scope);
+					pw.get(original, function(readOK) {
+						if (readOK) {
+							self.parentWeibo = pw;
+						} else {
+							self.parentWeibo = null;	//original post is deleted, show it on webpage
+						};
+					});
+				}
+				callback(true);
+			};
+
 			angular.forEach(data[1].pictures, function(picID) {
 				var wp = new WeiboPicture(picID, self.authorID);
-				wp.get(1, function(uri) {
+				wp.get(1 /*ratio*/, function(uri) {
 					wp.dataURI = uri;
 					self.pictures.push(wp);
 					if (self.scope) self.scope.$apply();	//show the pic right away
 				});
 			});
-
-			if (self.parentID && !self.original) {
-				//there is a parent weibo, load it.
-				//Notice: make sure only to read one direct parent weibo
-				//a weibo that can be a parentWeibo must be original itself
-				var pw = new WeiboPost(self.parentID, self.parentAuthorID, true, self.scope);
-				pw.get(function(readOK) {
-					if (readOK) {
-						self.parentWeibo = pw;
-					} else {
-						self.parentWeibo = null;	//original post is deleted, show it on webpage
-					};
-				});
-			};
-			callback(true);
 		}, function(name, err) {
 			debug.warn(err);
 		});

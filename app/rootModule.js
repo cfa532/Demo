@@ -233,16 +233,17 @@
 		
 		//read one weibo and add it to weiboList
 		var getWeibo = function(bid, key, original) {
-			var wb = new WeiboPost(key, bid, original, $scope);
-			wb.get(function() {
-				//debug.log(wb);
-				$scope.myUserInfo.checkFavorite(wb);
-				$scope.weiboList.push(wb);
-				//sort array in descending order, worked like a charm
-				$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
-				G.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
-				$scope.$apply();
-				$timeout(function() {G.spinner.stop();});		//stop loading sign
+			var wb = new WeiboPost(key, bid, $scope);
+			wb.get(original, function(readOK) {
+				if (readOK) {
+					$scope.myUserInfo.checkFavorite(wb);
+					$scope.weiboList.push(wb);
+					//sort array in descending order, worked like a charm
+					$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
+					G.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+					$scope.$apply();
+					$timeout(function() {G.spinner.stop();});		//stop loading sign					
+				};
 			});
 		};
 		
@@ -499,7 +500,7 @@
 			$scope.P.txtInvalid = true;
 			G.spinner.spin(document.getElementById('myAppRoot'));
 			
-			var wb = new WeiboPost($scope);
+			var wb = new WeiboPost();
 			wb.body = $scope.wbText;
 			wb.timeStamp = new Date().getTime();
 			wb.authorID = G.bid;
