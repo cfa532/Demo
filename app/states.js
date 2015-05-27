@@ -23,6 +23,7 @@
 			resolve : {
 				logon : function(logonService, $q, $rootScope) {
 					var deferredStart = $q.defer();
+					//open indexedDB before starting app
 					var request = window.indexedDB.open("weiboDB", G.idxDBVersion);
 					request.onerror = function(event) {
 						debug.error("open indexedDB error", event.target.errorCode);
@@ -44,7 +45,7 @@
 								$rootScope.myUserInfo.set(function() {
 									//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
 									$rootScope.currUserInfo = $rootScope.myUserInfo;
-									deferredStart.resolve(321);									
+									deferredStart.resolve(321);
 								});
 							} else {
 								//get my head pic
@@ -62,13 +63,28 @@
 				}
 			},
 			controller : function(logon, $scope, msgService, $interval, $timeout) {
-				debug.log("in root state controller = " +logon);
-				debug.log("Login user", $scope.myUserInfo);
+				debug.log("in root, Login user", $scope.myUserInfo);
 
 				//begin to check for new message
 				msgService.readMsg();
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
+				
+				//check if there is a inviter
+				debug.info(G.inviter, G.bid)
+				if (G.inviter && G.inviter!=='%%inviter%%' && !$scope.myUserInfo.isFriend(G.inviter)) {
+					//add inviter as friend
+					var fri = new UserInfo(G.inviter);
+					fri.get(function(readOK) {
+						if (readOK) {
+							$scope.myUserInfo.addFriend(fri);
+							msgService.sendRequest(fri.bid, "request to be added");
+							myChatBox.getOnlineUsers();		//unknown user may cause a problem
+							//delete $scope.usrList[fri.bid];
+						};
+					});
+				};
 				myChatBox.getOnlineUsers();		//unknown user may cause a problem
+
 				G.spinner = new Spinner(	// show the onload spinner
 				{
 					lines: 15,				// The number of lines to draw
@@ -88,7 +104,7 @@
 					top: '50%',				// Top position relative to parent
 					left: '50%'				// Left position relative to parent
 				}).spin(document.getElementById('myAppRoot'));
-				$timeout(function() {G.spinner.stop();}, 30000);		//stop the spinner after 30s nonetheless
+				$timeout(function() {G.spinner.stop();}, 10000);		//stop the spinner after 30s nonetheless
 			}
 		})
 		.state("root.chat", {

@@ -7,15 +7,17 @@
 			debug.log("invite friends");
 			G.leClient.createinvcode(G.sid, G.bid, 24 * 3600, 20, 40, function (invcode) {
 				//get template code
-				G.leClient.get(G.sid, G.dataBid, G.makefile.system.invite.fileKey, function(tmp) {
+				G.leClient.get(G.sid, G.appBid, G.makefile.system.invite.fileKey, function(tmp) {
 					var r = new FileReader();
 					r.onloadend = function(e) {
 						var htmlTemplate = r.result;
-						debug.log(htmlTemplate);
+						//add inviter's bid to template
+						htmlTemplate = htmlTemplate.replace('%%inviter%%', G.bid);
+						//debug.log(htmlTemplate);
 						//set template with invcode
 						G.leClient.setinvtemplate(G.sid, G.bid, invcode, htmlTemplate, function() {
 							debug.info("template set ok", invcode);
-							$scope.invCode = "http://"+G.currentIP+"/getres?key="+G.makefile.files.inviteFile.fileKey+"&bid="+G.dataBid+"&sid="+G.sid+"&invcode="+invcode+"&sender="+G.bid;
+							$scope.invCode = "http://"+G.currentIP+"/getres?key="+G.makefile.files.inviteFile.fileKey+"&bid="+G.appBid+"&sid="+G.sid+"&invcode="+invcode+"&sender="+G.bid;
 							$scope.$apply();
 							
 							G.leClient.getinvcodeinfo(G.sid, G.bid, invcode, function(info) {
@@ -48,7 +50,7 @@
 				window.prompt("复制到剪贴板按住Ctrl+C, 然后按回车键", $scope.invCode);
 		};
 	})
-	.controller("appController", function($scope, $rootScope, $window) {
+	.controller("appController", function($rootScope) {
 		console.log("In app controller");	//the very root of this app
 		
 		//do little here, just initiate some global variables

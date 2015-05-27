@@ -12,17 +12,16 @@ var G = {
 		IPNum : 0,
 		currentIP : null,
 		httpClient : null,
-		sid : '4d01b26c7a5128f718871221ad6456bfd505779b',
-		dataBid : '4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U',	//from which JS data are read, the APP ID
+		sid : 'f67b827aaead51a11027abdca72f2b76cda23d02',
+		appBid : 'Dbz6OJHBL7RFdFSRice5V4-gzBa73PsZXrg2sgUzbcM',	//from which JS data are read, the APP ID
+		appPpt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0RiejZPSkhCTDdSRmRGU1JpY2U1VjQtZ3pCYTczUHNaWHJnMnNnVXpiY00A",
 		leither : '_leither_cloud_js', 	//leither-cloud.js has to be loaded on server
 		makefileKey	: "_makefile.json_release",		//where K-V of js, templates and css code stored
 		makefile : null,		//makefile object, store keys for js, css, templates
-//xiaoxie
-//		userppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBKzRfNk1ma1BnSjAzVFNycnRsRWF3R2YyOTlQWXpVTHU0MmcybTQ5eFFsOFUA",
-//sibao
-//		userppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0VING5NeWNaWkJJYndnNG0xdlF2RUtKR2pJOGdoN0hvTTM3S2lLcjBWazgA",
 //appowner
-		userppt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK2hmSXNqZVFaU2lXRlhUaXpRQUt0eG1uWEJlbEdvNkxDa0JGTERpUjJ2YjQA",
+		userid : "%%userid%%",
+		userppt : "%%ppt%%",
+		inviter : '%%inviter%%',
 };
 
 	//customize log function. Disable it by setting isDebug to false
@@ -69,7 +68,7 @@ var G = {
 			checkServer(G.IPList[G.IPNum++]);
 		});
 		//here is a problem with illegitimate sid
-		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G.sid+'&bid='+G.dataBid+'&key='+G.leither;
+		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G.sid+'&bid='+G.appBid+'&key='+G.leither;
 		debug.log(script);
 		document.getElementsByTagName("head")[0].appendChild(script);		//load Leither first
 	};
@@ -84,12 +83,16 @@ var G = {
 			//the server is live, Leither loaded from it
 			G.leClient = leither.client(ip);
 			G.currentIP = ip;
+			
+			//if there is no inviter, then there is no userppt. Use appPpt as userppt
+			if (G.inviter === '%%inviter%%')
+				G.userppt = G.appPpt;
 			G.leClient.login(null, G.userppt, function(sid) {
 				G.sid = sid;
 				G.leClient.getvar(sid, 'self', function(usr) {
 					G.bid = usr.id;
 					debug.info("login with ppt, sid=" + G.sid, "bid="+G.bid);
-					G.leClient.get(G.sid, G.dataBid, G.makefileKey, function(data) {
+					G.leClient.get(G.sid, G.appBid, G.makefileKey, function(data) {
 						G.makefile = JSON.parse(data[1]);		//makefile has all the keys of system resources
 						debug.log(G.makefile);
 
@@ -98,7 +101,7 @@ var G = {
 							debug.log("angular loaded from local storage", angular);
 							loadMainHtml(G.makefile.files.main.fileKey);
 						} else {
-							G.leClient.get(G.sid, G.dataBid, G.makefile.files.angular.fileKey, function(data) {
+							G.leClient.get(G.sid, G.appBid, G.makefile.files.angular.fileKey, function(data) {
 								var r = new FileReader();
 								r.onload = function(e) {
 									localStorage[G.makefile.files.angular.fileKey] = e.target.result;
@@ -131,7 +134,7 @@ var G = {
 			div.innerHTML = localStorage[fileKey];
 			loadResources();		//load all resources required by system
 		} else {
-			G.leClient.get(G.sid, G.dataBid, fileKey, function(data) {
+			G.leClient.get(G.sid, G.appBid, fileKey, function(data) {
 				debug.info("get main ok")
 				var r = new FileReader();
 				r.onload = function(e) {
@@ -191,7 +194,7 @@ var G = {
 					cs.textContent = localStorage[o.fileKey];
 					document.getElementsByTagName("head")[0].appendChild(cs);
 				} else {
-					G.leClient.get(G.sid, G.dataBid, o.fileKey, function(data) {
+					G.leClient.get(G.sid, G.appBid, o.fileKey, function(data) {
 						var r = new FileReader();
 						r.onload = function(e) {
 							localStorage[o.fileKey] = e.target.result;
@@ -252,7 +255,7 @@ var G = {
 				} else
 					resolve();
 			} else {
-				G.leClient.get(G.sid, G.dataBid, o.fileKey, function(data) {
+				G.leClient.get(G.sid, G.appBid, o.fileKey, function(data) {
 					if (data[1]) {
 						var r = new FileReader();
 						r.onload = function(e) {
@@ -291,7 +294,7 @@ var G = {
 				document.getElementsByTagName("head")[0].appendChild(script);
 			} else {
 				ds.push(q(function(resolve, reject) {
-					G.leClient.get(G.sid, G.dataBid, o.fileKey, function(data) {
+					G.leClient.get(G.sid, G.appBid, o.fileKey, function(data) {
 						if (data[1]) {
 							var r = new FileReader();
 							r.onload = function(e) {

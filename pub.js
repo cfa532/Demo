@@ -10,9 +10,9 @@ var client = new HproseHttpClient("http://" + hosturl + "/webapi/",
 		 "sendmsg", "readmsg", "invite", "accept", "test", "veni", "sethostip","proxyget"])
 var proxy = client.useService();
 var fs = require('fs');
-var bid = "4_6MfkPgJ03TSrrtlEawGf299PYzULu42g2m49xQl8U";
+var bid = "Dbz6OJHBL7RFdFSRice5V4-gzBa73PsZXrg2sgUzbcM";	//app bid
 //bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
-var sid = "9f25eb605c1c0ef865c5dd5ade7621c66be5b244";
+var sid = "f67b827aaead51a11027abdca72f2b76cda23d02";
 var version = "release";
 var ps = [];		//queue to hold all the promises
 

@@ -461,7 +461,7 @@
 			link : function(scope, element, attrs) {
 				//debug.log(G.css[scope.href]);
 				if (localStorage[G.css[scope.href]]===null || typeof(localStorage[G.css[scope.href]])==='undefined') {
-					G.leClient.get(G.sid, G.dataBid, G.css[scope.href], function(data) {
+					G.leClient.get(G.sid, G.appBid, G.css[scope.href], function(data) {
 						//debug.log(data[1])
 						var r = new FileReader();
 						r.onload = function(e) {

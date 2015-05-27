@@ -163,7 +163,7 @@ function UserInfo(bid) {
 					self.headPicUrl = uri;
 			});
 
-			if (self.bid === G.bid) {
+			if (self.bid===G.bid ) {
 				//only read login user's weibo count
 				self.getFavoriteCount(function(count) {
 					self.favoriteCount = count;	
@@ -213,7 +213,7 @@ function UserInfo(bid) {
 	//get a full copy of friends UI
 	this.getFriends = function(scope) {
 		angular.forEach(self.b.friends, function(f) {
-			if (!self.friends[f.bid]) {
+			if (!self.friends[f.bid] && f.bid!==G.bid) {
 				var ui = new UserInfo(f.bid);
 				self.friends[f.bid] = ui;
 				ui.get(function() {
@@ -226,7 +226,8 @@ function UserInfo(bid) {
 	
 	//add a new friend
 	this.addFriend = function(ui) {
-		if (self.isFriend(ui.bid)) return;
+		if (self.isFriend(ui.bid))
+			return;
 		self.friends[ui.bid] = ui;
 		var f = new Friend();
 		f.bid = ui.bid;
@@ -376,6 +377,8 @@ function UserInfo(bid) {
 	}
 
 	this.isFriend = function(bid) {
+		if (bid === self.bid)
+			return true;	//do not add self as friend
 		for (var i=0; i<self.b.friends.length; i++) {
 			if (bid === self.b.friends[i].bid)
 				return true;

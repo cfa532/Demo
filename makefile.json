@@ -38,7 +38,7 @@
 			"angular" : { "fileKey" : "js/angular.min.js" }
 		},
 		"system" : {
-			"invite" : { "fileKey" : "templates/et.html" },
+			"invite" : { "fileKey" : "release.html" },
 			"leither" : { "fileKey" : "app/leither-cloud.js" }
 		}
 	},

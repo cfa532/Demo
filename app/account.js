@@ -128,9 +128,9 @@
 				var np = new WeiboPicture();
 				np.set(f.result, function(setOK) {
 					if (setOK) {
-						//$scope.myUserInfo.headPicUrl = np.dataURI;
-						np.get(1, function(uri) {
+						np.get(1, function(uri) {	//get a square picture
 							$scope.myUserInfo.headPicUrl = uri;
+							$scope.$apply();
 						});
 						$scope.myUserInfo.headPicKey = np.id;
 						$scope.myUserInfo.set(function() {
