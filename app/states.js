@@ -66,16 +66,17 @@
 				debug.log("in root, Login user", $scope.myUserInfo);
 
 				//begin to check for new message
-				msgService.readMsg();
+				msgService.readMsg($scope);
 				var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
 				
 				//check if there is a inviter
 				debug.info(G.inviter, G.bid)
-				if (G.inviter && G.inviter!=='%%inviter%%' && !$scope.myUserInfo.isFriend(G.inviter)) {
+				if (G.inviter!=='%%inviter%%' && !$scope.myUserInfo.isFriend(G.inviter)) {
 					//add inviter as friend
 					var fri = new UserInfo(G.inviter);
 					fri.get(function(readOK) {
 						if (readOK) {
+							debug.log("add friend", fri);
 							$scope.myUserInfo.addFriend(fri);
 							msgService.sendRequest(fri.bid, "request to be added");
 							myChatBox.getOnlineUsers();		//unknown user may cause a problem

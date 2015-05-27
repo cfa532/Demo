@@ -82,10 +82,9 @@
 		
 		//read inbound message and process them accordingly
 		//take 2 call back functions as param to process reviews and SMS
-		this.readMsg = function() {
+		this.readMsg = function(scope) {
 			G.leClient.readmsg(G.sid, function(msgs) {
-				//debug.log("readMsg: ", msgs);
-				
+				//debug.info("readMsg: ", msgs);
 				//iterate through msg list and combine msgs to the same Weibo into an array
 				//then store the msg array in a hash table, indexed by wbID
 				var htReview = {};		//hashtable to hold reviews and relays message
@@ -102,17 +101,18 @@
 						angular.copy(msg, m);
 						G.leClient.hset(G.sid, G.bid, G.Request, fromID, m, function() {
 							// only the newest request is saved
-							debug.log("saved request from "+fromID)
+							debug.log("saved request from "+fromID, m);
 							
-							//approve it for now
-							var f = new Friend();
-							f.bid = m.bid;
-							f.group = "friend";
-							f.type = 1;
-							$rootScope.myUserInfo.friends[f.bid] = f;
-							$rootScope.myUserInfo.set();
+							//approve it for now, add a friend automatically
+							var f = new UserInfo(m.bid);
+							f.get(function(readOK) {
+								if (readOK) {
+									$rootScope.myUserInfo.addFriend(f);
+									//if(scope) scope.$apply();
+								};
+							});
 						}, function(name, err) {
-							debug.error(err);
+							debug.warn(err);
 						});
 						break;
 					case 1:
@@ -124,7 +124,7 @@
 						} else {
 							htSMS[m.bid].unshift(m);
 						};
-						debug.log(m);
+						//debug.log(m);
 						break;
 					case 2:
 						var wbID = msg.content.parentID;		//wb to be reviewed
@@ -151,7 +151,7 @@
 				self.readMsg();
 			}, function(name, err) {
 				debug.error("read msg failed = " +err, new Date());
-				self.readMsg();
+				self.readMsg(scope);
 			});
 		};
 	}])

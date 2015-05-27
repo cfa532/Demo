@@ -84,7 +84,7 @@ function UIBase() {
 
 function UserInfo(bid) {
 	this.b = new UIBase();		//UIBase object.
-	this.nickName = "author nick name";
+	this.nickName = "User"+Math.floor(Math.random()*100000000);
 	this.intro = null;		//a brief self-introduction
 	this.mobile = null;		//cellular number used for verifying user's authenticity
 	this.email = null;
