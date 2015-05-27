@@ -61,24 +61,6 @@
 			currentPage : 1,
 			itemsPerPage : 10,
 		};
-
-		var request = window.indexedDB.open("weiboDB", G.idxDBVersion);
-		request.onerror = function(event) {
-			debug.error("open indexedDB error", event.target.errorCode);
-		};
-		request.onsuccess = function(event) {
-			G.idxDB = request.result;		//event.target.result;		//IDBDatabase object
-			G.idxDB.onerror = function(e) {
-				//generic handler for all error in this db
-				debug.warn("weiboDB error, errorCode=" + e.target.errorCode);
-			};
-			debug.log("idxDB opened OK");
-		};
-		request.onupgradeneeded = function(event) {
-			debug.info("here is db upgrade")
-			G.idxDB = request.result;
-			G.idxDB.createObjectStore(G.objStore.picture, {keyPath : "id"});
-		};
 	})
 	//get weibo list and display them nicely
 	.controller("weiboController", ["$state", "$stateParams", "$scope", "$rootScope", "$timeout",

@@ -22,55 +22,42 @@
 			template : "<div ui-view></div>",
 			resolve : {
 				logon : function(logonService, $q, $rootScope) {
-					debug.log("S>>>>>>>>>>>>>>>>>>>>>>start login process>>>>>>>>>>>>>>>>>>>>>>>>>S")
 					var deferredStart = $q.defer();
-					debug.log("E<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<login done<<<<<<<<<<<<<<<<<<<<<<<<<<<<E")
-					//login succeed, read owner's data
-					debug.log("login bid="+G.bid);
-					$rootScope.myUserInfo = new UserInfo(G.bid);
-					$rootScope.myUserInfo.get(function(readOK) {
-						if (!readOK) {
-							//UserInfo does not exit, create a default one
-							$rootScope.myUserInfo.set(function() {
-								//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
-								$rootScope.currUserInfo = $rootScope.myUserInfo;
-								deferredStart.resolve(321);									
-							});
-						} else {
-							//get my head pic
-							$rootScope.currUserInfo = $rootScope.myUserInfo;
-							deferredStart.resolve(123);
+					var request = window.indexedDB.open("weiboDB", G.idxDBVersion);
+					request.onerror = function(event) {
+						debug.error("open indexedDB error", event.target.errorCode);
+						deferredStart.reject("open indexedDB error");
+					};
+					request.onsuccess = function(event) {
+						G.idxDB = request.result;		//event.target.result;		//IDBDatabase object
+						G.idxDB.onerror = function(e) {
+							//generic handler for all error in this db
+							debug.warn("weiboDB error, errorCode=" + e.target.errorCode);
+							deferredStart.reject("open idxDB error");
 						};
-					});
-//					logonService.getSysUser().then(function(sysdata) {
-//						debug.log(sysdata);
-//						var bidPath = window.location.pathname+"/appID/userID";
-//						$rootScope.user = sysdata[0];
-//						$rootScope.ver = sysdata[1];
-//						G.sid = sessionStorage.sid;
-//						G.bid = $rootScope.user.id;
-//						localStorage[bidPath] = G.bid;
-//						debug.log("E<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<login done<<<<<<<<<<<<<<<<<<<<<<<<<<<<E")
-//						//login succeed, read owner's data
-//						debug.log("login bid="+G.bid);
-//						$rootScope.myUserInfo = new UserInfo(G.bid);
-//						$rootScope.myUserInfo.get(function(readOK) {
-//							if (!readOK) {
-//								//UserInfo does not exit, create a default one
-//								$rootScope.myUserInfo.set(function() {
-//									//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
-//									$rootScope.currUserInfo = $rootScope.myUserInfo;
-//									deferredStart.resolve(321);									
-//								});
-//							} else {
-//								//get my head pic
-//								$rootScope.currUserInfo = $rootScope.myUserInfo;
-//								deferredStart.resolve(123);
-//							};
-//						});
-//					}, function(reason) {
-//						debug.error(reason);
-//					});
+						debug.log("idxDB opened OK");
+						
+						$rootScope.myUserInfo = new UserInfo(G.bid);
+						$rootScope.myUserInfo.get(function(readOK) {
+							if (!readOK) {
+								//UserInfo does not exit, create a default one
+								$rootScope.myUserInfo.set(function() {
+									//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
+									$rootScope.currUserInfo = $rootScope.myUserInfo;
+									deferredStart.resolve(321);									
+								});
+							} else {
+								//get my head pic
+								$rootScope.currUserInfo = $rootScope.myUserInfo;
+								deferredStart.resolve(123);
+							};
+						});
+					};
+					request.onupgradeneeded = function(event) {
+						debug.info("here is db upgrade")
+						G.idxDB = request.result;
+						G.idxDB.createObjectStore(G.objStore.picture, {keyPath : "id"});
+					};
 					return deferredStart.promise;
 				}
 			},
