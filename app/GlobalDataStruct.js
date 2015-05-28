@@ -117,6 +117,7 @@ function UserInfo(bid) {
 		t.timeStamp = new Date().getTime();	//last time the UI is changed
 		t.headPicKey = self.headPicKey;
 		t.passwd = self.passwd;
+		t.lastPostKey = self.b.lastPostKey;
 		t.favoriteCount = self.favoriteCount;
 		t.weiboCount = self.weiboCount;
 		
@@ -211,14 +212,14 @@ function UserInfo(bid) {
 	};
 	
 	//get a full copy of friends UI
-	this.getFriends = function(scope) {
+	this.getFriends = function() {
 		angular.forEach(self.b.friends, function(f) {
 			if (!self.friends[f.bid] && f.bid!==G.bid) {
 				var ui = new UserInfo(f.bid);
 				self.friends[f.bid] = ui;
-				ui.get(function() {
-					debug.log(ui);
-					if (scope) scope.$apply();
+				ui.get(function(readOK) {
+					if (readOK)
+						debug.log(ui);
 				});
 			};
 		});
@@ -359,6 +360,7 @@ function UserInfo(bid) {
 			G.leClient.get(G.sid, self.bid, self.b.lastPostKey, function(data) {
 				if (data[1]) {
 					self.lastPost = data[1];
+					debug.info(self.lastPost);
 				};
 			}, function(name, err) {
 				debug.warn(err);
