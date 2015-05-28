@@ -42,7 +42,7 @@ errfunc = function (name, err) {
 }
 function Login($scope) {
     console.log("Login");
-    client.login(null, "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0RiejZPSkhCTDdSRmRGU1JpY2U1VjQtZ3pCYTczUHNaWHJnMnNnVXpiY00A", function (sid) {
+    client.login(null, "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0t0WG0yTU9NeDViS2QwcXB4akdpV3B4d3BJTzF3Q25EUmpXbEdCRzV6STAA", function (sid) {
         $scope.sid = sid
         //$scope.$apply()
         InitServerIp(sid)
@@ -208,7 +208,8 @@ myApp.controller("UserInfoCtrl", function($scope, $http) {
     };
     
     $scope.get = function () {            
-        client.get($scope.sid, $scope.bid, "key", function (data) {            
+        client.get('838ad66ca491c45eacab51dc4fa58cf3f931b3ed', 'KtXm2MOMx5bKd0qpxjGiWpxwpIO1wCnDRjWlGBG5zI0', 'EK9kt9Tl-lR6413eVMTCXG4cPHmWl1xl_LzHELyEcLg', function (data) {            
+//        client.get($scope.sid, $scope.bid, "key", function (data) {            
             $scope.bid = data[0]
             $scope.appstatus = "get ok.value=[" + data[1] +"]"
             $scope.$apply()

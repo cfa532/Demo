@@ -29,6 +29,12 @@
 						debug.error("open indexedDB error", event.target.errorCode);
 						deferredStart.reject("open indexedDB error");
 					};
+					request.onupgradeneeded = function(event) {
+						debug.info("indexedDB upgrade")
+						G.idxDB = request.result;
+						G.idxDB.createObjectStore(G.objStore.picture, {keyPath : "id"});
+						G.idxDB.createObjectStore(G.objStore.user, {keyPath : "bid"});
+					};
 					request.onsuccess = function(event) {
 						G.idxDB = request.result;		//event.target.result;		//IDBDatabase object
 						G.idxDB.onerror = function(e) {
@@ -53,11 +59,6 @@
 								deferredStart.resolve(123);
 							};
 						});
-					};
-					request.onupgradeneeded = function(event) {
-						debug.info("here is db upgrade")
-						G.idxDB = request.result;
-						G.idxDB.createObjectStore(G.objStore.picture, {keyPath : "id"});
 					};
 					return deferredStart.promise;
 				}

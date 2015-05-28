@@ -8,9 +8,10 @@ var G = (function(_g) {		//augument global variable G, defined in release.html
 	_g.weiboApp = null, // ["ui.bootstrap", "ui.router"]
 	_g.MaxWeiboLength = 140,
 	_g.idxDB = null, // handle of indexedDB
-	_g.idxDBVersion = 3,
+	_g.idxDBVersion = 4,
 	_g.objStore = {
-		picture : "_picture_store",
+		picture : "_siyu_picture_store",
+		user : "_siyu_user_object_store"
 	},
 	_g.MaxHeight = 768, // max height and width of pictures uploaded
 	_g.MaxWidth = 1024,

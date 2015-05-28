@@ -10,15 +10,15 @@ var client = new HproseHttpClient("http://" + hosturl + "/webapi/",
 		 "sendmsg", "readmsg", "invite", "accept", "test", "veni", "sethostip","proxyget"])
 var proxy = client.useService();
 var fs = require('fs');
-var bid = "Dbz6OJHBL7RFdFSRice5V4-gzBa73PsZXrg2sgUzbcM";	//app bid
+var bid = "KtXm2MOMx5bKd0qpxjGiWpxwpIO1wCnDRjWlGBG5zI0";	//app bid
 //bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
-var sid = "f67b827aaead51a11027abdca72f2b76cda23d02";
+var sid = "bf3d208cba14c5f7e037b9acd0fc1d2e27a588ed";
 var version = "release";
 var ps = [];		//queue to hold all the promises
 
 function loadFile(o) {
 	return new Promise(function(resolve, reject) {
-		fs.readFile(o.fileKey, "utf-8", function(err, text) {
+		fs.readFile(o.fileKey, null, function(err, text) {
 			if (err) throw(err);
 			proxy.setdata(sid, bid, text, function(key) {
 				console.log(o.fileKey, key);
@@ -32,7 +32,7 @@ function loadFile(o) {
 	});
 };
 
-fs.readFile("makefile.json", "utf-8", function(err, text) {
+fs.readFile("makefile.json", null, function(err, text) {
 	if (err) throw(err);
 	var mf = JSON.parse(text)[version];		//everything under this version
 	//console.log(mf);
@@ -71,7 +71,7 @@ fs.readFile("makefile.json", "utf-8", function(err, text) {
 	var inv = mf.system.invite;
 	if (inv.fileKey) {
 		ps.push(new Promise(function(resolve, reject) {
-			fs.readFile(inv.fileKey, "utf-8", function(err, text) {
+			fs.readFile(inv.fileKey, null, function(err, text) {
 				if (err) throw(err);
 				var key = "_template_to_create_entry_html";
 				proxy.set(sid, bid, key, text, function() {
@@ -88,7 +88,7 @@ fs.readFile("makefile.json", "utf-8", function(err, text) {
 	
 	var leither = mf.system.leither;
 	if (leither.fileKey) {
-		fs.readFile(leither.fileKey, "utf-8", function(err, text) {
+		fs.readFile(leither.fileKey, null, function(err, text) {
 			if (err) throw(err);
 			var key = "_leither_cloud_js";
 			proxy.set(sid, bid, key, text, function() {
