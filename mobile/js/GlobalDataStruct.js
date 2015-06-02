@@ -2,6 +2,25 @@
  *  definition of global data structures, constructors
  */
 "use strict";
+
+var G = {
+		IPList :["112.124.113.235:30003","97.74.126.127:4800","218.74.25.10:8100"],		//api for IP lists
+		IPNum : 0,
+		currentIP : "112.124.113.235:30003",
+		leClient : leither.client("112.124.113.235:30003"),
+		sid : 'bf3d208cba14c5f7e037b9acd0fc1d2e27a588ed',
+		//bid : 'KtXm2MOMx5bKd0qpxjGiWpxwpIO1wCnDRjWlGBG5zI0',
+		appBid : 'KtXm2MOMx5bKd0qpxjGiWpxwpIO1wCnDRjWlGBG5zI0',	//from which JS data are read, the APP ID
+		appPpt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0t0WG0yTU9NeDViS2QwcXB4akdpV3B4d3BJTzF3Q25EUmpXbEdCRzV6STAA",
+		leither : '_leither_cloud_js', 	//leither-cloud.js has to be loaded on server
+		makefileKey	: "_makefile.json_1.0.10",		//where K-V of js, templates and css code stored
+		makefile : null,		//makefile object, store keys for js, css, templates
+//appowner
+		userid : "%%userid%%",
+		userppt : "%%ppt%%",
+		inviter : '%%inviter%%',
+};
+
 var G = (function(_g) {		//augument global variable G, defined in release.html
 	_g.bidPath = window.location.pathname + "/appID/userID/",
 	_g.spinner = null, // spinning image while loading
@@ -172,6 +191,7 @@ function UserInfo(bid) {
 		trans.onerror = function(e) {
 			debug.warn("User db transaction error", self.id);
 		};
+		//debug.log(self.bid);
 		var request = trans.objectStore(G.objStore.user).get(self.bid);
 		request.onerror = function(e) {
 			//error will be fired if id is not found

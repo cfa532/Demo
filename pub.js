@@ -13,8 +13,9 @@ var fs = require('fs');
 var bid = "KtXm2MOMx5bKd0qpxjGiWpxwpIO1wCnDRjWlGBG5zI0";	//app bid
 //bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
 var sid = "bf3d208cba14c5f7e037b9acd0fc1d2e27a588ed";
-var version = "release";
-var ps = [];		//queue to hold all the promises
+var version = "release";	//for release version
+version = "1.0.10";			//for testing purpose
+var ps = [];				//queue to hold all the promises
 
 function loadFile(o) {
 	return new Promise(function(resolve, reject) {
