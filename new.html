@@ -330,6 +330,17 @@ checkServer(G.IPList[G.IPNum++]);
 </script>
 </head>
 <body id="myAppRoot" ng-controller="appController">
+<script type="text/ng-template" id="root.html">
+<div ui-view></div>
+<div class="from_wrapper" id="siyu-next" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>欢迎使用私语</h4>
+	<div class="siyu-con">
+	  <p class="mb10">你的私语唯一ID:<span class="c-red">{{myUserInfo.bid}}</span></p>
+	  <p class="f12 c-999">这是您的ID，该ID已保存到当前文件中，请勿将当前文件泄露给他人！</p>
+	  <div class="tc pb10 pt20 mt10"><a class="siyu-sure f18 siyu-base" href="#">下一步</a></div>
+	</div>
+</div>
+</script>
 <div class="wrap_max">
 	<div class="wrap_min">
 		<div class="head_box">
@@ -564,66 +575,36 @@ checkServer(G.IPList[G.IPNum++]);
 	</div>
 </div>
 
-<div ng-controller="accountController" class="from_wrapper" id="user_set" style="display:none;">
-	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>账号设置</h4>
-	<div class="account_set">
-		<form name="accountForm" novalidate>
-			<div class="pf_head">
-				<p class="mb10"><img id="myUserIcon" ng-src="{{myUserInfo.headPicUrl}}"/></p>
-				<p class="tc mb10 pr">					
-					<a href="javascript:void(0);" class="up_file_img"></a>
+<div ng-controller="accountController" class="from_wrapper" id="siyu-msg" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>设置基本信息</h4>
+	<form name="accountForm" novalidate>
+	<div class="siyu-con">
+	  <div class="siyu-person">
+	  	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	  		<tr>
+	  			<td width="60" align="right"><span class="c-red">*</span> 昵称：</td>
+	  			<td><input type="text" ng-model="myUserInfo.nickName" class="siyu-input" placeholder="2-10个字符"/><span class="c-999"></span></td>
+  			</tr>
+	  		<tr>
+	  			<td align="right" valign="top">头像：</td>
+	  			<td>
+	  			<p>
+					<a href="javascript:void(0);" class="up_file_img"><img tooltip="更换头像" id="myUserIcon" ng-src="{{myUserInfo.headPicUrl}}"/></a>
 					<input onchange="uploadMyIcon()" type="file" id="myUploadIcon" accept="image/*" class="up_file_input"></input>
-				</p>
-				<p class="f12">仅支持jpg、gif、png格式文件小于5M</p>
-			</div>
-			<div class="member_info">
-				<table border="0" cellspacing="0" cellpadding="0" width="360">
-					<tr>
-						<td width="80" align="right"><b>登录名：</b></td>
-						<td width="280">火速死死按</td>
-					</tr>
-					<tr>
-						<td align="right"><b>密码：</b></td>
-						<td>
-							<input type="password" ng-model="myUserInfo.passwd" class="input_text" style="width:150px" />
-						</td>
-					</tr>
-					<tr>
-						<td align="right"><b>手机号：</b></td>
-						<td>
-							<input type="text" ng-model="myUserInfo.mobile" class="input_text" style="width:150px" />
-						</td>
-					</tr>
-					<tr>
-						<td align="right"><b>昵称：</b></td>
-						<td>
-							<input type="text" ng-model="myUserInfo.nickName" class="input_text" style="width:150px" />
-						</td>
-					</tr>
-					<tr>
-						<td align="right"><b>收货地址：</b></td>
-						<td>
-							<input type="text" ng-model="myUserInfo.location" class="input_text" style="width:270px" />
-						</td>
-					</tr>
-					<tr>
-						<td align="right"></td>
-						<td>
-							<div class="p10">
-								<a ng-click="saveAccount()" class="send_btn W_btn_c" href="javascript:void(0);"><span class="btn_30px">保存</span></a>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td colspan='2'>
-							<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<div class="clearfix"></div>
-		</form>
+	  			</p>
+				 <p class="c-999 mt10">只支持JPG、PNG、GIF、BMP，大小不超过2M</p>
+				</td>
+  			</tr>
+			<tr>
+				<td colspan='2'>
+					<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+				</td>
+			</tr>
+  		</table>
+	  </div>
+	  <div class="tc pb10 pt20 mt10"><a class="siyu-sure f18" href="javascript:void(0);" ng-click="saveAccount()">确  认</a></div>
 	</div>
+	</form>
 </div>
 </script>
 
@@ -1172,38 +1153,5 @@ checkServer(G.IPList[G.IPNum++]);
 </div>
 <div class="clearfix"></div>
 </script>
-
-
-<div class="from_wrapper" id="siyu-next" style="display:none;">
-	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>欢迎使用私语</h4>
-	<div class="siyu-con">
-	  <p class="mb10">你的私语唯一<span class="c-red">ID:HFFGGG84343054365M4645645K</span></p>
-	  <p class="f12 c-999">这是您的ID，该ID已保存到当前文件中，请勿将当前文件泄露给他人！</p>
-	  <div class="tc pb10 pt20 mt10"><a class="siyu-sure f18 siyu-base" href="#">下一步</a></div>
-	</div>
-</div>
-
-<div class="from_wrapper" id="siyu-msg" style="display:none;">
-	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>设置基本信息</h4>
-	<div class="siyu-con">
-	  <div class="siyu-person">
-	  	<table width="100%" border="0" cellspacing="0" cellpadding="0">
-	  		<tr>
-	  			<td width="60" align="right"><span class="c-red">*</span> 昵称：</td>
-	  			<td><input type="text" name="textfield" id="textfield" class="siyu-input"/><span class="c-999">2-10个字符</span></td>
-  			</tr>
-	  		<tr>
-	  			<td align="right" valign="top">头像：</td>
-	  			<td>
-	  			<p><a href="#"><img src="data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAA8AAD/4QN1aHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YzI4ZGRkMWEtM2EwZS0xODRlLWIzM2YtYjdkNDE0ZmI3ZDgzIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjM2M0FFNURENTlCMTExRTQ5QTU3RkRDMjg5QzlEMjM4IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjM2M0FFNURDNTlCMTExRTQ5QTU3RkRDMjg5QzlEMjM4IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgV2luZG93cyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMwQzNGMERFMDI1OUU0MTFCMDVGOUE1NkI2NDg1OTg5IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOmMyOGRkZDFhLTNhMGUtMTg0ZS1iMzNmLWI3ZDQxNGZiN2Q4MyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pv/uAA5BZG9iZQBkwAAAAAH/2wCEAAYEBAQFBAYFBQYJBgUGCQsIBgYICwwKCgsKCgwQDAwMDAwMEAwODxAPDgwTExQUExMcGxsbHB8fHx8fHx8fHx8BBwcHDQwNGBAQGBoVERUaHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fH//AABEIAGYAZgMBEQACEQEDEQH/xABvAAEAAwEBAQAAAAAAAAAAAAAAAQMEAgUIAQEAAAAAAAAAAAAAAAAAAAAAEAADAAECAwIKCwAAAAAAAAAAAQIDEQQhMRJRFNEykrLSE3OzVAVBcYGRoSJCY5MkNBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A+mAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHOTLixT1ZLmJ5dVNJfiBV3/AGPxOLy58IF0XFyqilUvlSeqf2oCQAAAAAAAAAABXb03e0f7le6sD0OsDzdr4uT22b3tAXAAAAAAAAAOcuScWK8leLEuq07EtQKu8Zvhcv34vTA56s+Tcbd+ovHOO3VVTjTToqf01T5sDd1gYMV58SuHtsla5MlKpePRqrdLnafJgTe8vHFXe2yzEp1Va43olxb4WBpAAAAAAAAo3/8Ah3Psr81gWquADqAdQDqAo39f0dx7K/NYGkAAAAAAACLibiopazSapdqfBgUdw2/bk/ly+kBVlwRhzbd46v8ANbmlWS6TXRT5U2voA0gZdttseXHV5KyOnkyLhkyJaK2lwVJcgLX8v2zWlespPmnlyNP606A0gAAAAAAAAAGXfXEVt7tqYnI+qnwS1ilxYEd/2PxGPy58IHXy9p7fqXFVkyOX2p5KaYGkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//2Q=="/></a>
-	  			</p>
-				 <p class="c-999 mt10">只支持JPG、PNG、GIF、BMP，大小不超过2M</p>
-				</td>
-  			</tr>
-  		</table>
-	  </div>
-	  <div class="tc pb10 pt20 mt10"><a class="siyu-sure f18" href="#">确  认</a></div>
-	</div>
-</div>
 </body>
 </html>
