@@ -270,17 +270,17 @@
 				//debug.log(data);
 				$scope.usrList = {};
 				angular.forEach(data, function(bid) {
-					if (bid!==G.bid && bid!==null && !$scope.myUserInfo.isFriend(bid)) {
-						(function(ht, bid) {
+					if (bid!==G.bid && !$scope.myUserInfo.isFriend(bid)) {
+						(function(bid) {
 							var ui = new UserInfo(bid);
 							ui.get(function(readOK) {
 								if (readOK) {
-									ht[bid] = ui;
+									$scope.usrList[bid] = ui;
 									//debug.info(ui);
 									$scope.$apply();
 								};
 							});
-						}($scope.usrList, bid));
+						}(bid));
 					};
 				});
 			});

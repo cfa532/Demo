@@ -75,12 +75,14 @@
 			"addition" : { "fileKey" : "css/addition.css" },
 			"bootstrap" : { "fileKey" : "css/bootstrap.min.css" }
 		},
-		"html" : {
+		"files" : {
 			"inviteFile" : { "fileKey" : "jk.html" },
-			"main" : { "fileKey" : "templates/main.html" }
+			"main" : { "fileKey" : "templates/main.html" },
+			"angular" : { "fileKey" : "js/angular.min.js" }
 		},
-		"template" : {
-			"invite" : { "fileKey" : "templates/et.html" }
+		"system" : {
+			"invite" : { "fileKey" : "release.html" },
+			"leither" : { "fileKey" : "app/leither-cloud.js" }
 		}
 	}
 }
