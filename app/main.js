@@ -84,7 +84,7 @@ var showChat = function() {
 
 $("#set_icon").click(function(){
 	easyDialog.open({
-	container : 'user_set',
+	container : 'siyu-msg',
 	fixed : false,
 	drag : true,
 	overlay : true
