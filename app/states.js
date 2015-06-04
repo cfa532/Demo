@@ -18,7 +18,7 @@ G.weiboApp
 	.state("root", {
 		abstract : true,
 		url : "/root",
-		template : "<div ui-view></div>",
+		templateUrl : "root.html",
 		resolve : {
 			logon : function($q, $rootScope) {
 				var deferredStart = $q.defer();
@@ -56,7 +56,7 @@ G.weiboApp
 								$rootScope.myUserInfo.set(function() {
 									//all assignment to currUserInfo must be in rootScope, otherwise shadow copy will be created
 									$rootScope.currUserInfo = $rootScope.myUserInfo;
-									deferredStart.resolve(321);
+									deferredStart.resolve("newcomer");
 								});
 							});
 						} else {
@@ -72,6 +72,23 @@ G.weiboApp
 		controller : function(logon, $scope, msgService, $interval, $timeout) {
 			debug.log("in root, Login user", $scope.myUserInfo);
 
+			if (logon === 123) {
+				//display welcome message
+				easyDialog.open({
+					container : 'siyu-next',
+					fixed : false,
+					drag : true,
+					overlay : true
+				});
+			};
+			$(".siyu-base").click(function() {
+				easyDialog.open({
+					container : 'siyu-msg',
+					fixed : false,
+					drag : true,
+					overlay : true
+				});
+			});
 			//begin to check for new message
 			msgService.readMsg($scope);
 			var myChatBox = angular.element(document.getElementById("myChatBox")).scope();

@@ -3,6 +3,99 @@
 (function() {
 	//angular.module("accountModule", [])
 	G.weiboApp
+	.controller("accountController", ["$state", "$scope", "$window", "$rootScope",
+	                                  function($state, $scope, $window, $rootScope) {
+		debug.log("in account controller");
+		$scope.alerts = [];
+		$scope.saveAccount = function() {
+			//should check validity of input here
+			var headpic = document.getElementById("myUploadIcon").files[0];
+			var f = new FileReader();
+			f.onloadend = function(e) {
+				var np = new WeiboPicture();
+				np.set(f.result, function(setOK) {
+					if (setOK) {
+						np.get(1, function(uri) {	//get a square picture
+							$scope.myUserInfo.headPicUrl = uri;
+							$scope.$apply();
+						});
+						$scope.myUserInfo.headPicKey = np.id;
+						$scope.myUserInfo.set(function() {
+							//my icon pic is changed, has to update the corresponding page
+							for (var i=0; i<$scope.weiboList.length; i++) {
+								if ($scope.weiboList[i].authorID === G.bid) {
+									$scope.weiboList[i].headPicUrl = np.dataURI;
+								};
+							};
+							$scope.$apply();
+						});
+					} else {
+						$scope.alerts[2].show = true;
+						debug.warn("UserInfo not saved");
+					};
+				});
+				headpic = null;
+				$scope.alerts[0] = {type: 'success', msg: 'Account updated OK with picture'};
+				$scope.$apply();
+			};
+			if (headpic) {
+				f.readAsDataURL(headpic);
+			} else {
+				$scope.myUserInfo.set(function() {
+					$scope.alerts[0] = {type: 'success', msg: 'Account updated OK without picture'};
+					$scope.$apply();
+				});
+			};
+		};
+		
+		$scope.closeAlert = function(index) {
+			$scope.alerts.length = 0;
+		};
+		
+		$window.uploadMyIcon = function() {
+			var img = document.getElementById("myUserIcon");				//current user icon
+			var file = document.getElementById("myUploadIcon").files[0];	//new icon to be uploaded
+			if (file) {
+				var r = new FileReader();
+				r.onloadend = function(e) {
+					var newImg = new Image();
+					newImg.onload = function(e) {
+						var maxWidth = 200, maxHeight = 200;
+						var imageWidth, imageHeight;
+						//crop the largest square from input image first
+						if (newImg.width > newImg.height) {
+							imageHeight = newImg.height;
+							imageWidth = imageHeight;
+						} else {
+							imageWidth = newImg.width;
+							imageHeight = imageWidth;
+						};
+						//debug.info(imageWidth, imageHeight);
+						var tmpCanvas = document.createElement("canvas");
+						tmpCanvas.width = maxWidth, tmpCanvas.height = maxHeight;
+						var sx = parseInt((newImg.width-imageWidth)/2), sy = parseInt((newImg.height-imageHeight)/2);
+						if (newImg.height > newImg.width)
+							sy = 0;		//assume vertical image's important info is on top
+						tmpCanvas.getContext("2d").drawImage(newImg,
+								sx, sy, imageWidth, imageHeight, 0, 0, maxWidth, maxHeight);
+						img.setAttribute("src", tmpCanvas.toDataURL());
+					};
+					newImg.src = r.result;
+				};
+				r.readAsDataURL(file);
+			};
+		};
+
+		//jQuery for showing account manager box
+		$("#set_icon").click(function(){
+			easyDialog.open({
+			container : 'user_set',
+			fixed : false,
+			drag : true,
+			overlay : true
+			});
+		});
+	}])
 	.provider("logonService", [function() {
 	    this.$get = ["$q", function($q) {
 	        return new logon($q);
@@ -115,98 +208,5 @@
 				});
 			};
 		};
-	}])
-	.controller("accountController", ["$state", "$scope", "$window", "$rootScope",
-	                                  function($state, $scope, $window, $rootScope) {
-		debug.log("in account controller");
-		$scope.alerts = [];
-		$scope.saveAccount = function() {
-			//should check validity of input here
-			var headpic = document.getElementById("myUploadIcon").files[0];
-			var f = new FileReader();
-			f.onloadend = function(e) {
-				var np = new WeiboPicture();
-				np.set(f.result, function(setOK) {
-					if (setOK) {
-						np.get(1, function(uri) {	//get a square picture
-							$scope.myUserInfo.headPicUrl = uri;
-							$scope.$apply();
-						});
-						$scope.myUserInfo.headPicKey = np.id;
-						$scope.myUserInfo.set(function() {
-							//my icon pic is changed, has to update the corresponding page
-							for (var i=0; i<$scope.weiboList.length; i++) {
-								if ($scope.weiboList[i].authorID === G.bid) {
-									$scope.weiboList[i].headPicUrl = np.dataURI;
-								};
-							};
-							$scope.$apply();
-						});
-					} else {
-						$scope.alerts[2].show = true;
-						debug.warn("UserInfo not saved");
-					};
-				});
-				headpic = null;
-				$scope.alerts[0] = {type: 'success', msg: 'Account updated OK with picture'};
-				$scope.$apply();
-			};
-			if (headpic) {
-				f.readAsDataURL(headpic);
-			} else {
-				$scope.myUserInfo.set(function() {
-					$scope.alerts[0] = {type: 'success', msg: 'Account updated OK without picture'};
-					$scope.$apply();
-				});
-			};
-		};
-		
-		$scope.closeAlert = function(index) {
-			$scope.alerts.length = 0;
-		};
-		
-		$window.uploadMyIcon = function() {
-			var img = document.getElementById("myUserIcon");				//current user icon
-			var file = document.getElementById("myUploadIcon").files[0];	//new icon to be uploaded
-			if (file) {
-				var r = new FileReader();
-				r.onloadend = function(e) {
-					var newImg = new Image();
-					newImg.onload = function(e) {
-						var maxWidth = 200, maxHeight = 200;
-						var imageWidth, imageHeight;
-						//crop the largest square from input image first
-						if (newImg.width > newImg.height) {
-							imageHeight = newImg.height;
-							imageWidth = imageHeight;
-						} else {
-							imageWidth = newImg.width;
-							imageHeight = imageWidth;
-						};
-						//debug.info(imageWidth, imageHeight);
-						var tmpCanvas = document.createElement("canvas");
-						tmpCanvas.width = maxWidth, tmpCanvas.height = maxHeight;
-						var sx = parseInt((newImg.width-imageWidth)/2), sy = parseInt((newImg.height-imageHeight)/2);
-						if (newImg.height > newImg.width)
-							sy = 0;		//assume vertical image's important info is on top
-						tmpCanvas.getContext("2d").drawImage(newImg,
-								sx, sy, imageWidth, imageHeight, 0, 0, maxWidth, maxHeight);
-						img.setAttribute("src", tmpCanvas.toDataURL());
-					};
-					newImg.src = r.result;
-				};
-				r.readAsDataURL(file);
-			};
-		};
-
-		//jQuery for showing account manager box
-		$("#set_icon").click(function(){
-			easyDialog.open({
-			container : 'user_set',
-			fixed : false,
-			drag : true,
-			overlay : true
-			});
-		});
 	}])
 })();

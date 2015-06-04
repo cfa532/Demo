@@ -171,13 +171,6 @@ var G = {
 			});
 		});
 		
-		$(".siyu-base").click(function(){easyDialog.open({
-				container : 'siyu-msg',
-				fixed : false,
-				drag : true,
-				overlay : true
-			});
-		});
 		$(".copy").click(function(){
 		  $(".siyu-alert").css("display","block")
 		})
@@ -324,5 +317,16 @@ checkServer(G.IPList[G.IPNum++]);
 </head>
 <body id="myAppRoot" ng-controller="appController">
 	<div id="loadZone"></div>
+<script type="text/ng-template" id="root.html">
+<div ui-view></div>
+<div class="from_wrapper" id="siyu-next" style="display:none;">
+	<h4><a href="javascript:void(0)" title="关闭窗口" onclick="easyDialog.close()" class="fr Dialog_close"></a>欢迎使用私语</h4>
+	<div class="siyu-con">
+	  <p class="mb10">你的私语唯一ID:<span class="c-red">{{myUserInfo.bid}}</span></p>
+	  <p class="f12 c-999">这是您的ID，该ID已保存到当前文件中，请勿将当前文件泄露给他人！</p>
+	  <div class="tc pb10 pt20 mt10"><a class="siyu-sure f18 siyu-base" href="#">下一步</a></div>
+	</div>
+</div>
+</script>
 </body>
 </html>
