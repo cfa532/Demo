@@ -87,9 +87,9 @@
 		};
 
 		//jQuery for showing account manager box
-		$("#set_icon").click(function(){
+		$(".siyu-base").click(function(){
 			easyDialog.open({
-			container : 'user_set',
+			container : 'siyu-msg',
 			fixed : false,
 			drag : true,
 			overlay : true
