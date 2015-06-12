@@ -11,11 +11,106 @@
     <link rel="stylesheet" href="css/mobile-angular-ui-hover.min.css" />
     <link rel="stylesheet" href="css/mobile-angular-ui-base.min.css" />
     <link rel="stylesheet" href="css/mobile-angular-ui-desktop.min.css" />
+    <link rel="stylesheet" href="css/addition.css" />
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <script src="lib/angular.min.js"></script>
+    <script src="lib/angular-ui-router.min.js"></script>
+    <script src="lib/mobile-angular-ui.min.js"></script>
+    <script src="lib/mobile-angular-ui.gestures.js"></script>
+    <script src="lib/leither-cloud.js"></script>
+    <script src="lib/spin.min.js"></script>
+    <script src="js/GlobalDataStruct.js"></script>
+    <script src="js/mobile.js"></script>
+    <script src="js/root.js"></script>
+    <script src="js/states.js"></script>
+    <script src="js/message.js"></script>
+    <script src="js/review.js"></script>
+    <script src="js/sms.js"></script>
+<script type="text/javascript">
+//define some globals
+	//customize log function. Disable it by setting isDebug to false
+	function setDebug(isDebug) {
+		if (isDebug) {
+			window.debug = {
+				log: window.console.log.bind(window.console),
+				error: window.console.error.bind(window.console),
+				info: window.console.info.bind(window.console),
+				warn: window.console.warn.bind(window.console)
+			};
+		} else {
+			var __no_op = function() {};
+			window.debug = {
+				log: __no_op,
+				error: __no_op,
+				warn: __no_op,
+				info: __no_op
+			}
+		}
+	};
+	setDebug(true);
+
+	//if there is no inviter, then there is no userppt. Use appPpt as userppt
+	if (G.inviter === '%%inviter%%')
+		G.userppt = G.appPpt;
+	G.leClient.login(null, G.userppt, function(sid) {
+		G.sid = sid;
+		G.leClient.getvar(sid, 'self', function(usr) {
+			G.bid = usr.id;
+			debug.log("login with ppt, sid=" + G.sid, "bid=" + G.bid);
+
+			//start app after login
+			//G.weiboApp = angular.module("appModule", ["mobile-angular-ui"])
+			angular.bootstrap(document, [ 'appModule' ]);
+		}, function(name, err) {
+			debug.error("getSysUser err=" + err);
+		});
+	}, function(name, err) {
+		debug.error(err);
+	});
+</script>
 </head>
 
-<body ng-controller="appController">
+<body ng-controller="appController" class="b-hui">
 <!-- html begin -->
-
+<div ui-view>Hello world(1)</div>
+<script type="text/ng-template" id="main.html">
+<div class="container">
+  <div class="row sy-nav">
+    <div class="sy-nav-left pull-left f24 ml10">乐跑王<span class="fa fa-angle-right fa-lg vm ml10 c-org"></span></div>
+	<div class="sy-nav-ri pull-right mr10"><a class="fa fa-edit fa-2x vm c-666"></a></div>
+  </div>
+  <div class="row sy-tab f18 b-fff c-666">
+    <ul>
+	  <li class="active"><span class="fa fa-home fa-lg vm mr5"></span>首页</li>
+	  <li><span class="fa fa-envelope-o fa-lg vm mr5"></span>信息</li>
+	</ul>
+  </div>
+  <div ui-view>weiboList</div>
+</div>
+</script>
+<script type="text/ng-template" id="weiboList.html">
+  <div class="row mt10 b-fff" ng-repeat="wb in currentList track by $index">
+     <div class="sy-list">
+	   <div class="p15">
+	      <div class="sy-photo pull-left mr10"><img ng-src="{{myUserInfo.friends[wb.authorID].headPicUrl || myUserInfo.headPicUrl}}" width="100%"/></div>
+		  <div class="pull-left">
+		    <p class="c-org f20">{{wb.author}}</p>
+	        <p class="c-999">{{wb.timeStamp | timePassed}}</p>
+		  </div>
+		  <div class="pull-right"><span class="fa fa-angle-down fa-2x c-999"></span></div>
+	   </div>
+	   <div class="c-999 clear p10">{{wb.body}}
+	   </div>
+	   <div class="sy-zan c-999">
+	      <ul>
+		    <li><a href="#" class="c-999"><span class="fa fa-star-o fa-lg mr5"></span>收藏</a></li>
+		    <li class="sy-fg"><a href="#" class="c-999"><span class="fa fa-external-link fa-lg mr5"></span>111</a></li>
+		    <li><a href="#" class="c-org"><span class="fa fa-comments fa-lg mr5"></span>226</a></li>
+		  </ul>
+	   </div>
+	 </div>
+  </div>
+</script>
 <!-- html end -->
 </body>
 </html>

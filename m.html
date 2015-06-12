@@ -45,31 +45,31 @@
 			}
 		}
 	};
-	setDebug(true);
+	//setDebug(true);
 
 	//if there is no inviter, then there is no userppt. Use appPpt as userppt
-			if (G.inviter === '%%inviter%%')
-				G.userppt = G.appPpt;
-			G.leClient.login(null, G.userppt, function(sid) {
-				G.sid = sid;
-				G.leClient.getvar(sid, 'self', function(usr) {
-					G.bid = usr.id;
-					debug.info("login with ppt, sid=" + G.sid, "bid="+G.bid);
+// 			if (G.inviter === '%%inviter%%')
+// 				G.userppt = G.appPpt;
+// 			G.leClient.login(null, G.userppt, function(sid) {
+// 				G.sid = sid;
+// 				G.leClient.getvar(sid, 'self', function(usr) {
+// 					G.bid = usr.id;
+// 					debug.info("login with ppt, sid=" + G.sid, "bid="+G.bid);
 					
-					//start app
-					angular.bootstrap(document, ['appModule']);
-				}, function(name, err) {
-					debug.error("getSysUser err=" + err);
-				});
-			}, function(name, err) {
-				debug.error(err);
-			});
+// 					//start app
+// 					angular.bootstrap(document, ['appModule']);
+// 				}, function(name, err) {
+// 					debug.error("getSysUser err=" + err);
+// 				});
+// 			}, function(name, err) {
+// 				debug.error(err);
+// 			});
 </script>
 </head>
 
-<body ng-controller="appController">
+<body>
 <!-- html begin -->
-
+<h1>Hello world</h1>
 <!-- html end -->
 
 <div ui-view></div>

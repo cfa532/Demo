@@ -72,7 +72,7 @@ G.weiboApp
 		controller : function(logon, $scope, msgService, $interval, $timeout) {
 			debug.log("in root, Login user", $scope.myUserInfo);
 
-			if (logon === 123) {
+			if (logon === "newcomer") {
 				//display welcome message
 				easyDialog.open({
 					container : 'siyu-next',

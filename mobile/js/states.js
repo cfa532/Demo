@@ -18,7 +18,7 @@ G.weiboApp
 	.state("root", {
 		abstract : true,
 		url : "/root",
-		template : "<div ui-view></div>",
+		template : "<div ui-view>Hello world(2)</div>",
 		resolve : {
 			logon : function($q, $rootScope) {
 				var deferredStart = $q.defer();
