@@ -1,0 +1,58 @@
+/* CSS Document */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;margin:0;padding:0; font-family: "Microsoft Yahei", arial, helvetica, sans-serif;}
+ol,ul{list-style:none; overflow:hidden;}
+.overf{ overflow:hidden;}
+.clear{ clear:both;}
+.c-org{ color:#ff9206;}
+.c-666{ color:#666;}
+.c-999{ color:#999;}
+.b-fff{ background:#fff;}
+.b-hui{ background:#f2f2f2;}
+.vm{ vertical-align:middle; margin-top:-5px;}
+.f16{ font-size:16px;}
+.f18{ font-size:18px;}
+.f20{ font-size:20px;}
+.f24{ font-size:24px;}
+.f34{ font-size:40px;}
+.ml10{ margin-left:10px;}
+.ml20{ margin-left:20px;}
+.mr5{ margin-right:5px;}
+.mr10{ margin-right:10px;}
+.mr15{ margin-right:15px;}
+.mt10{ margin-top:10px;}
+.mt15{ margin-top:15px;}
+.p10{ padding:10px;}
+.p15{ padding:15px;}
+.sy-nav{ height:60px; line-height:60px; width:100%;}
+.sy-nav-tb{ margin-left:10px; margin-top:-5px;}
+.sy-tab{ height:40px; width:100%;}
+.sy-tab ul{ margin:0; padding:0;}
+.sy-tab li{ width:50%; float:left; text-align:center; height:40px; line-height:40px;}
+.sy-tab .nav-active{ border-bottom:2px solid #ff9206; color:#ff9206;}
+.sy-photo{ width:80px; height:80px; overflow:hidden; border-radius:100%; border:2px solid #e1dddd;}
+.sy-zan{ border-top:1px solid #e6e6e6; border-bottom:1px solid #e6e6e6; padding:10px 0;}
+.sy-zan li{ width:33%; float:left; text-align:center;}
+.sy-fg{ border-left:1px solid #e6e6e6; border-right:1px solid #e6e6e6;}
+
+html,body{ overflow:auto!important;}
+.head-nav{ position: fixed; top:0; background:#f8f8f8; width:100%; z-index:99; overflow:hidden;}
+.main-info{ margin-top:110px; width:100%;}
+.sy-tab img{ margin-right:5px; vertical-align:middle; margin-top:-3px;}
+.sy-tab .tb1{ display:inline-block; width:23px; height:23px; background:url(../images/home2.png) no-repeat; background-size:23px auto; vertical-align:middle; margin-top:-4px;}
+.sy-tab .tb2{ display:inline-block; width:25px; height:19px; background:url(../images/msg2.png) no-repeat; background-size:25px auto; vertical-align:middle; margin-top:-3px;}
+.sy-tab .nav-active .tb1{ background:url(../images/home.png) no-repeat; background-size:23px auto;}
+.sy-tab .nav-active .tb2{ background:url(../images/msg.png) no-repeat; background-size:25px auto;}
+.tubiao1{ display:inline-block; width:16px; height:16px; vertical-align:middle; background:url(../images/sc.png) no-repeat; background-size:16px auto; margin-top:-5px;}
+.tubiao2{ display:inline-block; width:13px; height:13px; vertical-align:middle; background:url(../images/zf.png) no-repeat; background-size:13px auto; margin-top:-3px;}
+.tubiao3{ display:inline-block; width:17px; height:17px; vertical-align:middle; background:url(../images/pl2.png) no-repeat; background-size:17px auto;}
+.send-nav{ height:50px; line-height:50px; padding:0 10px;}
+.send-qx{ width:25%;}
+.send-wb{ width:50%;}
+.send-fs{ width:25%;}
+.send-main{ margin-top:50px;}
+.send-text{ border:0; width:100%; height:140px; padding:2%; color:#999; font-size:16px; display:block;}
+.send-more{ height:45px; line-height:45px; padding:0 15px; border-top:1px solid #d8d8d8; border-bottom:1px solid #d8d8d8;}
+.send-img{ margin:10px;}
+.send-img li{ width:30%; float:left; margin:0 1.65%; position:relative; overflow:hidden; margin-bottom:8px;}
+.send-img li i{ position:absolute; right:0; top:0; width:20px; height:20px; background:url(../images/del.png) no-repeat; background-size:20px 20px;}
+.send-img li img{ width:100%; height:100%;}
