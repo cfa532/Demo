@@ -22,5 +22,5 @@ $(function(){
 
 //文件选择
  function fileSelect() {
-        document.getElementById("fileToUpload").click(); 
-    }	
+      document.getElementById("fileToUpload").click(); 
+  }	

@@ -1,4 +1,5 @@
 // p.js
+//Usage: >node --harmony-proxies makefile.json
 "use strict";
 var prom = require("promise");
 var hp = require("hprose");

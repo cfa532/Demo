@@ -466,6 +466,10 @@ G.weiboApp
 	var tmpPicFiles = [];	//save selected picture files for upload
 	$scope.tmpPicUrls = [];
 	
+	$scope.delPic = function(i) {
+		$scope.tmpPicUrls.splice(i, 1);
+	};
+	
 	$scope.selectPics = function() {
 		if ($scope.P.showPicUpload === false) {
 			//open the pic selected area and open file selection dialog
@@ -480,9 +484,9 @@ G.weiboApp
 	
 	//publish a new Post, which doesn't have a ParentID
 	$scope.addNewPost = function() {
+		debug.log("add new post");
 		//prevent duplicated submission
 		$scope.P.txtInvalid = true;
-		G.spinner.spin(document.getElementById('myAppRoot'));
 		
 		var wb = new WeiboPost();
 		wb.body = $scope.wbText;
@@ -550,6 +554,7 @@ G.weiboApp
 
 	//display thumbnails of selected image files in the pic selection box
 	$scope.fileSelected = function(files) {
+		//debug.log("new file selected");
 		for (var i=0; i<files.length; i++) {
 			tmpPicFiles.push(files[i]);			//remember all the files selected
 			//$scope.tmpPicUrls.push(window.URL.createObjectURL(files[i]));		//works too
@@ -561,10 +566,6 @@ G.weiboApp
 			};
 			r.readAsDataURL(files[i], {type: 'image/png'});
 		};
-	};
-
-	//add a picture to Weibo post
-	var addPictures = function(wb) {
 	};
 	
 	//changed the style of submit button by checking validity of input text
@@ -587,16 +588,6 @@ G.weiboApp
 				$scope.P.chCounter = G.MaxWeiboLength - $scope.wbText.toString().length;
 			}
 		};
-	};
-
-	//jQuery code to show the picture file selector
-	document.getElementById('btnMonth').onclick = function(){
-		easyDialog.open({
-			container : 'dlgSend',
-			fixed : true,
-			drag : true,
-			overlay : true
-		});
 	};
 }])
 .filter("chatTime", function() {

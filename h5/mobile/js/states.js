@@ -115,6 +115,14 @@ G.weiboApp
 			$timeout(function() {G.spinner.stop();}, 10000);		//stop the spinner after 30s nonetheless
 		}
 	})
+	.state("root.newPost", {
+		url : "/newpost",
+		templateUrl : "send.html",
+		controller : "postController",
+//		controller : function($scope) {
+//			debug.log("in newPost state");
+//		}
+	})
 	.state("root.main", {
 		abstract : true,
 		url : "/main",

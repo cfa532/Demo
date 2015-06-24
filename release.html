@@ -231,7 +231,7 @@ var G = {
 		});
 	};
 	
-	//the 1st param is key to a js script, 2nd is the script
+	//the 1st param is a js script object, 2nd is Q service
 	function loadScript(o, q) {
 		return q(function(resolve, reject) {
 			var script = document.createElement("script")
