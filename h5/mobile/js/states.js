@@ -3,7 +3,7 @@
 
 G.weiboApp
 .run(function($state, $rootScope) {
-	//$state.go("root")
+	//$state.go("root");
 	function message(to, toP, from, fromP) { return from.name  + angular.toJson(fromP) + " -> " + to.name + angular.toJson(toP); }
 	$rootScope.$on("$stateChangeStart", function(evt, to, toP, from, fromP) { debug.log("Start:   " + message(to, toP, from, fromP)); });
 	$rootScope.$on("$stateChangeSuccess", function(evt, to, toP, from, fromP) { debug.log("Success: " + message(to, toP, from, fromP)); });
@@ -130,6 +130,11 @@ G.weiboApp
 		controller : function(logon, $scope, $rootScope) {
 			debug.log("in main state controller="+logon);
 			$rootScope.currUserInfo = $rootScope.myUserInfo;
+
+			$('.sy-tab ul li').click(function(){
+				$(this).addClass('nav-active').siblings().removeClass('nav-active');
+				$('.list-info>div:eq('+$(this).index()+')').show().siblings().hide();	
+			});
 		}
 	})
 	.state("root.main.allPosts", {

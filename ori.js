@@ -1,0 +1,307 @@
+var G = {
+		bidPath : window.location.pathname+"/appID/userID/",
+		IPList :["112.124.113.235:30003","97.74.126.127:4800","218.74.25.10:8100"],		//api for IP lists
+		IPNum : 0,
+		currentIP : null,
+		httpClient : null,
+		sid : 'bf3d208cba14c5f7e037b9acd0fc1d2e27a588ed',
+		appBid : 'KtXm2MOMx5bKd0qpxjGiWpxwpIO1wCnDRjWlGBG5zI0',	//from which JS data are read, the APP ID
+		appPpt : "L_-LAwEBA1BQVAH_jAABAwECSUQBDAABBFNpZ24BDAABCFZhbGlkaXR5Af-OAAAAEP-NBQEBBFRpbWUB_44AAAAw_4wBK0t0WG0yTU9NeDViS2QwcXB4akdpV3B4d3BJTzF3Q25EUmpXbEdCRzV6STAA",
+		leither : '_leither_cloud_js', 	//leither-cloud.js has to be loaded on server
+		makefileKey	: "_makefile.json_release",		//where K-V of js, templates and css code stored
+		makefileKey	: "_makefile.json_1.0.10",		//where K-V of js, templates and css code stored
+		makefile : null,		//makefile object, store keys for js, css, templates
+//appowner
+		userid : "%%userid%%",
+		userppt : "%%ppt%%",
+		inviter : '%%inviter%%',
+};
+
+	//customize log function. Disable it by setting isDebug to false
+	function setDebug(isDebug) {
+		if (isDebug) {
+			window.debug = {
+				log: window.console.log.bind(window.console),
+				error: window.console.error.bind(window.console),
+				info: window.console.info.bind(window.console),
+				warn: window.console.warn.bind(window.console)
+			};
+		} else {
+			var __no_op = function() {};
+			window.debug = {
+				log: __no_op,
+				error: __no_op,
+				warn: __no_op,
+				info: __no_op
+			}
+		}
+	};
+	setDebug(true);
+
+	//Both check server availability and load Leither
+	function loadLeither(ip, callback) {
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.async = "async";
+		if (script.readyState) { //IE
+			script.onreadystatechange = function() {
+				if (script.readyState == "loaded" || script.readyState == "complete") {
+					script.onreadystatechange = null;
+					callback(ip);
+				};
+			};
+		} else { //Others
+			script.onload = function() {
+				callback(ip);
+			};
+		};
+		script.addEventListener("error", function() {
+			//try next server IP in a predefined list
+			debug.log("check next server=" + G.IPList[G.IPNum])
+			checkServer(G.IPList[G.IPNum++]);
+		});
+		//here is a problem with illegitimate sid
+		script.src = 'http://'+ip+'/getres?type=application/javascript&sid='+G.sid+'&bid='+G.appBid+'&key='+G.leither;
+		debug.log(script);
+		document.getElementsByTagName("head")[0].appendChild(script);		//load Leither first
+	};
+
+	function checkServer(ip) {
+		if (ip===null || typeof(ip)==='undefined') {
+			debug.log("no server available");
+			return;
+		};
+		//try to load Leither from potential server
+		loadLeither(ip, function(ip) {
+			//the server is live, Leither loaded from it
+			G.leClient = leither.client(ip);
+			G.currentIP = ip;
+			
+			//if there is no inviter, then there is no userppt. Use appPpt as userppt
+			if (G.inviter === '%%inviter%%')
+				G.userppt = G.appPpt;
+			G.leClient.login(null, G.userppt, function(sid) {
+				G.sid = sid;
+				G.leClient.getvar(sid, 'self', function(usr) {
+					G.bid = usr.id;
+					debug.info("login with ppt, sid=" + G.sid, "bid="+G.bid);
+					G.leClient.get(G.sid, G.appBid, G.makefileKey, function(data) {
+						G.makefile = JSON.parse(data[1]);		//makefile has all the keys of system resources
+						debug.log(G.makefile);
+
+						if (localStorage[G.makefile.files.angular.fileKey]) {
+							eval(localStorage[G.makefile.files.angular.fileKey]);
+							debug.log("angular loaded from local storage", angular);
+							loadMainHtml(G.makefile.files.main.fileKey);
+						} else {
+							G.leClient.get(G.sid, G.appBid, G.makefile.files.angular.fileKey, function(data) {
+								var r = new FileReader();
+								r.onload = function(e) {
+									localStorage[G.makefile.files.angular.fileKey] = e.target.result;
+									eval(localStorage[G.makefile.files.angular.fileKey]);	//angular is defined as window.angular
+									debug.log("angular saved in local storage and loaded", angular);
+									loadMainHtml(G.makefile.files.main.fileKey);
+								};
+								r.readAsText(new Blob([data[1]]));
+							}, function(name, err) {
+								debug.error(err);
+							});
+						};
+					}, function(name, err) {
+						debug.error(err);
+					});
+				}, function(name, err) {
+					debug.error("getSysUser err=" + err);
+				});
+			}, function(name, err) {
+				debug.error(err);
+			});
+		});
+	};
+	
+	function loadMainHtml(fileKey) {
+		//load main html body
+		var div = document.getElementById("loadZone");
+		//debug.log(localStorage[G.makefile.files.main.fileKey]);
+		if (localStorage[fileKey]) {
+			div.innerHTML = localStorage[fileKey];
+			loadResources();		//load all resources required by system
+		} else {
+			G.leClient.get(G.sid, G.appBid, fileKey, function(data) {
+				debug.info("get main ok")
+				var r = new FileReader();
+				r.onload = function(e) {
+					localStorage[fileKey] = r.result;
+					//reading html from Leither will cause cross-original error
+					//even if the code is stored to localStorage first
+					//force a reload
+					location.reload(false);
+					//loadMainHtml(fileKey);
+					//div.innerHTML = localStorage[G.makefile.html.main.fileKey];
+				};
+				//the source file must be saved as utf-8 format
+				r.readAsText(new Blob([data[1]], {type : "utf-8"}));
+			}, function(name, err) {
+				console.error(err);
+			});
+		};
+	};
+	
+    function otherJS() {
+		$("#siyu").click(function(){easyDialog.open({
+				container : 'siyu-main',
+				fixed : false,
+				drag : true,
+				overlay : true
+			});
+		});
+		
+		$(".sure").click(function(){easyDialog.open({
+				container : 'siyu-next',
+				fixed : false,
+				drag : true,
+				overlay : true
+			});
+		});
+		
+		$(".copy").click(function(){
+		  $(".siyu-alert").css("display","block")
+		})
+	};
+	
+	function loadResources() {		
+		//load css code too
+		for (var k in G.makefile.css) {
+			(function(o) {
+				var cs = document.createElement("style");
+				cs.rel = "stylesheet";
+				cs.type = "text/css";
+				if (localStorage[o.fileKey]) {
+					cs.textContent = localStorage[o.fileKey];
+					document.getElementsByTagName("head")[0].appendChild(cs);
+				} else {
+					G.leClient.get(G.sid, G.appBid, o.fileKey, function(data) {
+						var r = new FileReader();
+						r.onload = function(e) {
+							localStorage[o.fileKey] = e.target.result;
+							cs.textContent = e.target.result;
+							document.getElementsByTagName("head")[0].appendChild(cs);
+						};
+						r.readAsText(new Blob([data[1]]));
+					}, function(name, err) {
+						debug.error(err);
+					});
+				};									
+			})(G.makefile.css[k]);
+		};
+		
+		//load JS files and save in localStorage
+		var q = angular.injector(['ng']).get('$q');
+		var ds = [];
+		for (var k in G.makefile.js[0]) {
+			//dependencies need to be loaded and executed first
+			ds.push(loadScript(G.makefile.js[0][k], q));
+		};
+		q.all(ds).then(function() {
+			//debug.info(G);
+			G.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"])
+			ds = [];
+			for (var k in G.makefile.js[1]) {
+				// exec JS that depends on previous ones
+				ds.push(loadScript(G.makefile.js[1][k], q));
+			};
+			q.all(ds).then(function() {
+				//kick start the app. weiboApp needed for the following JS code
+				otherJS();
+				angular.bootstrap(document, ['appModule']);
+				debug.log("app started");
+			}, function(reason) {
+				debug.error(reason);
+			});
+		}, function(reason) {
+			debug.error(reason);
+		});
+	};
+	
+	//the 1st param is a js script object, 2nd is Q service
+	function loadScript(o, q) {
+		return q(function(resolve, reject) {
+			var script = document.createElement("script")
+			if (localStorage[o.fileKey]) {
+				//debug.info(v);
+				script.type = "text/javascript";
+				script.textContent = localStorage[o.fileKey];
+				document.getElementsByTagName("head")[0].appendChild(script);
+				if (o.deps) {
+					loadDeps(o.deps, q).then(function() {
+						resolve();
+					}, function(reason) {
+						reject(reason);
+					});
+				} else
+					resolve();
+			} else {
+				G.leClient.get(G.sid, G.appBid, o.fileKey, function(data) {
+					if (data[1]) {
+						var r = new FileReader();
+						r.onload = function(e) {
+							localStorage[o.fileKey] = e.target.result;
+							script.type = "text/javascript";
+							script.textContent = e.target.result;
+							document.getElementsByTagName("head")[0].appendChild(script);
+							console.log(script)
+							if (o.deps) {
+								loadDeps(o.deps, q).then(function() {
+									resolve();
+								}, function(reason) {
+									reject(reason);
+								});
+							} else
+								resolve();
+						};
+						r.readAsText(new Blob([data[1]]));
+					} else {
+						reject("source code data not found, fileKey="+ o.fileKey);
+					};
+				}, function(name, err) {
+					reject(err);
+				});
+			};
+		});
+	};
+
+	function loadDeps(deps, q) {
+		var ds = [];
+		angular.forEach(deps, function(o) {
+			var script = document.createElement("script")
+			if (localStorage[o.fileKey]) {
+				script.type = "text/javascript";
+				script.textContent = localStorage[o.fileKey];
+				document.getElementsByTagName("head")[0].appendChild(script);
+			} else {
+				ds.push(q(function(resolve, reject) {
+					G.leClient.get(G.sid, G.appBid, o.fileKey, function(data) {
+						if (data[1]) {
+							var r = new FileReader();
+							r.onload = function(e) {
+								localStorage[o.fileKey] = e.target.result;
+								script.type = "text/javascript";
+								script.textContent = e.target.result;
+								document.getElementsByTagName("head")[0].appendChild(script);
+								console.log(script)
+								resolve();
+							};
+							r.readAsText(new Blob([data[1]]));
+						} else {
+							reject("source code data not found, key="+k);
+						};
+					}, function(name, err) {
+						reject(err);
+					});					
+				}));
+			};
+		});
+		return q.all(ds);
+	};
+
+checkServer(G.IPList[G.IPNum++]);

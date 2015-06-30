@@ -220,6 +220,7 @@ G.weiboApp
 		var wb = new WeiboPost(key, bid, $scope);
 		wb.get(original, function(readOK) {
 			if (readOK) {
+				debug.log(wb);
 				$scope.myUserInfo.checkFavorite(wb);
 				$scope.weiboList.push(wb);
 				//sort array in descending order, worked like a charm
@@ -358,9 +359,6 @@ G.weiboApp
 		debug.log("state is favorite");
 		showFavorites($stateParams.bid);
 	};
-}])
-.controller("sidebarController", ["$stateParams", "$scope", "$location", function($stateParams, $scope, $location) {
-	debug.log("in sidebar controller");
 }])
 .controller("pictureController", ["$state", "$stateParams", "$scope", "$timeout",
                                   function($state, $stateParams, $scope, $timeout) {
@@ -541,11 +539,9 @@ G.weiboApp
 				$scope.weiboList.unshift(wb);
 				G.slice($scope.weiboList, $scope.currentList, 0, $scope.global.itemsPerPage);
 				$scope.global.currentPage = 1;
-				$scope.$apply();
-				G.spinner.stop();
+				$state.go("root.main.allPosts");
 			}, function(reason) {
 				debug.error(reason);
-				G.spinner.stop();
 			});
 		}, function(reason) {
 			debug.warn(reason);
@@ -634,9 +630,9 @@ G.weiboApp
 		if (n===0) {
 			return null;
 		} else if (n<1000) {
-			return "("+n+")";
+			return ""+n+"";
 		} else {
-			return "(999+)";
+			return "999+";
 		};
 	};
 })

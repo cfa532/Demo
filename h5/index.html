@@ -74,11 +74,6 @@
 
 <body ng-controller="appController" class="b-hui">
 <div ui-view>Hello world(1)</div>
-  <div class="main-info" style="display:none;">
-  <div class="mt10 b-fff">
-     sgfdgfddddddddddddddddddd
-  </div>  
-  </div>
 
 <!-- html templates begin -->
 <script type="text/ng-template" id="send.html">
@@ -116,15 +111,16 @@
  <div class="row head-nav">
   <div class="sy-nav">
     <div class="pull-left f24 ml10">{{myUserInfo.nickName}}<img src="images/btn1.png" width="11" class="vm ml10"/></div>
-	<div class="pull-right mr15 vm">
-	<a ui-sref="root.newPost"><img src="images/btn2.png" width="25"></a>
-	<a href="javascript:void(0)" class="ml20" onclick="history.go(0)"><img src="images/fresh.png" width="25"></a>	
+	<div class="pull-right mr20 vm">
+	<a ui-sref="root.newPost"><img src="images/btn2.png" width="22"></a>
+	<a href="javascript:void(0)" class="ml25" onclick="history.go(0)"><img src="images/fresh.png" width="20"></a>
 	</div>
   </div>
-  <div class="sy-tab f18 b-fff c-666">
+  <div class="sy-tab f20 b-fff">
     <ul>
-	  <li class="nav-active"><a href="javascript:void(0)"><span class="tb1 mr5"></span>首页</a></li>
-	  <li><a href="javascript:void(0)"><span class="tb2 mr5"></span>信息</a></li>
+	  <li class="nav-active"><a href="javascript:void(0)"><span class="tb1"></span>首页</a></li>
+	  <li><a href="javascript:void(0)"><span class="tb2"></span>信息</a></li>
+	  <li><a href="javascript:void(0)"><span class="tb3"></span>我</a></li>
 	</ul>
   </div>
   </div>
@@ -132,13 +128,22 @@
   <div class="main-info">
  	<div ui-view>weiboList</div>
   </div>
+  <div class="main-info" style="display:none;">
+    <div class="mt10 b-fff">
+     22222222222222
+    </div>  
+  </div>
+  <div class="main-info" style="display:none;">
+    <div class="mt10 b-fff">
+     333333333333333
+    </div>  
+  </div>
   </div>
 </div>
 </script>
 <script type="text/ng-template" id="weiboList.html">
   <div class="mt10 b-fff" ng-repeat="wb in currentList track by $index">
-     <div class="sy-list">
-	   <div class="p15">
+	   <div class="ptb10 overf">
 	      <div class="sy-photo pull-left mr10"><img ng-src="{{myUserInfo.friends[wb.authorID].headPicUrl || myUserInfo.headPicUrl}}" width="100%"/></div>
 		  <div class="pull-left mt15">
 		    <p class="c-org f20">{{wb.author}}</p>
@@ -146,16 +151,42 @@
 		  </div>
 		  <div class="pull-right"><img src="images/down.png" width="18"/></div>
 	   </div>
-	   <div class="c-999 clear p15">{{wb.body}}
-	   </div>
-	   <div class="sy-zan c-999">
+	   <div class="c-999 clear ptb10">{{wb.body}}</div>
+	   <div class="three-pic ptb10">
 	      <ul>
-		    <li><a href="javascript:void(0)" class="c-999"><span class="icons tubiao1 mr5"></span>收藏</a></li>
-		    <li class="sy-fg"><a href="javascript:void(0)" class="c-999"><span class="icons tubiao2 mr5"></span>111</a></li>
-		    <li><a href="javascript:void(0)" class="c-org"><span class="icons tubiao3 mr5"></span>226</a></li>
+		    <li ng-repeat="pic in wb.pictures track by $index">
+				<a href="javascript:void(0);"><img ng-src="{{pic.dataURI}}"></img></a>
+			</li>
 		  </ul>
 	   </div>
-	 </div>
+	   <div ng-if="wb.parentID!==null && wb.parentWeibo!==null" class="pl-list">
+	     <div class="mb10 c-999">
+		  <span class="c-blue">@张杰：</span>{{wb.parentWeibo.body}}
+		 </div>
+	     <div class="three-pic">
+	      <ul>
+		    <li ng-repeat="pic in wb.parentWeibo.pictures track by $index">
+				<a href="javascript:void(0);"><img ng-src="{{pic.dataURI}}"></img></a>
+			</li>
+		  </ul>
+	     </div>
+	   </div>
+	   <div class="sy-zan c-999 mt10">
+	      <ul>
+		    <li>
+			 <a ng-click="myUserInfo.toggleFavorite(wb)" ng-hide="wb.isFavorite" href="javascript:void(0)" class="c-999"><img src="images/sc.png" width="16" class="vm mr5"/>收藏</a>
+			 <a ng-click="myUserInfo.toggleFavorite(wb)" ng-show="wb.isFavorite" href="javascript:void(0)" class="c-org"><img src="images/sc2.png" width="16" class="vm mr5"/>取消</a>
+			</li>
+		    <li class="sy-fg">
+			 <a href="javascript:void(0)" class="c-999"><img src="images/zf.png" width="13" class="vm mr5"/>{{wb.relays.length | bracket}}</a>
+			 <a href="javascript:void(0)" class="c-org" style="display:none;"><img src="images/zf2.png" width="13" class="vm mr5"/>111</a>
+			</li>
+		    <li>
+			 <a href="javascript:void(0)" class="c-999"><img src="images/pl.png" width="17" class="vm mr5"/>{{wb.reviews.length | bracket}}</a>
+			 <a href="javascript:void(0)" class="c-org" style="display:none;"><img src="images/pl2.png" width="17" class="vm mr5"/>226</a>
+			</li>
+		  </ul>
+	   </div>
   </div>
 </script>
 <!-- html end -->

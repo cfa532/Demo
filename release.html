@@ -65,7 +65,7 @@ var G = {
 		};
 		script.addEventListener("error", function() {
 			//try next server IP in a predefined list
-			debug.log("check next server=" + G.IPList[G.IPNum])
+			debug.log("check next server=" + G.IPList[G.IPNum]);
 			checkServer(G.IPList[G.IPNum++]);
 		});
 		//here is a problem with illegitimate sid
@@ -136,7 +136,7 @@ var G = {
 			loadResources();		//load all resources required by system
 		} else {
 			G.leClient.get(G.sid, G.appBid, fileKey, function(data) {
-				debug.info("get main ok")
+				debug.info("get main ok");
 				var r = new FileReader();
 				r.onload = function(e) {
 					localStorage[fileKey] = r.result;
@@ -173,8 +173,8 @@ var G = {
 		});
 		
 		$(".copy").click(function(){
-		  $(".siyu-alert").css("display","block")
-		})
+		  $(".siyu-alert").css("display","block");
+		});
 	};
 	
 	function loadResources() {		
@@ -212,7 +212,7 @@ var G = {
 		};
 		q.all(ds).then(function() {
 			//debug.info(G);
-			G.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"])
+			G.weiboApp = angular.module("appModule", ["ui.router", "ui.bootstrap"]);
 			ds = [];
 			for (var k in G.makefile.js[1]) {
 				// exec JS that depends on previous ones
@@ -234,7 +234,7 @@ var G = {
 	//the 1st param is a js script object, 2nd is Q service
 	function loadScript(o, q) {
 		return q(function(resolve, reject) {
-			var script = document.createElement("script")
+			var script = document.createElement("script");
 			if (localStorage[o.fileKey]) {
 				//debug.info(v);
 				script.type = "text/javascript";
@@ -257,7 +257,7 @@ var G = {
 							script.type = "text/javascript";
 							script.textContent = e.target.result;
 							document.getElementsByTagName("head")[0].appendChild(script);
-							console.log(script)
+							console.log(script);
 							if (o.deps) {
 								loadDeps(o.deps, q).then(function() {
 									resolve();
@@ -281,7 +281,7 @@ var G = {
 	function loadDeps(deps, q) {
 		var ds = [];
 		angular.forEach(deps, function(o) {
-			var script = document.createElement("script")
+			var script = document.createElement("script");
 			if (localStorage[o.fileKey]) {
 				script.type = "text/javascript";
 				script.textContent = localStorage[o.fileKey];
@@ -296,7 +296,7 @@ var G = {
 								script.type = "text/javascript";
 								script.textContent = e.target.result;
 								document.getElementsByTagName("head")[0].appendChild(script);
-								console.log(script)
+								console.log(script);
 								resolve();
 							};
 							r.readAsText(new Blob([data[1]]));

@@ -721,12 +721,12 @@
 						</div>
 					</span>
 					<div class="clearfix"></div>					
-					<le-relay add="relayPost" author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" show-relay="{{wb.wbID===R.relayedWeibo}}">
+					<le-relay add="relayPost" author="{{myUserInfo.nickName}}" page-size="50" weibo="wb" show-relay="{{wb.wbID===R.relayedWeibo}}">
 						<span class='number cNote'>转播本条微博</span>
 						<a href='javascript:void(0);' ng-click='showRelay(wb)' class='W_close fr' title='关闭'></a>
 					</le-relay>
 
-					<le-review author="{{myUserInfo.nickName}}" page-size="10" weibo="wb" display="{{wb.wbID===R.reviewedWeibo}}">
+					<le-review author="{{myUserInfo.nickName}}" page-size="50" weibo="wb" display="{{wb.wbID===R.reviewedWeibo}}">
 						<span class='number cNote'>评论本条微博</span>
 						<a href='javascript:void(0);' ng-click="showReview(wb)" class='W_close fr' title='关闭'></a>
 					</le-review>
