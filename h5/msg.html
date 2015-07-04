@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <base href="mobile/" />
+    <title>Mobile Angular UI Demo</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimal-ui" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="yes" />
+    <link rel="stylesheet" href="css/mobile-angular-ui-hover.min.css" />
+    <link rel="stylesheet" href="css/mobile-angular-ui-base.min.css" />
+    <link rel="stylesheet" href="css/mobile-angular-ui-desktop.min.css" />
+    <link rel="stylesheet" href="css/addition.css" />
+	<script src="js/jquery-1.10.1.min.js"></script>
+	<script src="js/tabs.js"></script>
+</head>
+
+<body ng-controller="appController" class="b-hui">
+<!-- html begin -->
+<div class="container">
+ <div class="row head-nav">
+  <div class="send-nav f18">
+    <div class="pull-left send-qx"><a href="javascript:void(0)" onclick="history.go(-1)"><img src="images/btn3.png" width="15" class="vm ml5"/></a></div>
+    <div class="pull-left send-wb text-center">与乐跑王私信</div>
+	</div>
+  </div>
+  <div class="row send-main">
+    <textarea name="textarea" id="textarea" class="msg-text">私语分享...</textarea>
+  </div>
+  <div class="row b-hui">
+     <div class="send-more"> 
+	   <div class="pull-left">
+		  <a href="javascript:void(0)" onclick="fileSelect();"><img src="images/img.png" width="24"/></a>
+		  <input type="file" name="fileToUpload" id="fileToUpload" style="display:none;">
+	   </div>
+	   <div class="pull-right"><a href="#" class="msg-send">发送</a></div>
+	 </div>
+	 <div class="msg-list plr15">
+	   <div class="text-center msg-time c-hui f12 mt10"><span>6-18 09:00:09</span></div>
+	   <div>
+	     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	     	<tr>
+	     		<td width="48" valign="top"><div class="detail-left"><img src="images/pic.png" width="100%"/></div></td>
+	     		<td><p class="f12 c-huim">小米周鸿!!</p>
+				  <div class="msg-left c-666 f14 pr">小米周鸿!!<em></em><span></span></div>
+				</td>
+     		</tr>
+     	</table>
+		</div>
+	   <div class="text-center msg-time c-hui f12 mt10"><span>6-18 09:00:09</span></div>
+	   <div>
+	     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	     	<tr>
+	     		<td align="right"><p class="f12 c-huim">小米周鸿!!</p>
+				  <div class="msg-right c-666 f14 pr">中午自助餐时间，雷军和小米两位同事在吃饭，周鸿..<em></em><span></span></div>
+				</td>
+	     		<td width="48" valign="top"><div class="detail-left pull-right"><img src="images/pic.png" width="100%"/></div></td>
+     		</tr>
+     	</table>
+		</div>
+	   <div class="text-center msg-time c-hui f12 mt10"><span>6-18 09:00:09</span></div>
+	   <div>
+	     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	     	<tr>
+	     		<td width="48" valign="top"><div class="detail-left"><img src="images/pic.png" width="100%"/></div></td>
+	     		<td><p class="f12 c-huim">小米周鸿!!</p>
+				  <div class="msg-left c-666 f14 pr">中午自助餐时间，雷军和小米两位同事在吃饭，周鸿..<em></em><span></span></div>
+				</td>
+     		</tr>
+     	</table>
+		</div>
+	 </div>
+  </div>
+</div>
+<!-- html end -->
+</body>
+</html>
