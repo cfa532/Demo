@@ -86,6 +86,11 @@ G.weiboApp
 			favoriteWeibo	: null
 	};
 
+	$scope.showPostDetail = function(wb) {
+		$rootScope.currentWB = wb;
+		$state.go("root.post");
+	};
+	
 	$scope.showRelay = function(wb) {
 		$scope.R.reviewedWeibo = null;
 		$scope.R.favoriteWeibo = null;

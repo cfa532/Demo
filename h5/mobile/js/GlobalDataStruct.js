@@ -714,7 +714,7 @@ function WeiboPost(wbID, authorID, scope)
 	this.rating = 0;			//number of Praise
 	this.pictures = [];			//key list of pictures
 	this.videos = [];			//key list of videos
-	this.parentWeibo = [];
+	this.parentWeibo = null;
 	this.isFavorite = false;
 	this.original = null;
 	this.scope = scope;

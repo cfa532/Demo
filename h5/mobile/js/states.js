@@ -115,6 +115,56 @@ G.weiboApp
 			$timeout(function() {G.spinner.stop();}, 10000);		//stop the spinner after 30s nonetheless
 		}
 	})
+	.state("root.comment", {
+		url : "/comment",
+		templateUrl : "comment.html",
+		controller : "postController",
+	})
+	.state("root.post", {
+		url : "/post",
+		templateUrl : "post.html",
+		controller : function($scope) {
+			debug.log("in weibo main text state");
+		}
+	})
+	.state("root.msg", {
+		url : "/msg",
+		templateUrl : "msg.html",
+		controller : function($scope, $rootScope, $timeout) {
+			debug.log("in chat history controller");
+			$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
+
+			angular.forEach($scope.myUserInfo.friends, function(ui, bid) {
+				G.spinner.spin(document.getElementById('myAppRoot'));
+				G.leClient.hkeys(G.sid, G.bid, bid, function(data) {
+					if (data.length > 0) {
+						data.sort(function(a, b) {return b-a});
+						G.leClient.hget(G.sid, G.bid, bid, data[0], function(m) {
+							if (m[1].contentType === 1) {
+								var p = new WeiboPicture(m[1].content, m[1].bid);
+								p.get(0, function(uri) {
+									m[1].dataURI = uri;
+									ui.lastSMS = m[1];
+									$scope.$apply();
+									G.spinner.stop();
+								});
+							} else {
+								ui.lastSMS = m[1];
+								$scope.$apply();
+								G.spinner.stop();
+							};
+						}, function(name, err) {
+							debug.error(err);
+						});
+					} else {
+						G.spinner.stop();
+					};
+				}, function(name, err) {
+					debug.error(err);
+				});
+			});
+		},
+	})
 	.state("root.newPost", {
 		url : "/newpost",
 		templateUrl : "send.html",

@@ -1,9 +1,15 @@
 // JavaScript Document
-$(function(){
-	//nav bar click control
+$(function(){	
+   //首页tab切换
 	$('.sy-tab ul li').click(function(){
 		$(this).addClass('nav-active').siblings().removeClass('nav-active');
 		$('.list-info>div:eq('+$(this).index()+')').show().siblings().hide();	
+	})
+	
+   //转发评论微博tab切换
+	$('.detail-nav ul li').click(function(){
+		$(this).addClass('pl-active').siblings().removeClass('pl-active');
+		$('.detail-info>div:eq('+$(this).index()+')').show().siblings().hide();	
 	})
 	
 	//上传图片高度等于宽度

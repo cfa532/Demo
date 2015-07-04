@@ -20,10 +20,12 @@
     <script src="lib/mobile-angular-ui.gestures.js"></script>
     <script src="lib/leither-cloud.js"></script>
     <script src="lib/spin.min.js"></script>
+	<script src="lib/ui-bootstrap-tpls.min.js"></script>
     <script src="js/GlobalDataStruct.js"></script>
     <script src="js/mobile.js"></script>
     <script src="js/root.js"></script>
     <script src="js/states.js"></script>
+    <script src="js/directives.js"></script>
     <script src="js/message.js"></script>
     <script src="js/review.js"></script>
     <script src="js/sms.js"></script>
@@ -61,7 +63,7 @@
 
 			//start app after login
 			//G.weiboApp = angular.module("appModule", ["mobile-angular-ui"])
-			angular.bootstrap(document, [ 'appModule' ]);
+			angular.bootstrap(document, ['appModule']);
 			debug.log("auglar started")
 		}, function(name, err) {
 			debug.error("getSysUser err=" + err);
@@ -75,7 +77,200 @@
 <body ng-controller="appController" class="b-hui">
 <div ui-view>Hello world(1)</div>
 
+<script type="text/ng-template" id="post.html">
+<div class="container">
+ <div class="row head-nav">
+  <div class="send-nav f18">
+    <div class="pull-left send-qx"><a href="javascript:void(0)" onclick="history.go(-1)"><img src="images/btn3.png" width="15" class="vm ml5"/></a></div>
+    <div class="pull-left send-wb text-center">微博正文</div>
+	</div>
+  </div>
+  <div class="row send-main">
+   <div class="mt10 b-fff">
+	   <div class="ptb10 overf">
+	      <div class="sy-photo pull-left mr10"><img src="images/pic.png" width="100%"/></div>
+		  <div class="pull-left mt15">
+		    <p class="c-org f20">{{currentWB.author}}</p>
+	        <p class="c-999">{{currentWB.timeStamp | timePassed}}</p>
+		  </div>
+	   </div>
+	   <div class="c-999 clear ptb10">
+	        {{currentWB.body}}
+	   </div>
+	   <div class="three-pic ptb10">
+	      <ul>
+		    <li ng-repeat="pic in currentWB.pictures track by $index">
+				<a href="javascript:void(0)"><img ng-src="{{pic.dataURI}}"></img></a>
+			</li>
+		  </ul>
+	   </div>
+	   <div class="pl-list">
+	     <div class="mb10 c-999">
+		  <span class="c-blue">@{{currentWB.parentWeibo.author}}：</span>{{currentWB.parentWeibo.body}}
+		 </div>
+	     <div class="three-pic">
+	      <ul>
+		    <li ng-repeat="pic in currentWB.parentWeibo.pictures track by $index">
+				<a href="javascript:void(0);"><img ng-src="{{pic.dataURI}}"></img></a>
+			</li>
+		  </ul>
+	     </div>
+	   </div>
+	   <div class="sy-zan c-999 mt10">
+	      <ul>
+		    <li>
+			 <a ng-click="myUserInfo.toggleFavorite(currentWB)" ng-hide="currentWB.isFavorite" href="javascript:void(0)" class="c-999"><img src="images/sc.png" width="16" class="vm mr5"/>收藏</a>
+			 <a ng-click="myUserInfo.toggleFavorite(currentWB)" ng-show="currentWB.isFavorite" href="javascript:void(0)" class="c-org"><img src="images/sc2.png" width="16" class="vm mr5"/>取消</a>
+			</li>
+		    <li class="sy-fg">
+			 <a ui-sref="root.post" class="c-999"><img src="images/zf.png" width="13" class="vm mr5"/>{{currentWB.relays.length | bracket}}</a>
+			 <a ui-sref="root.post" class="c-org" style="display:none;"><img src="images/zf2.png" width="13" class="vm mr5"/>111</a>
+			</li>
+		    <li>
+			 <a ui-sref="root.post" class="c-999"><img src="images/pl.png" width="17" class="vm mr5"/>{{currentWB.reviews.length | bracket}}</a>
+			 <a ui-sref="root.post" class="c-org" style="display:none;"><img src="images/pl2.png" width="17" class="vm mr5"/>226</a>
+			</li>
+		  </ul>
+	   </div>
+  </div>
+  </div>
+ <div class="row mt10 b-fff">
+   <div class="detail-nav plr15">
+     <ul>
+	   <li class="pl-active mr20"><a href="javascript:void(0);">转发（9）</a><em></em><span></span></li>
+	   <li><a href="javascript:void(0);">评论（5）</a><em></em><span></span></li>
+	 </ul>
+   </div>
+   <div class="detail-info pl15 f14">
+     <div class="overf">
+	   <div class="detail-list">
+	      <div class="detail-left pull-left mr10"><img src="images/pic.png" width="100%"/></div>
+		  <div class="detail-right pull-left c-999">
+		    <p class="f18 c-org">傻鸟</p>
+			<p>昨天  22:13</p>
+			<p>博览会议。<span class="c-blue">@乐跑王</span> 中午自助餐时间，雷军和小米两位同事在吃饭，周鸿...</p>
+		  </div>
+	   </div>
+	   <div class="detail-list">
+	      <div class="detail-left pull-left mr10"><img src="images/pic.png" width="100%"/></div>
+		  <div class="detail-right pull-left c-999">
+		    <p class="f18 c-org">傻鸟</p>
+			<p>昨天  22:13</p>
+			<p>博览会议。<span class="c-blue">@乐跑王</span> 中午自助餐时间，雷军和小米两位同事在吃饭，周鸿...</p>
+		  </div>
+	   </div>
+	 </div>
+     <div class="overf" style=" display:none;">
+	   <div class="detail-list">
+	      <div class="detail-left pull-left mr10"><img src="images/pho.jpg" width="100%"/></div>
+		  <div class="detail-right pull-left c-999">
+		    <p class="f18 c-org">乐跑王</p>
+			<p>昨天  22:13</p>
+			<p>博览会议。<span class="c-blue">@乐跑王</span> 中午自助餐时间，雷军和小米两位同事在吃饭，周鸿...</p>
+		  </div>
+	   </div>
+	   <div class="detail-list">
+	      <div class="detail-left pull-left mr10"><img src="images/pho.jpg" width="100%"/></div>
+		  <div class="detail-right pull-left c-999">
+		    <p class="f18 c-org">乐跑王</p>
+			<p>昨天  22:13</p>
+			<p>博览会议。<span class="c-blue">@乐跑王</span> 中午自助餐时间，雷军和小米两位同事在吃饭，周鸿...</p>
+		  </div>
+	   </div>
+	 </div>
+   </div>
+ </div>
+</div>
+</script>
+
+<script type="text/ng-template" id="comment.html">
+<div class="container">
+ <div class="row head-nav">
+  <div class="send-nav f18">
+    <div class="pull-left send-qx"><a href="javascript:void(0)" onclick="history.go(-1)"><img src="images/btn3.png" width="15" class="vm ml5"/></a></div>
+    <div class="pull-left send-wb text-center">所有评论</div>
+	</div>
+  </div>
+  <div class="row send-main">
+   <div class="mt10 b-fff overf">
+	   <div class="ptb10">
+	      <div class="detail-left pull-left mr10"><img src="images/pic.png" width="100%"/></div>
+		  <div class="detail-right pull-left c-999">
+		    <p class="f18 c-org">傻鸟</p>
+			<p>昨天  22:13</p>
+		  </div>
+	   </div>
+	   <div class="c-999 clear ptb10">
+	      回复<span class="c-blue">@乐跑王</span> 你说的太对了。
+	   </div>
+	   <div class="pl-list">
+	     <div class="mb10 c-999">
+		  <span class="c-blue">@张杰：</span>今天在贵阳国际大数据产业博览会议，中午自助餐时间，雷军和小米两位同事在吃饭，周鸿祎过来问，这里有没人？...
+		 </div>
+	   </div>
+  </div>
+  </div>
+</div>
+</script>
+
 <!-- html templates begin -->
+<script type="text/ng-template" id="msg.html">
+<div class="container">
+ <div class="row head-nav">
+  <div class="send-nav f18">
+    <div class="pull-left send-qx"><a href="javascript:void(0)" onclick="history.go(-1)"><img src="images/btn3.png" width="15" class="vm ml5"/></a></div>
+    <div class="pull-left send-wb text-center">与乐跑王私信</div>
+	</div>
+  </div>
+  <div class="row send-main">
+    <textarea name="textarea" id="textarea" class="msg-text">私语分享...</textarea>
+  </div>
+  <div class="row b-hui">
+     <div class="send-more"> 
+	   <div class="pull-left">
+		  <a href="javascript:void(0)" onclick="fileSelect();"><img src="images/img.png" width="24"/></a>
+		  <input type="file" name="fileToUpload" id="fileToUpload" style="display:none;">
+	   </div>
+	   <div class="pull-right"><a href="#" class="msg-send">发送</a></div>
+	 </div>
+	 <div class="msg-list plr15">
+	   <div class="text-center msg-time c-hui f12 mt10"><span>6-18 09:00:09</span></div>
+	   <div>
+	     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	     	<tr>
+	     		<td width="48" valign="top"><div class="detail-left"><img src="images/pic.png" width="100%"/></div></td>
+	     		<td><p class="f12 c-huim">小米周鸿!!</p>
+				  <div class="msg-left c-666 f14 pr">小米周鸿!!<em></em><span></span></div>
+				</td>
+     		</tr>
+     	</table>
+		</div>
+	   <div class="text-center msg-time c-hui f12 mt10"><span>6-18 09:00:09</span></div>
+	   <div>
+	     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	     	<tr>
+	     		<td align="right"><p class="f12 c-huim">小米周鸿!!</p>
+				  <div class="msg-right c-666 f14 pr">中午自助餐时间，雷军和小米两位同事在吃饭，周鸿..<em></em><span></span></div>
+				</td>
+	     		<td width="48" valign="top"><div class="detail-left pull-right"><img src="images/pic.png" width="100%"/></div></td>
+     		</tr>
+     	</table>
+		</div>
+	   <div class="text-center msg-time c-hui f12 mt10"><span>6-18 09:00:09</span></div>
+	   <div>
+	     <table width="100%" border="0" cellspacing="0" cellpadding="0">
+	     	<tr>
+	     		<td width="48" valign="top"><div class="detail-left"><img src="images/pic.png" width="100%"/></div></td>
+	     		<td><p class="f12 c-huim">小米周鸿!!</p>
+				  <div class="msg-left c-666 f14 pr">中午自助餐时间，雷军和小米两位同事在吃饭，周鸿..<em></em><span></span></div>
+				</td>
+     		</tr>
+     	</table>
+		</div>
+	 </div>
+  </div>
+</div>
+</script>
 <script type="text/ng-template" id="send.html">
 <div class="container">
 <form name="weiboForm" ng-submit="" novalidate>  
@@ -130,7 +325,34 @@
   </div>
   <div class="main-info" style="display:none;">
     <div class="mt10 b-fff">
-     22222222222222
+      <div class="my-msg">
+	    <a ui-sref="root.msg"><div class="pull-left"><img src="images/sx.png" width="30" class="vm mr10"/><span class="f20 c-org">私信</span></div><div class="pull-right"><img src="images/btn4.png" height="20" class="mt5"/></div></a>
+	  </div>
+    </div>  
+    <div class="mt10 b-fff">
+      <div class="my-msg">
+	    <a ui-sref="root.comment"><div class="pull-left"><img src="images/say.png" width="30" class="vm mr10"/><span class="f20 c-org">评论</span></div><div class="pull-right"><img src="images/btn4.png" height="20" class="mt5"/></div></a>
+	  </div>
+    </div>  
+    <div class="mt10 b-fff">
+      <div class="my-news">
+	    <a href="#"><div class="my-left pull-left mr10"><img src="images/pic.png" width="100%"/></div>
+		 <div class="pull-left my-text">
+		    <div><div class="pull-left f14 c-org">乐跑王</div><div class="pull-right c-hui f12">昨天  22:13</div></div>
+		   	<div class="c-999 clear f10">今天在贵阳国际大数据......</div>
+		 </div>
+		</a>
+	  </div>
+    </div>  
+    <div class="mt10 b-fff">
+      <div class="my-news">
+	    <a href="#"><div class="my-left pull-left mr10"><img src="images/pic.png" width="100%"/></div>
+		 <div class="pull-left my-text">
+		    <div><div class="pull-left f14 c-org">乐跑王</div><div class="pull-right c-hui f12">昨天  22:13</div></div>
+		   	<div class="c-999 clear f10">今天在贵阳国际大数据......</div>
+		 </div>
+		</a>
+	  </div>
     </div>  
   </div>
   <div class="main-info" style="display:none;">
@@ -149,24 +371,23 @@
 		    <p class="c-org f20">{{wb.author}}</p>
 	        <p class="c-999">{{wb.timeStamp | timePassed}}</p>
 		  </div>
-		  <div class="pull-right"><img src="images/down.png" width="18"/></div>
 	   </div>
 	   <div class="c-999 clear ptb10">{{wb.body}}</div>
 	   <div class="three-pic ptb10">
 	      <ul>
 		    <li ng-repeat="pic in wb.pictures track by $index">
-				<a href="javascript:void(0);"><img ng-src="{{pic.dataURI}}"></img></a>
+				<a href="javascript:void(0);" ng-click="showPostDetail(wb)"><img ng-src="{{pic.dataURI}}"></img></a>
 			</li>
 		  </ul>
 	   </div>
 	   <div ng-if="wb.parentID!==null && wb.parentWeibo!==null" class="pl-list">
 	     <div class="mb10 c-999">
-		  <span class="c-blue">@张杰：</span>{{wb.parentWeibo.body}}
+		  <span class="c-blue">@{{wb.parentWeibo.author}}：</span>{{wb.parentWeibo.body}}
 		 </div>
 	     <div class="three-pic">
 	      <ul>
 		    <li ng-repeat="pic in wb.parentWeibo.pictures track by $index">
-				<a href="javascript:void(0);"><img ng-src="{{pic.dataURI}}"></img></a>
+				<a href="javascript:void(0);" ng-click="showPostDetail(wb)"><img ng-src="{{pic.dataURI}}"></img></a>
 			</li>
 		  </ul>
 	     </div>
@@ -178,16 +399,17 @@
 			 <a ng-click="myUserInfo.toggleFavorite(wb)" ng-show="wb.isFavorite" href="javascript:void(0)" class="c-org"><img src="images/sc2.png" width="16" class="vm mr5"/>取消</a>
 			</li>
 		    <li class="sy-fg">
-			 <a href="javascript:void(0)" class="c-999"><img src="images/zf.png" width="13" class="vm mr5"/>{{wb.relays.length | bracket}}</a>
-			 <a href="javascript:void(0)" class="c-org" style="display:none;"><img src="images/zf2.png" width="13" class="vm mr5"/>111</a>
+			 <a ng-click="showPostDetail(wb)" class="c-999"><img src="images/zf.png" width="13" class="vm mr5"/>{{wb.relays.length | bracket}}</a>
+			 <a ng-click="showPostDetail(wb)" class="c-org" style="display:none;"><img src="images/zf2.png" width="13" class="vm mr5"/>111</a>
 			</li>
 		    <li>
-			 <a href="javascript:void(0)" class="c-999"><img src="images/pl.png" width="17" class="vm mr5"/>{{wb.reviews.length | bracket}}</a>
-			 <a href="javascript:void(0)" class="c-org" style="display:none;"><img src="images/pl2.png" width="17" class="vm mr5"/>226</a>
+			 <a ng-click="showPostDetail(wb)" class="c-999"><img src="images/pl.png" width="17" class="vm mr5"/>{{wb.reviews.length | bracket}}</a>
+			 <a ng-click="showPostDetail(wb)" class="c-org" style="display:none;"><img src="images/pl2.png" width="17" class="vm mr5"/>226</a>
 			</li>
 		  </ul>
 	   </div>
   </div>
+  <pager total-items="totalItems" items-per-page="global.itemsPerPage" ng-model="global.currentPage" ng-change="pageChanged()"></pager>
 </script>
 <!-- html end -->
 </body>
