@@ -61,7 +61,7 @@
 		$rootScope.chatSessions = {};
 		$rootScope.global = {
 			currentPage : 1,
-			itemsPerPage : 10,
+			itemsPerPage : 20,				//number of weibo per page
 		};
 	})
 	//get weibo list and display them nicely
