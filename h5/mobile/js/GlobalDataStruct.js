@@ -102,7 +102,7 @@ function UIBase() {
 	this.oneLiner = "";			//brief self-intro
 };
 
-function UserInfo(bid) {
+function UserInfo(bid, scope) {
 	this.b = new UIBase();		//UIBase object.
 	this.nickName = null;
 	this.intro = null;		//a brief self-introduction
@@ -111,6 +111,7 @@ function UserInfo(bid) {
 	this.location = null;
 	this.version = null;		//version number
 	this.headPicKey = null;		//head icon of the user
+	this.headPicUrl = null;		//dataURI of the head icon
 	this.passwd = null;
 	this.favoriteCount = 0;
 	this.weiboCount = 0;
@@ -118,8 +119,8 @@ function UserInfo(bid) {
 	this.lastPost = null;		//a weibo obj
 	this.friends = {};			//associate array of my friends {bid : friend's UI}
 	this.favorites = {};		//associate array of my favorites {bid : [wbIDs]}
-	this.headPicUrl = null;		//dataURI of the head icon
 	this.bid = bid;				//system assigned user id
+	this.scope = scope;
 
 	var self = this;
 
@@ -217,6 +218,7 @@ function UserInfo(bid) {
 					//it is possible a new UI has no pic key
 					if (uri)
 						self.headPicUrl = uri;
+					if (self.scope) self.scope.$apply();
 				});
 
 				if (self.bid===G.bid ) {

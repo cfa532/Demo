@@ -58,7 +58,7 @@
 				add : "&"
 			},
 			link : function(scope, elem, attrs) {
-				//debug.log("in relay's link, size=" + scope.pageSize);
+				debug.log("in relay's link, size=" + scope.pageSize);
 				scope.R = {
 					sentOK			: false,
 					txtInvalid		: true,
@@ -68,29 +68,28 @@
 				scope.currentPage = 1;
 				
 				//watch if review block of current weibo is shown or hidden
-				scope.$watch(function() { return scope.showRelay }, 
-						function(newValue, oldValue) {
-					if (newValue!==oldValue && newValue==='true') {
-						//debug.log(scope.weibo);
-						scope.show = true;
-						getPage()
-					} else {
-						scope.show = false;
-					};
-				});
+//				scope.$watch(function() { return scope.showRelay }, 
+//						function(newValue, oldValue) {
+//					if (newValue!==oldValue && newValue==='true') {
+//						//debug.log(scope.weibo);
+//						scope.show = true;
+//						getPage()
+//					} else {
+//						scope.show = false;
+//					};
+//				});
 				
 				var getPage = function(nr) {
 					scope.relayList.length = 0;
 					if (nr) scope.relayList = [nr];		//put new review in front of the list
 					
-					//debug.log("number of relays = " + scope.weibo.relays.length);
+					//debug.log("number of relays = ", scope.weibo);
 					//debug.log(scope.weibo);
 					for(var j=(scope.currentPage-1)*scope.pageSize; j<scope.weibo.relays.length && j<scope.currentPage*scope.pageSize; j++) {
 						//iterate every review ID
 						G.leClient.get(G.sid, scope.weibo.authorID, scope.weibo.relays[j], function(data) {
 							if (data[1] !== null) {
 								scope.relayList.push(data[1]);
-								//debug.log(data[1])
 								scope.relayList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
 								scope.$apply();
 							};
@@ -99,6 +98,7 @@
 						});
 					};
 				};
+				//getPage();
 				
 				scope.pageChanged = function() {
 					debug.log("current page="+scope.currentPage);
@@ -404,6 +404,7 @@
 						var r = new FileReader();
 						r.onloadend = function(e) {
 							element[0].src = e.target.result;
+							//debug.log(e.target.result)
 							scope.$apply();
 						};
 						r.readAsDataURL(new Blob([data[1]], {type: 'image/png'}));
@@ -411,7 +412,7 @@
 						debug.error("le-src err=", err);
 					});					
 				};
-				//loadImg(scope.authorid, scope.leSrc);
+				loadImg(scope.authorid, scope.leSrc);
 			}
 		};
 	})

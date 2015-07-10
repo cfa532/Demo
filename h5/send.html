@@ -19,28 +19,18 @@
 <body ng-controller="appController" class="b-hui">
 <!-- html begin -->
 <div class="container">
+<form name="weiboForm" ng-submit="" novalidate>  
  <div class="row head-nav">
   <div class="send-nav f18">
-    <div class="pull-left send-qx"><a href="javascript:void(0)" class="c-org">取消</a></div>
-    <div class="pull-left send-wb text-center">发微博</div>
-    <div class="pull-left send-fs text-right"><a href="javascript:void(0)" class="c-999">发送</a></div>
+    <div class="pull-left send-qx"><a href="javascript:void(0)" onclick="history.back()" class="c-org">取消</a></div>
+    <div class="pull-left send-wb text-center">编辑</div>
+    <div class="pull-left send-fs text-right"><a ng-click="(!P.txtInvalid) && addNewPost()" href="javascript:void(0)" class="c-999">发送</a></div>
 	</div>
   </div>
   <div class="row send-main">
-    <textarea name="textarea" id="textarea" class="send-text">私语分享...</textarea>
+    <textarea ng-model="wbText" ng-change="wbtxtChanged()" class="send-text" placeholder="私语分享..."></textarea>
   </div>
-  <div class="row b-hui">
-     <div class="send-more">
-	  <a href="javascript:void(0)" onclick="fileSelect();"><img src="images/img.png" width="24"/></a>
-	  <input type="file" name="fileToUpload" id="fileToUpload" style="display:none;">
-	 </div>
-	 <div class="send-img">
-	   <ul>
-	     <li><a href="javascript:void(0)"><img src="images/pho.jpg"/></a><i><a href="javascript:void(0)"></a></i></li>
-	     <li><a href="javascript:void(0)" onclick="fileSelect();"><img src="images/pho2.jpg"/></a></li>
-	   </ul>
-	 </div>
-  </div>
+</form>
 </div>
 <!-- html end -->
 </body>

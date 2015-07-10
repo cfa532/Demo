@@ -74,7 +74,6 @@ G.weiboApp
 
 			//begin to check for new message
 			//msgService.readMsg($scope);
-			//var myChatBox = angular.element(document.getElementById("myChatBox")).scope();
 			
 			//check if there is a inviter
 			debug.info(G.inviter, G.bid)
@@ -86,92 +85,215 @@ G.weiboApp
 						debug.log("add friend", fri);
 						$scope.myUserInfo.addFriend(fri);
 						msgService.sendRequest(fri.bid, "request to be added");
-						myChatBox.getOnlineUsers();		//unknown user may cause a problem
-						//delete $scope.usrList[fri.bid];
 					};
 				});
 			};
-			//myChatBox.getOnlineUsers();		//unknown user may cause a problem
-
-			G.spinner = new Spinner(	// show the onload spinner
-			{
-				lines: 15,				// The number of lines to draw
-				length: 20,				// The length of each line
-				width: 12,				// The line thickness
-				radius: 32,				// The radius of the inner circle
-				corners: 1,				// Corner roundness (0..1)
-				rotate: 30,				// The rotation offset
-				direction: 1,			// 1: clockwise, -1: counterclockwise
-				color: '#999',			// #rgb or #rrggbb or array of colors
-				speed: 1,				// Rounds per second
-				trail: 76,				// Afterglow percentage
-				shadow: true,			// Whether to render a shadow
-				hwaccel: false,			// Whether to use hardware acceleration
-				className: 'spinner',	// The CSS class to assign to the spinner
-				zIndex: 2e9,			// The z-index (defaults to 2000000000)
-				top: '50%',				// Top position relative to parent
-				left: '50%'				// Left position relative to parent
-			}).spin(document.getElementById('myAppRoot'));
-			$timeout(function() {G.spinner.stop();}, 10000);		//stop the spinner after 30s nonetheless
 		}
 	})
-	.state("root.comment", {
-		url : "/comment",
-		templateUrl : "comment.html",
-		controller : "postController",
+	.state("root.setup", {			//all comments 
+		url : "/setup",
+		templateUrl : "setup.html",
+		controller : function($scope) {
+		}
+	})
+	.state("root.xgnc", {			//all comments 
+		url : "/xgnc",
+		templateUrl : "xgnc.html",
+		controller : function($scope, $state) {
+			$scope.newNickName = $scope.myUserInfo.nickName;
+			$scope.changeName = function() {
+				$scope.myUserInfo.nickName = $scope.newNickName;
+				$scope.myUserInfo.set();
+				history.go(-1);
+			}
+		}
 	})
 	.state("root.post", {
-		url : "/post",
+		url : "/post/{wbID}",
 		templateUrl : "post.html",
-		controller : function($scope) {
-			debug.log("in weibo main text state");
-		}
-	})
-	.state("root.msg", {
-		url : "/msg",
-		templateUrl : "msg.html",
-		controller : function($scope, $rootScope, $timeout) {
-			debug.log("in chat history controller");
-			$rootScope.currUserInfo = $scope.myUserInfo;	//display my userInfo at upper right corner
+		controller : function($scope, $state, $stateParams, $window, msgService) {
+			debug.log("in weibo state");
+			   //转发评论微博tab切换
+			$('.detail-nav ul li').click(function(){
+				$(this).addClass('pl-active').siblings().removeClass('pl-active');
+				$('.detail-info>div:eq('+$(this).index()+')').show().siblings().hide();	
+			});
+			
+			$window.togglezf = function() {
+				$("#hidepl").addClass("hide");
+				if($('#hidezf').is(':hidden')){$("#hidezf").removeClass("hide");} else{$("#hidezf").addClass("hide");}	
+			};
+			$window.togglepl = function() {
+				$("#hidezf").addClass("hide");
+				if($('#hidepl').is(':hidden')){$("#hidepl").removeClass("hide");} else{$("#hidepl").addClass("hide");}	
+			};
+			$window.cancel = function() {
+				$("#hidezf").addClass("hide");	
+				$("#hidepl").addClass("hide");		
+			};
 
-			angular.forEach($scope.myUserInfo.friends, function(ui, bid) {
-				G.spinner.spin(document.getElementById('myAppRoot'));
-				G.leClient.hkeys(G.sid, G.bid, bid, function(data) {
-					if (data.length > 0) {
-						data.sort(function(a, b) {return b-a});
-						G.leClient.hget(G.sid, G.bid, bid, data[0], function(m) {
-							if (m[1].contentType === 1) {
-								var p = new WeiboPicture(m[1].content, m[1].bid);
-								p.get(0, function(uri) {
-									m[1].dataURI = uri;
-									ui.lastSMS = m[1];
+			$scope.R = {
+					sentOK			: false,
+					txtInvalid		: true,
+					chCounter		: G.MaxWeiboLength,
+				};
+			$scope.wb = null;
+			$scope.currentList.forEach(function(wb) {
+				if (wb.wbID === $stateParams.wbID) {
+					$scope.wb = wb;
+					debug.log($scope.wb);
+				}
+			});
+			if (!$scope.wb) {
+				$scope.wb = new WeiboPost($stateParams.wbID, G.bid);
+				$scope.wb.get(false, function(readOK) {
+					if (readOK) {
+						//also read comments of the weibo
+						$scope.wb.relayList = []; $scope.wb.reviewList = [];
+						for(var j=0; j<$scope.wb.relays.length; j++) {
+							//iterate every review ID
+							G.leClient.get(G.sid, $scope.wb.authorID, $scope.wb.relays[j], function(data) {
+								if (data[1] !== null) {
+									$scope.wb.relayList.push(data[1]);
+									$scope.wb.relayList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
 									$scope.$apply();
-									G.spinner.stop();
-								});
-							} else {
-								ui.lastSMS = m[1];
-								$scope.$apply();
-								G.spinner.stop();
-							};
-						}, function(name, err) {
-							debug.error(err);
-						});
+								};
+							}, function(name, err) {
+								debug.error("In showRelay err=", err);
+							});
+						};
+
+						for(var j=0; j<$scope.wb.reviews.length; j++) {
+							//iterate every review ID
+							G.leClient.get(G.sid, $scope.wb.authorID, $scope.wb.reviews[j], function(data) {
+								if (data[1] !== null) {
+									$scope.wb.reviewList.push(data[1]);
+									//debug.log(data[1]);
+									$scope.wb.reviewList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
+									$scope.$apply();
+								};
+							}, function(name, err) {
+								debug.error(err);
+							});
+						};
+						$scope.$apply();
+					};
+				});
+			};
+			
+			//message input in the Review textarea
+			$scope.txtChanged = function() {
+				if ($scope.txtComment.replace(/\s+/g,"") !== '') {
+					$scope.R.txtInvalid = false;
+					if ($scope.txtComment.toString().length > G.MaxWeiboLength) {
+						//no more, remove the last char input
+						$scope.txtComment = $scope.txtComment.toString().slice(0, G.MaxWeiboLength);
 					} else {
-						G.spinner.stop();
+						$scope.R.chCounter = G.MaxWeiboLength - $scope.txtComment.toString().length;
+					}
+				} else {
+					$scope.R.txtInvalid = true;
+					$scope.R.chCounter = G.MaxWeiboLength;
+				};
+			};
+
+			$scope.sendComment = function() {
+				$("#hidezf").addClass("hide");
+				$("#hidepl").addClass("hide");	
+
+				//prevent duplicated submit
+				$scope.R.txtInvalid = true;
+
+				var r = new WeiboReview();
+				r.body = $scope.txtComment;
+				r.timeStamp = new Date().getTime();
+				r.parentID = $scope.wb.wbID;
+				r.authorID = G.bid;	//commenting on other's post
+				r.author = $scope.wb.author;
+				
+				G.leClient.setdata(G.sid, G.bid, r, function(reviewKey) {	
+					if ($scope.wb.authorID !== G.bid) {
+						//now send a message to the author of the Post reviewed
+						r.key = reviewKey;
+						msgService.sendReview(r, $scope.wb.authorID);
+						
+						//debug.log("review message sent, key="+reviewKey);
+						$scope.wb.reviews.unshift(reviewKey);
+						$scope.txtComment = '';
+						updateMyReviewList(reviewKey);
+					} else {
+						//call this only when reviewing my own post
+						$scope.wb.reviews.unshift(reviewKey);
+						$scope.wb.update(function() {
+							debug.log("Review added. key="+ reviewKey);
+							$scope.txtComment = '';
+							updateMyReviewList(reviewKey);
+						});
 					};
 				}, function(name, err) {
-					debug.error(err);
+					debug.error("add review err2=", err);
+					$scope.R.txtInvalid = false;
 				});
-			});
-		},
-	})
-	.state("root.newPost", {
-		url : "/newpost",
-		templateUrl : "send.html",
-		controller : "postController",
-//		controller : function($scope) {
-//			debug.log("in newPost state");
-//		}
+			};
+			
+			//publish a new Post with a ParentID
+			$scope.forwardWeibo = function() {
+				var relayText = $scope.txtComment;
+				var parentWB = $scope.wb;
+				
+				console.log("in relayPost()");
+				var wb = new WeiboPost();
+				if (parentWB.parentID !== null) {
+					//relaying a weibo that has been relayed at least once.
+					//attach its text to the new review and update the parent
+					wb.body = relayText+"://@"+parentWB.author+":"+parentWB.body;		//these 2 fields have value only in a relayed post
+					wb.parentID = parentWB.parentID;
+					wb.parentAuthorID = parentWB.parentAuthorID;
+					wb.parentWeibo = parentWB.parentWeibo;
+				} else {
+					wb.body = relayText;				
+					wb.parentID = parentWB.wbID;
+					wb.parentAuthorID = parentWB.authorID;
+					wb.parentWeibo = parentWB;
+				}
+				wb.body = wb.body.toString().slice(0, G.MaxWeiboLength);
+				wb.timeStamp = new Date().getTime();
+				wb.authorID = G.bid;
+				wb.author = $scope.myUserInfo.nickName;
+				
+				wb.set(function() {
+					$scope.weiboList.unshift(wb);
+					G.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
+					$scope.myUserInfo.weiboCount++;
+					$scope.myUserInfo.setLastWeibo(wb);
+					
+					//close review window and roll to the top of page where the new forward is displayed
+					$scope.R.relayedWeibo = null;
+					scrollTo(0,200);
+					$scope.$apply();
+				});
+				
+				$scope.sendComment();
+			};
+
+			var updateMyReviewList = function(reviewKey) {
+				var currentDay = parseInt(new Date().getTime()/86400000);
+				//now update the global review's keylist
+				G.leClient.hget(G.sid, G.bid, G.Reviews, currentDay, function(data) {
+					if (data[1] === null)
+						data[1] = [reviewKey];
+					else
+						data[1].unshift(reviewKey);
+					G.leClient.hset(G.sid, G.bid, G.Reviews, currentDay, data[1], function() {
+						debug.log("setReviewData: update review keys OK. "+reviewKey);
+					}, function(name, err) {
+						debug.error("setReviewData: update review keys failed ", err);
+					});
+				}, function(name, err) {
+					debug.error("setReviewData: get review keys failed ", err);
+				});
+			};
+		}
 	})
 	.state("root.main", {
 		abstract : true,
@@ -192,20 +314,335 @@ G.weiboApp
 		templateUrl : "weiboList.html",
 		controller : "weiboController"
 	})
-	.state("root.main.original", {
-		url : "/original",
-		templateUrl : "weiboList.html",
-		controller : "weiboController"
+	.state("root.main.msg", {
+		url : "/msg",
+		templateUrl : "msg.html",
+		controller : function($scope, $rootScope, $timeout) {
+			debug.log("in chat history controller");
+			angular.forEach($scope.myUserInfo.friends, function(ui, bid) {
+				G.leClient.hkeys(G.sid, G.bid, bid, function(data) {
+					if (data.length > 0) {
+						data.sort(function(a, b) {return b-a});
+						G.leClient.hget(G.sid, G.bid, bid, data[0], function(m) {
+							if (m[1].contentType === 1) {
+								var p = new WeiboPicture(m[1].content, m[1].bid);
+								p.get(0, function(uri) {
+									m[1].dataURI = uri;
+									ui.lastSMS = m[1];
+									$scope.$apply();
+								});
+							} else {
+								ui.lastSMS = m[1];
+								$scope.$apply();
+							};
+						}, function(name, err) {
+							debug.warn(err);
+						});
+					};
+				}, function(name, err) {
+					debug.warn(err);
+				});
+			});
+		},
 	})
-	.state("root.main.favorite", {
-		url : "/favorite",
-		templateUrl : "weiboList.html",
-		controller : "weiboController"
+	.state("root.msgDetail", {
+		url : "/msgdetail/{bid}",
+		templateUrl : "msgDetail.html",
+		controller : function($scope, $rootScope, $stateParams, msgService, SMSService) {
+			debug.log("in msgDetail state", $stateParams.bid);
+			
+			$rootScope.currUserInfo = $rootScope.myUserInfo.friends[$stateParams.bid];
+			$scope.inPageBid = $stateParams.bid;	//bid of user I am talking to
+			$scope.inPageMsgs = [];
+			$scope.C = {
+					sentOK			: false,
+					txtInvalid		: true,
+					chCounter		: G.MaxWeiboLength,
+			};
+			
+			//register this function with SMS service to sort inPage message display
+			//called by processMsg when a new msg is received
+			SMSService.addCallback(function(bid) {
+				if (bid !== $stateParams.bid) return;	//a new msg other than current bid come in, ignore it
+				
+				$scope.inPageMsgs.length = 0;
+				for (var i=0; i<$scope.chatSessions[bid].messages.length; i++) {
+					$scope.inPageMsgs.push($scope.chatSessions[bid].messages[i]);
+				};
+				$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp})
+				$scope.$apply();
+			});
+
+			//display chat time every hour
+			$scope.showTimeLine = function(mi) {
+				// take a Message as param
+				// check if the time difference from this message to its previous message cross the hourly border
+				if (mi===0 || mi===$scope.chatSessions[$stateParams.bid].messages.length-1) return false;
+				var tt = parseInt($scope.chatSessions[$stateParams.bid].messages[mi].timeStamp/1000/3600);
+				var pt = parseInt($scope.chatSessions[$stateParams.bid].messages[mi-1].timeStamp/1000/3600);
+				if (tt !== pt) 
+					return true;
+				return false;
+			};
+
+			//take the chatting friend's bid as parameter
+			$scope.sendMsg = function(bid) {
+				if ($scope.txtChat && $scope.txtChat.toString().replace(/\s+/g,"") !== '') {
+					var m = new WeiboMessage();
+					m.bid = G.bid;
+					m.type = 1;				//SMS
+					m.contentType = 0;		//text
+					m.content = $scope.txtChat;
+					m.timeStamp = new Date().getTime();
+					msgService.sendSMS(bid, m);
+					
+					debug.log($scope.chatSessions[bid]);
+					$scope.chatSessions[bid].messages.push(m);
+					$scope.chatSessions[bid].timeStamp = m.timeStamp;
+					$scope.txtChat = '';
+					
+					//save it in db as conversation
+					SMSService.saveSMS(bid, m);
+				};
+				if ($scope.picFile) {
+					var r = new FileReader();
+					r.onloadend = function(e) {
+						G.leClient.setdata(G.sid, G.bid, e.target.result, function(picKey) {
+							var m = new WeiboMessage();
+							m.bid = G.bid;
+							m.type = 1;				//SMS
+							m.contentType = 1;		//picture
+							m.content = picKey;
+							m.timeStamp = new Date().getTime();
+							msgService.sendSMS(bid, m);
+							
+							getMsgPic(m);
+							$scope.chatSessions[bid].messages.push(m);
+							$scope.chatSessions[bid].timeStamp = m.timeStamp;
+							$scope.picUrl = null;
+							$scope.picFile = null;
+							$scope.$apply();
+							//save it in db as conversation
+							SMSService.saveSMS(bid, m);
+						}, function(name, err) {
+							debug.error(err);
+						});
+					};
+					r.readAsArrayBuffer($scope.picFile);
+				};
+			};
+			
+			$scope.showBigPic = function(m) {
+				$scope.bigPicUrl = m.dataURI;
+				$timeout(function() {$scope.$apply();});
+				easyDialog.open({
+					container : 'big_picture2',
+					fixed : false,
+					drag : true,
+					overlay : true
+				});
+			};
+			
+			//upload a picture or file to be sent over SMS
+			$scope.sendFile = function(id) {
+				//simulate file selection event
+	            document.getElementById(id).dispatchEvent(new Event('click'));
+			};
+			
+			$scope.picSelected = function(files) {
+				$scope.picUrl = null;
+				$scope.fileSent = null;
+				if (files!==null && files.length>0) {
+					//display pic in send box
+					var r = new FileReader();
+					r.onloadend = function(e) {
+						$scope.picUrl = e.target.result;
+						$scope.$apply();
+					};
+					$scope.picFile = files[0];
+					r.readAsDataURL(files[0], {type: 'image/png'});
+				};
+			};
+							
+			$scope.unselectFile = function() {
+				$scope.fileSent = null;
+				$scope.picFile = null;
+			};
+			
+			//message input in the textarea
+			$scope.txtChanged = function() {
+				//debug.log($scope.txtChat)
+				if ($scope.txtChat.replace(/\s+/g,"") !== '') {
+					$scope.C.txtInvalid = false;
+					if ($scope.txtChat.toString().length > G.MaxWeiboLength) {
+						//no more, remove the last char input
+						$scope.txtChat = $scope.txtChat.toString().slice(0, G.MaxWeiboLength);
+					} else {
+						$scope.C.chCounter = G.MaxWeiboLength - $scope.txtChat.toString().length;
+					}
+				} else {
+					$scope.C.txtInvalid = true;
+					$scope.C.chCounter = G.MaxWeiboLength;
+				};
+			};
+
+			var getMsgPic = function(m) {
+				if (m.contentType === 1) {
+					m.dataURI = null;		//prevent browse show an illegal dataURI error
+					var p = new WeiboPicture(m.content, m.bid);
+					p.get(0, function(uri) {	//show original pic
+						m.dataURI = uri;
+						$scope.$apply();
+					});
+				};
+			};
+			
+			var getChatDetail = function(bid) {
+				$scope.inPageMsgs.length = 0;
+				if ($scope.chatSessions[bid]) {
+					//a chat with a friend is going on. resort the msgs for in page display
+					for (var i=0; i<$scope.chatSessions[bid].messages.length; i++) {
+						$scope.inPageMsgs.push($scope.chatSessions[bid].messages[i]);
+					};
+					$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp})
+				} else {
+					//no existing chat session, open one. Clean unread msgs only when user opened a new chat session
+					//assume that is when the user read any old msgs
+					var cs = new ChatSession();
+					cs.bid = bid;
+					cs.friend = $scope.myUserInfo.friends[bid];
+					$scope.chatSessions[bid] = cs;
+
+					//first check if there are unread msgs in SMSUnread db
+					G.leClient.hget(G.sid, G.bid, G.UnreadSMS, bid, function(data) {
+						if (data[1]) {
+							//there are unread msgs
+							cs.messages = cs.messages.concat(data[1]);
+							for (var i=0; i<cs.messages.length; i++) {
+								getMsgPic(cs.messages[i]);
+								$scope.inPageMsgs.push(cs.messages[i]);
+								$scope.$apply();
+							};
+							$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
+						} else {
+							//no unread msgs, load most recent 50 msgs
+							G.leClient.hkeys(G.sid, G.bid, bid, function(ts) {
+								if (ts.length>0) {
+									ts.sort(function(a,b) {return b-a});
+									for (var i=0; i<ts.length && i<50; i++) {
+										G.leClient.hget(G.sid, G.bid, bid, ts[i], function(msg) {
+											getMsgPic(msg[1]);
+											$scope.chatSessions[bid].messages.push(msg[1]);
+											$scope.inPageMsgs.push(msg[1]);
+											$scope.inPageMsgs.sort(function(a,b) {return b.timeStamp - a.timeStamp});
+											$scope.$apply();
+											//$timeout(function() {$scope.$apply();});
+										}, function(name, err) {
+											debug.error(err);
+										});
+									};
+								};
+							}, function(name, err) {
+								debug.error(err);
+							});
+						};
+						
+						//delete unread msgs record
+						G.leClient.hdel(G.sid, G.bid, G.UnreadSMS, bid, function() {
+							debug.log("unread msgs deleted");
+						}, function(name, err) {
+							debug.error(err);
+						});
+					});
+				};
+			};
+			getChatDetail($stateParams.bid);
+
+//			$("#myChatArea2").keyup(function(e) {	//use keyup to avoid misfire in chinese input
+//				if (e.keyCode === 13) {
+//					$scope.sendSMS($stateParams.bid);
+//					return false;
+//				};
+//			});
+		}
 	})
-	.state("root.main.pictureGrid", {
-		url : "/pictures",
-		templateUrl : "allPics.html",
-		controller : "pictureController"
+	.state("root.main.my", {
+		url : "/my",
+		templateUrl : "my.html",
+	})
+	.state("root.friends", {
+		url : "/friends",
+		templateUrl : "friends.html",
+		controller : function($scope) {
+			debug.log("in friends state");
+			//我的好友，在线用户切换下拉隐藏
+			$(".send-wb span").click(function(){
+				var ul=$(".more-tit");
+				if(ul.css("display")=="none"){
+					ul.show();
+				}else{
+					ul.hide();
+				}
+			});
+			//我的好友，在线用户切换右侧图标更换
+			$(".up-tb").click(function(){
+				var _name = $(this).attr("name");
+				if( $("[name="+_name+"]").length > 1 ){
+					$("[name="+_name+"]").removeClass("down-tb");
+					$(this).addClass("down-tb");
+				} else {
+					if( $(this).hasClass("down-tb") ){
+						$(this).removeClass("down-tb");
+					} else {
+						$(this).addClass("down-tb");
+					}
+				}
+			});
+			//我的好友，在线用户切换中内容切换
+			$(".more-tit li").click(function(){
+				var li=$(this).text();
+				var type=$(this).attr('data-type');
+				$(".send-wb span").html(li);
+				$(".more-tit").hide();
+				$(".send-wb span").removeClass("down-tb");   
+				$('.contype').hide();
+				$('.'+type).show();
+			});
+			
+			$scope.addFriend = function(ui) {
+				$scope.myUserInfo.addFriend(ui);
+				delete $scope.usrList[ui.bid];
+			};
+			
+			$scope.getOnlineUsers = function() {
+				//get nearby users those are not friends
+				$scope.usrList = {};
+				G.leClient.getvar(G.sid, "usernearby", function(data) {
+					//an array of userid on the same node
+					//debug.log(data);
+					angular.forEach(data, function(bid) {
+						if (bid!==G.bid && !$scope.myUserInfo.isFriend(bid)) {
+							(function(bid) {
+								var ui = new UserInfo(bid);
+								ui.get(function(readOK) {
+									if (readOK) {
+										$scope.usrList[bid] = ui;
+										debug.info(ui);
+										$scope.$apply();
+									};
+								});
+							}(bid));
+						};
+					});
+				});
+			};
+			$scope.getOnlineUsers();			
+		}
+	})
+	.state("root.newPost", {
+		url : "/newpost",
+		templateUrl : "send.html",
+		controller : "postController",
 	})
 	//catch all urls
 	$urlRouterProvider.otherwise("/root/main/allposts");

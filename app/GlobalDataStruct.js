@@ -2,7 +2,7 @@
  *  definition of global data structures, constructors
  */
 "use strict";
-var G = (function(_g) {		//augument global variable G, defined in release.html
+var G = (function(_g) {		//augment global variable G, defined in release.html
 	_g.bidPath = window.location.pathname + "/appID/userID/",
 	_g.spinner = null, // spinning image while loading
 	_g.weiboApp = null, // ["ui.bootstrap", "ui.router"]

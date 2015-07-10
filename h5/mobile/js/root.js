@@ -68,7 +68,6 @@ G.weiboApp
 .controller("weiboController", ["$state", "$stateParams", "$scope", "$rootScope", "$timeout",
                                 function($state, $stateParams, $scope, $rootScope, $timeout) {
 	debug.log("in weibo controller")
-	G.spinner.spin(document.getElementById('myAppRoot'));
 
 	//state switch
 	var iDay = 0;			//index of the most recent day, used by getPosts() to read single user's posts
@@ -86,11 +85,6 @@ G.weiboApp
 			favoriteWeibo	: null
 	};
 
-	$scope.showPostDetail = function(wb) {
-		$rootScope.currentWB = wb;
-		$state.go("root.post");
-	};
-	
 	$scope.showRelay = function(wb) {
 		$scope.R.reviewedWeibo = null;
 		$scope.R.favoriteWeibo = null;
@@ -225,14 +219,40 @@ G.weiboApp
 		var wb = new WeiboPost(key, bid, $scope);
 		wb.get(original, function(readOK) {
 			if (readOK) {
-				debug.log(wb);
+				//debug.log(wb);
 				$scope.myUserInfo.checkFavorite(wb);
 				$scope.weiboList.push(wb);
 				//sort array in descending order, worked like a charm
 				$scope.weiboList.sort(function(a,b) {return b.timeStamp - a.timeStamp})
 				G.slice($scope.weiboList, $scope.currentList, ($scope.global.currentPage-1)*$scope.global.itemsPerPage, $scope.global.currentPage*$scope.global.itemsPerPage);
 				$scope.$apply();
-				$timeout(function() {G.spinner.stop();});		//stop loading sign					
+				
+				//also read comments of the weibo
+				wb.relayList = []; wb.reviewList = [];
+				for(var j=0; j<wb.relays.length; j++) {
+					//iterate every review ID
+					G.leClient.get(G.sid, wb.authorID, wb.relays[j], function(data) {
+						if (data[1] !== null) {
+							wb.relayList.push(data[1]);
+							wb.relayList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
+						};
+					}, function(name, err) {
+						debug.error("In showRelay err=", err);
+					});
+				};
+
+				for(var j=0; j<wb.reviews.length; j++) {
+					//iterate every review ID
+					G.leClient.get(G.sid, wb.authorID, wb.reviews[j], function(data) {
+						if (data[1] !== null) {
+							wb.reviewList.push(data[1]);
+							//debug.log(data[1]);
+							wb.reviewList.sort(function(a,b) {return b.timeStamp - a.timeStamp});
+						};
+					}, function(name, err) {
+						debug.error(err);
+					});
+				};
 			};
 		});
 	};
@@ -368,7 +388,6 @@ G.weiboApp
 .controller("pictureController", ["$state", "$stateParams", "$scope", "$timeout",
                                   function($state, $stateParams, $scope, $timeout) {
 	debug.log("in picture controller");
-	G.spinner.spin(document.getElementById('myAppRoot'));
 	
 	//pic keys are saved in G.PostPics, indexed by weibo date
 	//for now, read all pics into the following list without pagination.
@@ -392,15 +411,12 @@ G.weiboApp
 								//do nothing other than get the picture
 								p.dataURI = uri;
 								$scope.myPicUrls.push(p);
-								$timeout(function() {G.spinner.stop()});
 							});
 						});
 					}, function(name, err) {
 						debug.error(err);
 					});
 				});
-			} else {
-				G.spinner.stop();
 			};
 		}, function(name, err) {
 			debug.error(err);
@@ -417,8 +433,6 @@ G.weiboApp
 				for (var i=0; i<wbDays.length && i<7; i++) {
 					getPicsOfDay(wbDays[i], bid);
 				};
-			} else {
-				G.spinner.stop();
 			};
 		}, function(name, err) {
 			debug.error("pic controller err= " + err);

@@ -220,6 +220,22 @@
 	</div>
 </div>
 
+<script type="text/ng-template" id="trends.html">
+    <div class="WB_feed">
+        <div ng-repeat="trend in trends">
+            <a ui-sref="root.personal.trendweibos({uid:trend.uid})">
+                <span>{{trend.name}}</span>
+            </a>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="trendweibos.html">
+    <div class="WB_feed">
+        good,world
+    </div>
+</script>
+
 <script type="text/ng-template" id="floating.html">
 <!-- floating stuff  -->
 <div class="from_wrapper" id="pic_slider" style="display:none;">
