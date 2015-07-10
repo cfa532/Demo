@@ -1,27 +1,28 @@
-// p.js
-//Usage: >node --harmony-proxies makefile.json
+//pub.js
+//Usage: >node --harmony-proxies pub.js
 "use strict";
 var prom = require("promise");
 var hp = require("hprose");
 var hosturl = "112.124.113.235:30003";
-//hosturl ="97.74.126.127:4800";
+//hosturl ="4bao.vicp.net:4802";
 var client = new HproseHttpClient("http://" + hosturl + "/webapi/",
 		["login","register", "getvar", "begin", "commit", "rollback", "setdata", "set", "get", "hset", "hget","hlen","hkeys",
 		 "hgetall", "hmset","hmget","exit", "lpush", "lpop", "rpush", "rpop", "lrange", "zadd", "zrange",
 		 "sendmsg", "readmsg", "invite", "accept", "test", "veni", "sethostip","proxyget"])
 var proxy = client.useService();
 var fs = require('fs');
-var bid = "KtXm2MOMx5bKd0qpxjGiWpxwpIO1wCnDRjWlGBG5zI0";	//app bid
+var bid = "SyQirXjTVnJHCkG4SWsSw6Pnq3eeB86jCUF2MxVy2Jo";	//app bid
 //bid = "lrOXcQpnLuiINnMbJ7SNHmoCislHjjsoaRCFJVNYFY4";	//97
-var sid = "bf3d208cba14c5f7e037b9acd0fc1d2e27a588ed";
+var sid = "db08010ff3c83b9d91846da2aa7dc308d1097a74";
 var version = "release";	//for release version
-version = "1.0.10";			//for testing purpose
+//version = "1.0.10";			//for testing purpose
 var ps = [];				//queue to hold all the promises
 
 function loadFile(o) {
 	return new Promise(function(resolve, reject) {
 		fs.readFile(o.fileKey, null, function(err, text) {
 			if (err) throw(err);
+			//console.log(sid, bid, text);
 			proxy.setdata(sid, bid, text, function(key) {
 				console.log(o.fileKey, key);
 				o.fileKey = key;
