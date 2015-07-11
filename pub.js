@@ -25,7 +25,7 @@ function loadFile(o) {
 	return new Promise(function(resolve, reject) {
 		fs.readFile(o.fileKey, "utf-8", function(err, text) {
 			if (err) throw(err);
-			console.log(text);
+			//console.log(text);
 			proxy.setdata(sid, bid, text, function(key) {
 				console.log(o.fileKey, key);
 				o.fileKey = key;
